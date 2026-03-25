@@ -1,0 +1,69 @@
+<div class="max-w-5xl mx-auto">
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold">FAAN Admin Operations System</h1>
+    <p class="text-sm mt-2">Incident Report</p>
+  </div>
+
+  <div class="border border-gray-300">
+    <table class="w-full text-sm border-collapse">
+      <tbody>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 w-1/3 bg-gray-100">Incident Number</th>
+          <td class="p-3"><%= @incident.incident_number %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Title</th>
+          <td class="p-3"><%= @incident.title %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Description</th>
+          <td class="p-3"><%= @incident.description %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Incident Type</th>
+          <td class="p-3"><%= @incident.incident_type.humanize %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Severity</th>
+          <td class="p-3"><%= @incident.severity.humanize %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Status</th>
+          <td class="p-3"><%= @incident.status.humanize %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Action Taken</th>
+          <td class="p-3"><%= @incident.action_taken.presence || "-" %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Escalation Required</th>
+          <td class="p-3"><%= @incident.escalation_required? ? "Yes" : "No" %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Escalated To</th>
+          <td class="p-3"><%= @incident.escalated_to.presence || "-" %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Escalated At</th>
+          <td class="p-3"><%= @incident.escalated_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Created By</th>
+          <td class="p-3"><%= @incident.created_by.display_name %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Reviewed By</th>
+          <td class="p-3"><%= @incident.reviewed_by&.display_name || "-" %></td>
+        </tr>
+        <tr>
+          <th class="text-left p-3 bg-gray-100">Reviewer Remark</th>
+          <td class="p-3"><%= @incident.reviewer_remark.presence || "-" %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-8 text-sm">
+    <p><strong>Printed On:</strong> <%= Time.current.strftime("%d %b %Y, %I:%M %p") %></p>
+  </div>
+</div>

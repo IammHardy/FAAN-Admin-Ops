@@ -1,0 +1,103 @@
+<% content_for :page_title, "Dispatch Register" %>
+<% content_for :page_subtitle, "Track memos and document movement across departments." %>
+
+<div class="bg-white border border-gray-200 p-4 mb-4">
+  <%= form_with url: search_dispatches_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">Reference Number</label>
+      <%= text_field_tag :reference_number, params[:reference_number], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Subject</label>
+      <%= text_field_tag :subject, params[:subject], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Status</label>
+      <%= select_tag :status,
+          options_for_select(Dispatch.statuses.keys.map { |status| [status.humanize, status] }, params[:status]),
+          include_blank: "All Statuses",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Memo Date</label>
+      <%= date_field_tag :memo_date, params[:memo_date], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-end gap-2">
+      <%= submit_tag "Search", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Reset", dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="flex items-center justify-between mb-4">
+  <div class="flex items-center gap-2">
+    <%= link_to "All Dispatches", dispatches_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <%= link_to "Pending", pending_dispatches_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+
+  <%= link_to "New Dispatch", new_dispatch_path, class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+</div>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @dispatches.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Reference No.</th>
+          <th class="text-left px-4 py-3 font-semibold">Subject</th>
+          <th class="text-left px-4 py-3 font-semibold">Memo Date</th>
+          <th class="text-left px-4 py-3 font-semibold">From</th>
+          <th class="text-left px-4 py-3 font-semibold">To</th>
+          <th class="text-left px-4 py-3 font-semibold">Status</th>
+          <th class="text-right px-4 py-3 font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @dispatches.each do |dispatch| %>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3 font-medium"><%= dispatch.reference_number %></td>
+            <td class="px-4 py-3"><%= dispatch.subject %></td>
+            <td class="px-4 py-3"><%= dispatch.memo_date&.strftime("%d %b %Y") %></td>
+            <td class="px-4 py-3"><%= dispatch.sender_department.name %></td>
+            <td class="px-4 py-3"><%= dispatch.receiving_department.name %></td>
+            <td class="px-4 py-3">
+              <span class="inline-block px-2 py-1 text-xs border
+                <%= case dispatch.status
+                    when 'draft'
+                      'bg-gray-50 border-gray-300 text-gray-700'
+                    when 'dispatched'
+                      'bg-blue-50 border-blue-300 text-blue-700'
+                    when 'received'
+                      'bg-green-50 border-green-300 text-green-700'
+                    when 'acknowledged'
+                      'bg-purple-50 border-purple-300 text-purple-700'
+                    when 'filed'
+                      'bg-amber-50 border-amber-300 text-amber-700'
+                    end %>">
+                <%= dispatch.status.humanize %>
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <%= link_to "View", dispatch_path(dispatch), class: "text-blue-600 hover:underline" %>
+              <%= link_to "Edit", edit_dispatch_path(dispatch), class: "text-amber-600 hover:underline" %>
+              <%= button_to "Delete",
+                  dispatch_path(dispatch),
+                  method: :delete,
+                  form: { class: "inline-block" },
+                  data: { turbo_confirm: "Are you sure you want to delete this dispatch record?" },
+                  class: "text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">
+      No dispatch records found.
+    </div>
+  <% end %>
+</div>

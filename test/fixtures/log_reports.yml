@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  report_date: 2026-03-25
+  shift: MyString
+  department: one
+  unit: one
+  submitted_by: one
+  entered_by: one
+  summary: MyText
+  general_remarks: MyText
+  status: MyString
+
+two:
+  report_date: 2026-03-25
+  shift: MyString
+  department: two
+  unit: two
+  submitted_by: two
+  entered_by: two
+  summary: MyText
+  general_remarks: MyText
+  status: MyString

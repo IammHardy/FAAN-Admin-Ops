@@ -1,0 +1,55 @@
+<% content_for :page_title, "Users" %>
+<% content_for :page_subtitle, "Manage system users and roles." %>
+
+<div class="flex items-center justify-between mb-4">
+  <div></div>
+  <%= link_to "New User", new_user_path, class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+</div>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @users.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Full Name</th>
+          <th class="text-left px-4 py-3 font-semibold">Email</th>
+          <th class="text-left px-4 py-3 font-semibold">Role</th>
+          <th class="text-left px-4 py-3 font-semibold">Department</th>
+          <th class="text-left px-4 py-3 font-semibold">Unit</th>
+          <th class="text-left px-4 py-3 font-semibold">Status</th>
+          <th class="text-right px-4 py-3 font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3"><%= user.full_name %></td>
+            <td class="px-4 py-3 text-gray-600"><%= user.email %></td>
+            <td class="px-4 py-3"><%= user.role.humanize %></td>
+            <td class="px-4 py-3"><%= user.department&.name || "-" %></td>
+            <td class="px-4 py-3"><%= user.unit&.name || "-" %></td>
+            <td class="px-4 py-3">
+              <span class="inline-block px-2 py-1 text-xs border <%= user.active? ? 'bg-green-50 border-green-300 text-green-700' : 'bg-red-50 border-red-300 text-red-700' %>">
+                <%= user.active? ? "Active" : "Inactive" %>
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <%= link_to "View", user_path(user), class: "text-blue-600 hover:underline" %>
+              <%= link_to "Edit", edit_user_path(user), class: "text-amber-600 hover:underline" %>
+              <%= button_to "Deactivate",
+                  user_path(user),
+                  method: :delete,
+                  form: { class: "inline-block" },
+                  data: { turbo_confirm: "Are you sure you want to deactivate this user?" },
+                  class: "text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">
+      No users found.
+    </div>
+  <% end %>
+</div>

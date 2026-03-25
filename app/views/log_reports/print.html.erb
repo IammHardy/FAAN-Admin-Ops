@@ -1,0 +1,78 @@
+<div class="max-w-5xl mx-auto">
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold">FAAN Admin Operations System</h1>
+    <p class="text-sm mt-2">Daily Log Report</p>
+  </div>
+
+  <div class="border border-gray-300 mb-6">
+    <table class="w-full text-sm border-collapse">
+      <tbody>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 w-1/3 bg-gray-100">Report Date</th>
+          <td class="p-3"><%= @log_report.report_date.strftime("%d %b %Y") %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Shift</th>
+          <td class="p-3"><%= @log_report.shift.humanize %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Department</th>
+          <td class="p-3"><%= @log_report.department.name %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Unit</th>
+          <td class="p-3"><%= @log_report.unit.name %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Entered By</th>
+          <td class="p-3"><%= @log_report.entered_by.display_name %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Status</th>
+          <td class="p-3"><%= @log_report.status.humanize %></td>
+        </tr>
+        <tr class="border-b border-gray-300">
+          <th class="text-left p-3 bg-gray-100">Summary</th>
+          <td class="p-3"><%= @log_report.summary.presence || "-" %></td>
+        </tr>
+        <tr>
+          <th class="text-left p-3 bg-gray-100">General Remarks</th>
+          <td class="p-3"><%= @log_report.general_remarks.presence || "-" %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-3">Log Entries</h2>
+
+  <% if @log_entries.any? %>
+    <table class="w-full text-sm border border-gray-300 border-collapse">
+      <thead>
+        <tr class="bg-gray-100 border-b border-gray-300">
+          <th class="text-left p-3 border-r border-gray-300">Time</th>
+          <th class="text-left p-3 border-r border-gray-300">Description</th>
+          <th class="text-left p-3 border-r border-gray-300">Incident</th>
+          <th class="text-left p-3 border-r border-gray-300">Follow-up</th>
+          <th class="text-left p-3">Action Taken</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @log_entries.each do |entry| %>
+          <tr class="border-b border-gray-300">
+            <td class="p-3 border-r border-gray-300"><%= entry.entry_time&.strftime("%I:%M %p") || "-" %></td>
+            <td class="p-3 border-r border-gray-300"><%= entry.description %></td>
+            <td class="p-3 border-r border-gray-300"><%= entry.incident_flag? ? "Yes" : "No" %></td>
+            <td class="p-3 border-r border-gray-300"><%= entry.follow_up_needed? ? "Yes" : "No" %></td>
+            <td class="p-3"><%= entry.action_taken.presence || "-" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-sm">No entries found.</p>
+  <% end %>
+
+  <div class="mt-8 text-sm">
+    <p><strong>Printed On:</strong> <%= Time.current.strftime("%d %b %Y, %I:%M %p") %></p>
+  </div>
+</div>

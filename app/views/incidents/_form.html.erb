@@ -1,0 +1,87 @@
+<%= form_with model: @incident, class: "space-y-5" do |f| %>
+  <% if @incident.errors.any? %>
+    <div class="border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+      <p class="font-semibold mb-2">Please fix the following errors:</p>
+      <ul class="list-disc ml-5 space-y-1">
+        <% @incident.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <%= f.label :log_report_id, "Log Report", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :log_report_id, @log_reports, :id, :display_name,
+    { prompt: "Select Log Report" },
+    { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+    </div>
+
+    <div>
+      <%= f.label :log_entry_id, "Log Entry", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :log_entry_id, @log_entries, :id, :short_description,
+    { prompt: "Select Log Entry" },
+    { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :title, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :title, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :description, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :description, rows: 4, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :incident_type, class: "block text-sm font-medium mb-1" %>
+      <%= f.select :incident_type,
+          Incident.incident_types.keys.map { |type| [type.humanize, type] },
+          { prompt: "Select Type" },
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :severity, class: "block text-sm font-medium mb-1" %>
+      <%= f.select :severity,
+          Incident.severities.keys.map { |severity| [severity.humanize, severity] },
+          { prompt: "Select Severity" },
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :action_taken, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :action_taken, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= f.check_box :escalation_required, class: "border-gray-300" %>
+      <%= f.label :escalation_required, "Escalation Required", class: "text-sm font-medium" %>
+    </div>
+
+    <div>
+      <%= f.label :escalated_to, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :escalated_to, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :status, class: "block text-sm font-medium mb-1" %>
+      <%= f.select :status,
+          Incident.statuses.keys.map { |status| [status.humanize, status] },
+          { prompt: "Select Status" },
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :reviewer_remark, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :reviewer_remark, rows: 2, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+    <%= link_to "Cancel", incidents_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+<% end %>

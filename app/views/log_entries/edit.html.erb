@@ -1,0 +1,49 @@
+<% content_for :page_title, "Edit Log Entry" %>
+<% content_for :page_subtitle, "Update an entry in this log report." %>
+
+<div class="max-w-3xl bg-white border border-gray-200 p-6">
+  <%= form_with model: [@log_report, @log_entry], class: "space-y-5" do |f| %>
+    <% if @log_entry.errors.any? %>
+      <div class="border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+        <p class="font-semibold mb-2">Please fix the following errors:</p>
+        <ul class="list-disc ml-5 space-y-1">
+          <% @log_entry.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :entry_time, class: "block text-sm font-medium mb-1" %>
+      <%= f.time_field :entry_time, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :description, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :description, rows: 4, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :action_taken, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :action_taken, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-2">
+        <%= f.check_box :incident_flag, class: "border-gray-300" %>
+        <%= f.label :incident_flag, "Mark as Incident", class: "text-sm font-medium" %>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= f.check_box :follow_up_needed, class: "border-gray-300" %>
+        <%= f.label :follow_up_needed, "Follow-up Needed", class: "text-sm font-medium" %>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= f.submit "Update Log Entry", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Back", log_report_path(@log_report), class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  <% end %>
+</div>

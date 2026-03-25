@@ -1,0 +1,37 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  reference_number: MyString
+  subject: MyString
+  memo_date: 2026-03-25
+  sender_department: one
+  receiving_department: one
+  sender_unit: one
+  receiving_unit: one
+  created_by: one
+  dispatched_by: one
+  receiver_name: MyString
+  receiver_designation: MyString
+  dispatched_at: 2026-03-25 09:50:50
+  received_at: 2026-03-25 09:50:50
+  status: MyString
+  delivery_note: MyText
+  remarks: MyText
+
+two:
+  reference_number: MyString
+  subject: MyString
+  memo_date: 2026-03-25
+  sender_department: two
+  receiving_department: two
+  sender_unit: two
+  receiving_unit: two
+  created_by: two
+  dispatched_by: two
+  receiver_name: MyString
+  receiver_designation: MyString
+  dispatched_at: 2026-03-25 09:50:50
+  received_at: 2026-03-25 09:50:50
+  status: MyString
+  delivery_note: MyText
+  remarks: MyText

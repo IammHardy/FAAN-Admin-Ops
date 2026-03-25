@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FAAN Admin Operations System</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-100 text-gray-900 min-h-screen">
+    <div class="min-h-screen flex">
+      <% if user_signed_in? %>
+        <aside class="w-64 bg-slate-900 text-white flex flex-col">
+          <div class="px-6 py-5 border-b border-slate-700">
+            <h1 class="text-lg font-bold">FAAN Admin Ops</h1>
+            <p class="text-sm text-slate-300 mt-1">Operations Support System</p>
+          </div>
+
+          <nav class="flex-1 px-4 py-4 space-y-2 text-sm">
+            <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
+            <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
+            <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
+            <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
+            <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
+            <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
+            <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
+          </nav>
+
+          <div class="px-4 py-4 border-t border-slate-700 text-sm">
+            <p class="font-semibold"><%= current_user.display_name %></p>
+            <p class="text-slate-300 capitalize"><%= current_user.role.humanize %></p>
+
+            <div class="mt-4">
+              <%= button_to "Sign Out",
+                  destroy_user_session_path,
+                  method: :delete,
+                  class: "w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-medium" %>
+            </div>
+          </div>
+        </aside>
+      <% end %>
+
+      <main class="flex-1">
+        <% if user_signed_in? %>
+          <header class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-xl font-semibold"><%= content_for?(:page_title) ? yield(:page_title) : "FAAN Admin Operations System" %></h2>
+                <% if content_for?(:page_subtitle) %>
+                  <p class="text-sm text-gray-500 mt-1"><%= yield(:page_subtitle) %></p>
+                <% end %>
+              </div>
+            </div>
+          </header>
+        <% end %>
+
+        <div class="px-6 py-6">
+          <% flash.each do |type, message| %>
+            <div class="<%= flash_class(type) %> mb-4 px-4 py-3 border text-sm">
+              <%= message %>
+            </div>
+          <% end %>
+
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

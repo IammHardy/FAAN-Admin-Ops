@@ -1,0 +1,56 @@
+<% content_for :page_title, @user.full_name %>
+<% content_for :page_subtitle, "User details." %>
+
+<div class="bg-white border border-gray-200 p-6 max-w-4xl">
+  <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Full Name</dt>
+      <dd class="mt-1 text-sm"><%= @user.full_name %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Email</dt>
+      <dd class="mt-1 text-sm"><%= @user.email %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Phone Number</dt>
+      <dd class="mt-1 text-sm"><%= @user.phone_number.presence || "-" %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Role</dt>
+      <dd class="mt-1 text-sm"><%= @user.role.humanize %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Department</dt>
+      <dd class="mt-1 text-sm"><%= @user.department&.name || "-" %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Unit</dt>
+      <dd class="mt-1 text-sm"><%= @user.unit&.name || "-" %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Status</dt>
+      <dd class="mt-1 text-sm"><%= @user.active? ? "Active" : "Inactive" %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Created At</dt>
+      <dd class="mt-1 text-sm"><%= @user.created_at.strftime("%d %b %Y, %I:%M %p") %></dd>
+    </div>
+
+    <div>
+      <dt class="text-sm font-semibold text-gray-500">Last Updated</dt>
+      <dd class="mt-1 text-sm"><%= @user.updated_at.strftime("%d %b %Y, %I:%M %p") %></dd>
+    </div>
+  </dl>
+
+  <div class="mt-6 flex items-center gap-3">
+    <%= link_to "Edit", edit_user_path(@user), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
+    <%= link_to "Back", users_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<%= form_with model: @dispatch, class: "space-y-5" do |f| %>
+  <% if @dispatch.errors.any? %>
+    <div class="border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+      <p class="font-semibold mb-2">Please fix the following errors:</p>
+      <ul class="list-disc ml-5 space-y-1">
+        <% @dispatch.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <%= f.label :reference_number, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :reference_number, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+      <p class="text-xs text-gray-500 mt-1">Leave blank to auto-generate.</p>
+    </div>
+
+    <div>
+      <%= f.label :memo_date, class: "block text-sm font-medium mb-1" %>
+      <%= f.date_field :memo_date, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :subject, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :subject, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :sender_department_id, "Sender Department", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :sender_department_id, @departments, :id, :name,
+          { prompt: "Select Sender Department" },
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+    </div>
+
+    <div>
+      <%= f.label :sender_unit_id, "Sender Unit", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :sender_unit_id, @units, :id, :name,
+          { prompt: "Select Sender Unit" },
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+    </div>
+
+    <div>
+      <%= f.label :receiving_department_id, "Receiving Department", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :receiving_department_id, @departments, :id, :name,
+          { prompt: "Select Receiving Department" },
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+    </div>
+
+    <div>
+      <%= f.label :receiving_unit_id, "Receiving Unit", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :receiving_unit_id, @units, :id, :name,
+          { prompt: "Select Receiving Unit" },
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :delivery_note, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :delivery_note, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :remarks, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :remarks, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+    <%= link_to "Cancel", dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+<% end %>

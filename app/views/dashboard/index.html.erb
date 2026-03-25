@@ -1,0 +1,107 @@
+<% content_for :page_title, "Dashboard" %>
+<% content_for :page_subtitle, "Overview of dispatches, log reports, and incidents." %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Dispatches Today</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @dispatches_today %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Pending Dispatches</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @pending_dispatches %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Log Reports Today</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @log_reports_today %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Incidents Today</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents_today %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Open Incidents</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @open_incidents %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Escalated Incidents</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @escalated_incidents %></h3>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-semibold">Recent Dispatches</h3>
+      <%= link_to "View All", dispatches_path, class: "text-sm text-blue-600 hover:underline" %>
+    </div>
+
+    <% if @recent_dispatches.any? %>
+      <div class="space-y-3">
+        <% @recent_dispatches.each do |dispatch| %>
+          <div class="border-b border-gray-100 pb-3 last:border-b-0">
+            <p class="font-medium"><%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "hover:underline" %></p>
+            <p class="text-sm text-gray-600"><%= dispatch.subject %></p>
+            <p class="text-xs text-gray-500 mt-1">
+              <%= dispatch.memo_date&.strftime("%d %b %Y") %> •
+              <%= dispatch.status.humanize %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No dispatch records yet.</p>
+    <% end %>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-semibold">Recent Log Reports</h3>
+      <%= link_to "View All", log_reports_path, class: "text-sm text-blue-600 hover:underline" %>
+    </div>
+
+    <% if @recent_log_reports.any? %>
+      <div class="space-y-3">
+        <% @recent_log_reports.each do |report| %>
+          <div class="border-b border-gray-100 pb-3 last:border-b-0">
+            <p class="font-medium"><%= link_to "#{report.unit.name} Log", log_report_path(report), class: "hover:underline" %></p>
+            <p class="text-sm text-gray-600"><%= report.department.name %> • <%= report.unit.name %></p>
+            <p class="text-xs text-gray-500 mt-1">
+              <%= report.report_date&.strftime("%d %b %Y") %> •
+              <%= report.shift.humanize %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No log reports yet.</p>
+    <% end %>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-semibold">Recent Incidents</h3>
+      <%= link_to "View All", incidents_path, class: "text-sm text-blue-600 hover:underline" %>
+    </div>
+
+    <% if @recent_incidents.any? %>
+      <div class="space-y-3">
+        <% @recent_incidents.each do |incident| %>
+          <div class="border-b border-gray-100 pb-3 last:border-b-0">
+            <p class="font-medium"><%= link_to incident.incident_number, incident_path(incident), class: "hover:underline" %></p>
+            <p class="text-sm text-gray-600"><%= incident.title %></p>
+            <p class="text-xs text-gray-500 mt-1">
+              <%= incident.severity.humanize %> • <%= incident.status.humanize %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No incidents recorded yet.</p>
+    <% end %>
+  </div>
+</div>

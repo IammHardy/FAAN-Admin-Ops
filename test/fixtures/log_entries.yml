@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  log_report: one
+  entry_time: 2026-03-25 09:50:54
+  description: MyText
+  incident_flag: false
+  action_taken: MyText
+  follow_up_needed: false
+
+two:
+  log_report: two
+  entry_time: 2026-03-25 09:50:54
+  description: MyText
+  incident_flag: false
+  action_taken: MyText
+  follow_up_needed: false

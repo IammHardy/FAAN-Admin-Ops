@@ -1,0 +1,70 @@
+<% content_for :page_title, "Incidents" %>
+<% content_for :page_subtitle, "Manage extracted incidents from daily logs." %>
+
+<div class="flex items-center justify-between mb-4">
+  <div class="flex items-center gap-2">
+    <%= link_to "All Incidents", incidents_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <%= link_to "Open Items", open_items_incidents_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <%= link_to "Escalated", escalated_incidents_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+
+  <%= link_to "New Incident", new_incident_path, class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+</div>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @incidents.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Incident No.</th>
+          <th class="text-left px-4 py-3 font-semibold">Title</th>
+          <th class="text-left px-4 py-3 font-semibold">Type</th>
+          <th class="text-left px-4 py-3 font-semibold">Severity</th>
+          <th class="text-left px-4 py-3 font-semibold">Status</th>
+          <th class="text-left px-4 py-3 font-semibold">Created By</th>
+          <th class="text-right px-4 py-3 font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @incidents.each do |incident| %>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3 font-medium"><%= incident.incident_number %></td>
+            <td class="px-4 py-3"><%= incident.title %></td>
+            <td class="px-4 py-3"><%= incident.incident_type.humanize %></td>
+            <td class="px-4 py-3">
+              <span class="inline-block px-2 py-1 text-xs border
+                <%= case incident.severity
+                    when 'low'
+                      'bg-gray-50 border-gray-300 text-gray-700'
+                    when 'medium'
+                      'bg-blue-50 border-blue-300 text-blue-700'
+                    when 'high'
+                      'bg-amber-50 border-amber-300 text-amber-700'
+                    when 'critical'
+                      'bg-red-50 border-red-300 text-red-700'
+                    end %>">
+                <%= incident.severity.humanize %>
+              </span>
+            </td>
+            <td class="px-4 py-3"><%= incident.status.humanize %></td>
+            <td class="px-4 py-3"><%= incident.created_by.display_name %></td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <%= link_to "View", incident_path(incident), class: "text-blue-600 hover:underline" %>
+              <%= link_to "Edit", edit_incident_path(incident), class: "text-amber-600 hover:underline" %>
+              <%= button_to "Delete",
+                  incident_path(incident),
+                  method: :delete,
+                  form: { class: "inline-block" },
+                  data: { turbo_confirm: "Are you sure you want to delete this incident?" },
+                  class: "text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">
+      No incidents found.
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,139 @@
+<% content_for :page_title, @dispatch.reference_number %>
+<% content_for :page_subtitle, "Dispatch record details." %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2 bg-white border border-gray-200 p-6">
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Reference Number</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.reference_number %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Status</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.status.humanize %></dd>
+      </div>
+
+      <div class="md:col-span-2">
+        <dt class="text-sm font-semibold text-gray-500">Subject</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.subject %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Memo Date</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.memo_date&.strftime("%d %b %Y") %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Created By</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.created_by.display_name %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Sender Department</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.sender_department.name %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Sender Unit</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.sender_unit&.name || "-" %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Receiving Department</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.receiving_department.name %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Receiving Unit</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.receiving_unit&.name || "-" %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Dispatched By</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.dispatched_by&.display_name || "-" %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Dispatched At</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.dispatched_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Receiver Name</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.receiver_name.presence || "-" %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Receiver Designation</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.receiver_designation.presence || "-" %></dd>
+      </div>
+
+      <div>
+        <dt class="text-sm font-semibold text-gray-500">Received At</dt>
+        <dd class="mt-1 text-sm"><%= @dispatch.received_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></dd>
+      </div>
+
+      <div class="md:col-span-2">
+        <dt class="text-sm font-semibold text-gray-500">Delivery Note</dt>
+        <dd class="mt-1 text-sm text-gray-700"><%= @dispatch.delivery_note.presence || "No delivery note provided." %></dd>
+      </div>
+
+      <div class="md:col-span-2">
+        <dt class="text-sm font-semibold text-gray-500">Remarks</dt>
+        <dd class="mt-1 text-sm text-gray-700"><%= @dispatch.remarks.presence || "No remarks provided." %></dd>
+      </div>
+    </dl>
+
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <%= link_to "Edit", edit_dispatch_path(@dispatch), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Print", print_dispatch_path(@dispatch), class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Back", dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-6">
+    <h3 class="text-base font-semibold mb-4">Update Status</h3>
+
+    <div class="space-y-4">
+      <% unless @dispatch.dispatched? || @dispatch.received? || @dispatch.acknowledged? || @dispatch.filed? %>
+        <%= button_to "Mark as Dispatched",
+            mark_dispatched_dispatch_path(@dispatch),
+            method: :patch,
+            class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
+      <% end %>
+
+      <% if @dispatch.dispatched? %>
+        <div class="border border-gray-200 p-4">
+          <%= form_with url: mark_received_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
+            <div>
+              <label class="block text-sm font-medium mb-1">Receiver Name</label>
+              <%= text_field_tag :receiver_name, nil, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">Receiver Designation</label>
+              <%= text_field_tag :receiver_designation, nil, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+            </div>
+
+            <%= submit_tag "Mark as Received", class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @dispatch.received? %>
+        <%= button_to "Mark as Acknowledged",
+            mark_acknowledged_dispatch_path(@dispatch),
+            method: :patch,
+            class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-medium" %>
+      <% end %>
+
+      <% if @dispatch.acknowledged? %>
+        <%= button_to "Mark as Filed",
+            mark_filed_dispatch_path(@dispatch),
+            method: :patch,
+            class: "w-full bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
+      <% end %>
+    </div>
+  </div>
+</div>

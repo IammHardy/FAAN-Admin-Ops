@@ -1,0 +1,37 @@
+<div class="nested-fields border border-gray-200 p-4 bg-gray-50">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :entry_time, "Entry Time", class: "block text-sm font-medium mb-1" %>
+      <%= f.time_field :entry_time, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-center gap-6 pt-7">
+      <div class="flex items-center gap-2">
+        <%= f.check_box :incident_flag, class: "border-gray-300" %>
+        <%= f.label :incident_flag, "Mark as Incident", class: "text-sm font-medium" %>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= f.check_box :follow_up_needed, class: "border-gray-300" %>
+        <%= f.label :follow_up_needed, "Follow-up Needed", class: "text-sm font-medium" %>
+      </div>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :description, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :description, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :action_taken, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :action_taken, rows: 2, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+  </div>
+
+  <% if f.object.persisted? %>
+    <div class="mt-3 flex items-center gap-2">
+      <%= f.check_box :_destroy, class: "border-gray-300" %>
+      <%= f.label :_destroy, "Remove this entry", class: "text-sm text-red-700 font-medium" %>
+    </div>
+  <% end %>
+</div>
