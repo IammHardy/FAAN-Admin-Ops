@@ -10,6 +10,7 @@ class IncidentsController < ApplicationController
   end
 
   def show
+    @audit_logs = AuditLog.includes(:user).where(auditable: @incident).recent_first
   end
 
   def new

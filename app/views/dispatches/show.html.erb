@@ -92,6 +92,25 @@
   </dd>
 </div>
 
+<div class="mt-6 bg-white border border-gray-200 p-6">
+  <h3 class="text-base font-semibold mb-4">Activity History</h3>
+
+  <% if @audit_logs.any? %>
+    <div class="space-y-3">
+      <% @audit_logs.each do |log| %>
+        <div class="border-b border-gray-100 pb-3 last:border-b-0">
+          <p class="text-sm font-medium"><%= log.description %></p>
+          <p class="text-xs text-gray-500 mt-1">
+            <%= log.user.display_name %> • <%= log.created_at.strftime("%d %b %Y, %I:%M %p") %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No activity history for this dispatch.</p>
+  <% end %>
+</div>
+
       <div class="md:col-span-2">
         <dt class="text-sm font-semibold text-gray-500">Remarks</dt>
         <dd class="mt-1 text-sm text-gray-700"><%= @dispatch.remarks.presence || "No remarks provided." %></dd>

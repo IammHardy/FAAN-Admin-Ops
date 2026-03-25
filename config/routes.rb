@@ -67,6 +67,7 @@ Rails.application.routes.draw do
   resources :departments
   resources :units
   resources :users
+  resources :audit_logs, only: [:index, :show]
 
   resources :dispatches do
     member do

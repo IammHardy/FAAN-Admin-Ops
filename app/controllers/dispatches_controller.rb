@@ -11,8 +11,9 @@ class DispatchesController < ApplicationController
     @dispatches = Dispatch.includes(:sender_department, :receiving_department, :created_by).recent_first
   end
 
-  def show
-  end
+def show
+  @audit_logs = AuditLog.includes(:user).where(auditable: @dispatch).recent_first
+end
 
   def new
     @dispatch = Dispatch.new(memo_date: Date.current)

@@ -88,6 +88,30 @@
     </div>
   </div>
 
+  <div class="mt-6 bg-white border border-gray-200 p-5">
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-base font-semibold">Recent Activity</h3>
+    <% if current_user.super_admin? || current_user.admin_officer? %>
+      <%= link_to "View Audit Logs", audit_logs_path, class: "text-sm text-blue-600 hover:underline" %>
+    <% end %>
+  </div>
+
+  <% if @recent_audit_logs.any? %>
+    <div class="space-y-3">
+      <% @recent_audit_logs.each do |log| %>
+        <div class="border-b border-gray-100 pb-3 last:border-b-0">
+          <p class="text-sm font-medium"><%= log.description %></p>
+          <p class="text-xs text-gray-500 mt-1">
+            <%= log.user.display_name %> • <%= log.created_at.strftime("%d %b %Y, %I:%M %p") %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No recent activity found.</p>
+  <% end %>
+</div>
+
   <div class="app-card">
     <div class="app-card-body">
       <div class="flex items-center justify-between mb-4">

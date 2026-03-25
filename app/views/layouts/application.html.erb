@@ -27,6 +27,7 @@
     <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
     <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
     <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
+    <%= link_to "Audit Logs", audit_logs_path, class: current_page?(audit_logs_path) ? "app-nav-link-active" : "app-nav-link" %>
   <% end %>
 
   <% if current_user.super_admin? || current_user.admin_officer? || current_user.dispatch_officer? %>
@@ -44,6 +45,8 @@
   <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
     <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
   <% end %>
+
+  
 </nav>
 
           <div class="px-4 py-4 border-t border-slate-700 text-sm">

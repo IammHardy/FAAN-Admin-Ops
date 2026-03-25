@@ -1,0 +1,59 @@
+<% content_for :page_title, "Audit Logs" %>
+<% content_for :page_subtitle, "System activity history and accountability trail." %>
+
+<div class="bg-white border border-gray-200 p-4 mb-4">
+  <%= form_with url: audit_logs_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">User</label>
+      <%= text_field_tag :user, params[:user], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Action</label>
+      <%= text_field_tag :action, params[:action], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Record Type</label>
+      <%= text_field_tag :record_type, params[:record_type], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-end gap-2">
+      <%= submit_tag "Filter", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Reset", audit_logs_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @audit_logs.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Date / Time</th>
+          <th class="text-left px-4 py-3 font-semibold">User</th>
+          <th class="text-left px-4 py-3 font-semibold">Action</th>
+          <th class="text-left px-4 py-3 font-semibold">Record Type</th>
+          <th class="text-left px-4 py-3 font-semibold">Record</th>
+          <th class="text-left px-4 py-3 font-semibold">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @audit_logs.each do |log| %>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3"><%= log.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+            <td class="px-4 py-3"><%= log.user.display_name %></td>
+            <td class="px-4 py-3"><%= log.action.humanize %></td>
+            <td class="px-4 py-3"><%= log.auditable_type %></td>
+            <td class="px-4 py-3"><%= log.auditable_label %></td>
+            <td class="px-4 py-3 text-gray-700"><%= log.description %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">
+      No audit logs found.
+    </div>
+  <% end %>
+</div>

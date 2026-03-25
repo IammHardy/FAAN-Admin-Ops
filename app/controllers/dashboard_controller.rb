@@ -12,5 +12,6 @@ class DashboardController < ApplicationController
     @recent_dispatches = Dispatch.recent_first.limit(5)
     @recent_log_reports = LogReport.recent_first.limit(5)
     @recent_incidents = Incident.recent_first.limit(5)
+   @recent_audit_logs = AuditLog.includes(:user).recent_first.limit(8)
   end
 end

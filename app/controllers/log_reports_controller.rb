@@ -13,6 +13,7 @@ class LogReportsController < ApplicationController
   def show
     @log_entries = @log_report.log_entries.order(:entry_time)
     @incidents = @log_report.incidents.recent_first
+    @audit_logs = AuditLog.includes(:user).where(auditable: @log_report).recent_first
   end
 
   def new
