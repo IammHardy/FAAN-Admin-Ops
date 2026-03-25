@@ -1,0 +1,7 @@
+<div class="space-y-2">
+  <% if devise_mapping.recoverable? && controller_name != "passwords" %>
+    <div>
+      <%= link_to "Forgot your password?", new_password_path(resource_name), class: "text-slate-700 hover:text-slate-900 hover:underline" %>
+    </div>
+  <% end %>
+</div>

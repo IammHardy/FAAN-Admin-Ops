@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   before_action :ensure_user_is_active!
 
   add_flash_types :success, :error, :warning, :info
-
+  layout :layout_by_resource
   
 
   private
@@ -68,4 +68,12 @@ class ApplicationController < ActionController::Base
 
     redirect_to dashboard_path, error: "You are not authorized to perform this action."
   end
+
+  def layout_by_resource
+  if devise_controller?
+    "devise"
+  else
+    "application"
+  end
+end
 end
