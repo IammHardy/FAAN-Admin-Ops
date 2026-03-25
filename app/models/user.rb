@@ -31,4 +31,24 @@ class User < ApplicationRecord
   def display_name
     full_name.presence || email
   end
+
+  def admin_level?
+  super_admin? || admin_officer?
+end
+
+def can_manage_dispatches?
+  super_admin? || admin_officer? || dispatch_officer?
+end
+
+def can_access_logs?
+  super_admin? || admin_officer? || unit_officer? || reviewer?
+end
+
+def can_access_incidents?
+  super_admin? || admin_officer? || reviewer?
+end
+
+def can_access_reports?
+  super_admin? || admin_officer? || reviewer?
+end
 end

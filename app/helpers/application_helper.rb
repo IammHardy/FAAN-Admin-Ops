@@ -1,18 +1,20 @@
 module ApplicationHelper
+
   def flash_class(type)
     case type.to_sym
     when :notice, :success
-      "bg-green-50 border-green-300 text-green-800"
+      "app-flash-success"
     when :alert, :error
-      "bg-red-50 border-red-300 text-red-800"
+      "app-flash-error"
     when :warning
-      "bg-yellow-50 border-yellow-300 text-yellow-800"
+      "app-flash-warning"
     when :info
-      "bg-blue-50 border-blue-300 text-blue-800"
+      "app-flash-info"
     else
-      "bg-gray-50 border-gray-300 text-gray-800"
+      "app-flash-info"
     end
   end
+
 
   def nav_link_class(path)
     base = "block px-3 py-2"
@@ -21,4 +23,12 @@ module ApplicationHelper
 
     current_page?(path) ? "#{base} #{active}" : "#{base} #{inactive}"
   end
+
+  def reports_nav_link_class
+  base = "block px-3 py-2"
+  active = "bg-slate-700 text-white font-medium"
+  inactive = "text-slate-200 hover:bg-slate-800 hover:text-white"
+
+  request.path.start_with?("/reports") ? "#{base} #{active}" : "#{base} #{inactive}"
+end
 end

@@ -1,2 +1,103 @@
-<h1>Reports::Incidents#index</h1>
-<p>Find me in app/views/reports/incidents/index.html.erb</p>
+<%= render "reports/nav" %>
+<% content_for :page_title, "Incident Reports" %>
+<% content_for :page_subtitle, "Filter incidents by date, severity, type, and status." %>
+
+<div class="bg-white border border-gray-200 p-4 mb-4">
+  <%= form_with url: reports_incidents_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-6 gap-4" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">From</label>
+      <%= date_field_tag :from, params[:from], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">To</label>
+      <%= date_field_tag :to, params[:to], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Severity</label>
+      <%= select_tag :severity,
+          options_for_select(Incident.severities.keys.map { |severity| [severity.humanize, severity] }, params[:severity]),
+          include_blank: "All Severities",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Status</label>
+      <%= select_tag :status,
+          options_for_select(Incident.statuses.keys.map { |status| [status.humanize, status] }, params[:status]),
+          include_blank: "All Statuses",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Type</label>
+      <%= select_tag :incident_type,
+          options_for_select(Incident.incident_types.keys.map { |type| [type.humanize, type] }, params[:incident_type]),
+          include_blank: "All Types",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-end gap-2">
+      <%= submit_tag "Filter", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Reset", reports_incidents_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Total Incidents</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents.count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Open / Under Review</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents.count { |i| i.open? || i.under_review? } %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Escalated</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents.select(&:escalated?).count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Resolved / Closed</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents.count { |i| i.resolved? || i.closed? } %></h3>
+  </div>
+</div>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @incidents.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Incident No.</th>
+          <th class="text-left px-4 py-3 font-semibold">Title</th>
+          <th class="text-left px-4 py-3 font-semibold">Type</th>
+          <th class="text-left px-4 py-3 font-semibold">Severity</th>
+          <th class="text-left px-4 py-3 font-semibold">Status</th>
+          <th class="text-left px-4 py-3 font-semibold">Created At</th>
+          <th class="text-right px-4 py-3 font-semibold">View</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @incidents.each do |incident| %>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3"><%= incident.incident_number %></td>
+            <td class="px-4 py-3"><%= incident.title %></td>
+            <td class="px-4 py-3"><%= incident.incident_type.humanize %></td>
+            <td class="px-4 py-3"><%= incident.severity.humanize %></td>
+            <td class="px-4 py-3"><%= incident.status.humanize %></td>
+            <td class="px-4 py-3"><%= incident.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to "Open", incident_path(incident), class: "text-blue-600 hover:underline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">No incidents found for this filter.</div>
+  <% end %>
+</div>

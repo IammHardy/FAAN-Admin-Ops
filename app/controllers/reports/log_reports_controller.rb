@@ -1,5 +1,6 @@
 module Reports
   class LogReportsController < ApplicationController
+     before_action :require_report_access!
     def index
       @log_reports = LogReport.includes(:department, :unit, :entered_by).recent_first
 

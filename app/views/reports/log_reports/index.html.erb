@@ -1,2 +1,88 @@
-<h1>Reports::LogReports#index</h1>
-<p>Find me in app/views/reports/log_reports/index.html.erb</p>
+<%= render "reports/nav" %>
+<% content_for :page_title, "Log Reports Report" %>
+<% content_for :page_subtitle, "Filter and review submitted daily log reports." %>
+
+<div class="bg-white border border-gray-200 p-4 mb-4">
+  <%= form_with url: reports_log_reports_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-5 gap-4" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">From</label>
+      <%= date_field_tag :from, params[:from], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">To</label>
+      <%= date_field_tag :to, params[:to], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Department</label>
+      <%= select_tag :department_id,
+          options_from_collection_for_select(Department.order(:name), :id, :name, params[:department_id]),
+          include_blank: "All Departments",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Unit</label>
+      <%= select_tag :unit_id,
+          options_from_collection_for_select(Unit.includes(:department).order(:name), :id, :name, params[:unit_id]),
+          include_blank: "All Units",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-end gap-2">
+      <%= submit_tag "Filter", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Reset", reports_log_reports_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Total Log Reports</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Submitted</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.select(&:submitted?).count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Reviewed</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.select(&:reviewed?).count %></h3>
+  </div>
+</div>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @log_reports.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Report Date</th>
+          <th class="text-left px-4 py-3 font-semibold">Shift</th>
+          <th class="text-left px-4 py-3 font-semibold">Department</th>
+          <th class="text-left px-4 py-3 font-semibold">Unit</th>
+          <th class="text-left px-4 py-3 font-semibold">Status</th>
+          <th class="text-right px-4 py-3 font-semibold">View</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @log_reports.each do |report| %>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3"><%= report.report_date.strftime("%d %b %Y") %></td>
+            <td class="px-4 py-3"><%= report.shift.humanize %></td>
+            <td class="px-4 py-3"><%= report.department.name %></td>
+            <td class="px-4 py-3"><%= report.unit.name %></td>
+            <td class="px-4 py-3"><%= report.status.humanize %></td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to "Open", log_report_path(report), class: "text-blue-600 hover:underline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">No log reports found for this filter.</div>
+  <% end %>
+</div>

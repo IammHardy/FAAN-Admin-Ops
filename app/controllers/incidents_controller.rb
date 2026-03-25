@@ -1,6 +1,9 @@
 class IncidentsController < ApplicationController
+  before_action :require_incident_access!
   before_action :set_incident, only: [:show, :edit, :update, :destroy, :review, :escalate, :resolve, :close, :print]
   before_action :load_incident_form_collections, only: [:new, :create, :edit, :update]
+  before_action :require_reviewer_or_admin!, only: [:review, :escalate, :resolve, :close]
+  before_action :require_admin_access!, only: [:destroy]
 
   def index
     @incidents = Incident.includes(:log_report, :log_entry, :created_by, :reviewed_by).recent_first
@@ -20,6 +23,13 @@ class IncidentsController < ApplicationController
     @incident.created_by = current_user
 
     if @incident.save
+      AuditLogger.call(
+        user: current_user,
+        action: "create",
+        auditable: @incident,
+        description: "Created incident #{@incident.incident_number}"
+      )
+
       redirect_to @incident, success: "Incident created successfully."
     else
       flash.now[:error] = "Unable to create incident."
@@ -32,6 +42,13 @@ class IncidentsController < ApplicationController
 
   def update
     if @incident.update(incident_params)
+      AuditLogger.call(
+        user: current_user,
+        action: "update",
+        auditable: @incident,
+        description: "Updated incident #{@incident.incident_number}"
+      )
+
       redirect_to @incident, success: "Incident updated successfully."
     else
       flash.now[:error] = "Unable to update incident."
@@ -40,7 +57,16 @@ class IncidentsController < ApplicationController
   end
 
   def destroy
+    incident_number = @incident.incident_number
     @incident.destroy
+
+    AuditLogger.call(
+      user: current_user,
+      action: "delete",
+      auditable: @incident,
+      description: "Deleted incident #{incident_number}"
+    )
+
     redirect_to incidents_path, success: "Incident deleted successfully."
   end
 
@@ -48,6 +74,13 @@ class IncidentsController < ApplicationController
     @incident.review!(
       reviewer: current_user,
       remark: params[:reviewer_remark]
+    )
+
+    AuditLogger.call(
+      user: current_user,
+      action: "review",
+      auditable: @incident,
+      description: "Marked incident #{@incident.incident_number} under review"
     )
 
     redirect_to @incident, success: "Incident marked under review."
@@ -62,6 +95,13 @@ class IncidentsController < ApplicationController
       remark: params[:reviewer_remark]
     )
 
+    AuditLogger.call(
+      user: current_user,
+      action: "escalate",
+      auditable: @incident,
+      description: "Escalated incident #{@incident.incident_number} to #{params[:escalated_to]}"
+    )
+
     redirect_to @incident, success: "Incident escalated successfully."
   rescue StandardError => e
     redirect_to @incident, error: e.message
@@ -73,6 +113,13 @@ class IncidentsController < ApplicationController
       remark: params[:reviewer_remark]
     )
 
+    AuditLogger.call(
+      user: current_user,
+      action: "resolve",
+      auditable: @incident,
+      description: "Resolved incident #{@incident.incident_number}"
+    )
+
     redirect_to @incident, success: "Incident resolved successfully."
   rescue StandardError => e
     redirect_to @incident, error: e.message
@@ -82,6 +129,13 @@ class IncidentsController < ApplicationController
     @incident.close!(
       reviewer: current_user,
       remark: params[:reviewer_remark]
+    )
+
+    AuditLogger.call(
+      user: current_user,
+      action: "close",
+      auditable: @incident,
+      description: "Closed incident #{@incident.incident_number}"
     )
 
     redirect_to @incident, success: "Incident closed successfully."

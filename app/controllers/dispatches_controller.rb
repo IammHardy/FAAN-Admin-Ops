@@ -1,4 +1,6 @@
 class DispatchesController < ApplicationController
+  before_action :require_dispatch_access!
+  before_action :require_admin_access!, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_dispatch, only: [
     :show, :edit, :update, :destroy,
     :mark_dispatched, :mark_received, :mark_acknowledged, :mark_filed, :print
@@ -21,6 +23,13 @@ class DispatchesController < ApplicationController
     @dispatch.created_by = current_user
 
     if @dispatch.save
+      AuditLogger.call(
+        user: current_user,
+        action: "create",
+        auditable: @dispatch,
+        description: "Created dispatch #{@dispatch.reference_number}"
+      )
+
       redirect_to @dispatch, success: "Dispatch record created successfully."
     else
       flash.now[:error] = "Unable to create dispatch record."
@@ -33,6 +42,13 @@ class DispatchesController < ApplicationController
 
   def update
     if @dispatch.update(dispatch_params)
+      AuditLogger.call(
+        user: current_user,
+        action: "update",
+        auditable: @dispatch,
+        description: "Updated dispatch #{@dispatch.reference_number}"
+      )
+
       redirect_to @dispatch, success: "Dispatch record updated successfully."
     else
       flash.now[:error] = "Unable to update dispatch record."
@@ -41,7 +57,16 @@ class DispatchesController < ApplicationController
   end
 
   def destroy
+    reference_number = @dispatch.reference_number
     @dispatch.destroy
+
+    AuditLogger.call(
+      user: current_user,
+      action: "delete",
+      auditable: @dispatch,
+      description: "Deleted dispatch #{reference_number}"
+    )
+
     redirect_to dispatches_path, success: "Dispatch record deleted successfully."
   rescue ActiveRecord::InvalidForeignKey
     redirect_to dispatches_path, error: "Dispatch record cannot be deleted."
@@ -76,6 +101,14 @@ class DispatchesController < ApplicationController
 
   def mark_dispatched
     @dispatch.mark_as_dispatched!(current_user)
+
+    AuditLogger.call(
+      user: current_user,
+      action: "mark_dispatched",
+      auditable: @dispatch,
+      description: "Marked dispatch #{@dispatch.reference_number} as dispatched"
+    )
+
     redirect_to @dispatch, success: "Dispatch marked as dispatched."
   rescue StandardError => e
     redirect_to @dispatch, error: e.message
@@ -90,6 +123,13 @@ class DispatchesController < ApplicationController
       receiver_designation: receiver_designation
     )
 
+    AuditLogger.call(
+      user: current_user,
+      action: "mark_received",
+      auditable: @dispatch,
+      description: "Marked dispatch #{@dispatch.reference_number} as received by #{receiver_name}"
+    )
+
     redirect_to @dispatch, success: "Dispatch marked as received."
   rescue StandardError => e
     redirect_to @dispatch, error: e.message
@@ -97,6 +137,14 @@ class DispatchesController < ApplicationController
 
   def mark_acknowledged
     @dispatch.mark_as_acknowledged!
+
+    AuditLogger.call(
+      user: current_user,
+      action: "mark_acknowledged",
+      auditable: @dispatch,
+      description: "Marked dispatch #{@dispatch.reference_number} as acknowledged"
+    )
+
     redirect_to @dispatch, success: "Dispatch marked as acknowledged."
   rescue StandardError => e
     redirect_to @dispatch, error: e.message
@@ -104,6 +152,14 @@ class DispatchesController < ApplicationController
 
   def mark_filed
     @dispatch.mark_as_filed!
+
+    AuditLogger.call(
+      user: current_user,
+      action: "mark_filed",
+      auditable: @dispatch,
+      description: "Marked dispatch #{@dispatch.reference_number} as filed"
+    )
+
     redirect_to @dispatch, success: "Dispatch marked as filed."
   rescue StandardError => e
     redirect_to @dispatch, error: e.message
@@ -135,7 +191,8 @@ class DispatchesController < ApplicationController
       :receiving_department_id,
       :receiving_unit_id,
       :delivery_note,
-      :remarks
+      :remarks,
+      :memo_file
     )
   end
 end

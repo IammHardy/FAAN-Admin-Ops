@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :require_admin_access!
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :load_form_collections, only: [:new, :create, :edit, :update]
 
@@ -44,9 +45,14 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user.update(active: false)
-    redirect_to users_path, success: "User was deactivated successfully."
+  if @user == current_user
+    redirect_to users_path, error: "You cannot deactivate your own account."
+    return
   end
+
+  @user.update(active: false)
+  redirect_to users_path, success: "User was deactivated successfully."
+end
 
   private
 

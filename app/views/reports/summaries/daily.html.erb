@@ -1,2 +1,89 @@
-<h1>Reports::Summaries#daily</h1>
-<p>Find me in app/views/reports/summaries/daily.html.erb</p>
+<%= render "reports/nav" %>
+<% content_for :page_title, "Daily Summary" %>
+<% content_for :page_subtitle, "Summary for #{@date.strftime('%d %b %Y')}" %>
+
+<div class="bg-white border border-gray-200 p-4 mb-4">
+  <%= form_with url: reports_daily_summary_path, method: :get, local: true, class: "flex flex-wrap items-end gap-4" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">Date</label>
+      <%= date_field_tag :date, params[:date] || @date, class: "border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= submit_tag "Load Summary", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Dispatches</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @dispatches.count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Log Reports</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Incidents</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents.count %></h3>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="text-base font-semibold mb-4">Dispatches</h3>
+
+    <% if @dispatches.any? %>
+      <div class="space-y-3">
+        <% @dispatches.each do |dispatch| %>
+          <div class="border-b border-gray-100 pb-3 last:border-b-0">
+            <p class="font-medium"><%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "hover:underline" %></p>
+            <p class="text-sm text-gray-600"><%= dispatch.subject %></p>
+            <p class="text-xs text-gray-500 mt-1"><%= dispatch.status.humanize %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No dispatches for this date.</p>
+    <% end %>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="text-base font-semibold mb-4">Log Reports</h3>
+
+    <% if @log_reports.any? %>
+      <div class="space-y-3">
+        <% @log_reports.each do |report| %>
+          <div class="border-b border-gray-100 pb-3 last:border-b-0">
+            <p class="font-medium"><%= link_to report.display_name, log_report_path(report), class: "hover:underline" %></p>
+            <p class="text-sm text-gray-600"><%= report.department.name %></p>
+            <p class="text-xs text-gray-500 mt-1"><%= report.status.humanize %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No log reports for this date.</p>
+    <% end %>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="text-base font-semibold mb-4">Incidents</h3>
+
+    <% if @incidents.any? %>
+      <div class="space-y-3">
+        <% @incidents.each do |incident| %>
+          <div class="border-b border-gray-100 pb-3 last:border-b-0">
+            <p class="font-medium"><%= link_to incident.incident_number, incident_path(incident), class: "hover:underline" %></p>
+            <p class="text-sm text-gray-600"><%= incident.title %></p>
+            <p class="text-xs text-gray-500 mt-1"><%= incident.severity.humanize %> • <%= incident.status.humanize %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No incidents for this date.</p>
+    <% end %>
+  </div>
+</div>

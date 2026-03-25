@@ -1,5 +1,6 @@
 module Reports
   class DispatchesController < ApplicationController
+    before_action :require_report_access!
     def index
       @dispatches = Dispatch.includes(:sender_department, :receiving_department, :created_by).recent_first
 

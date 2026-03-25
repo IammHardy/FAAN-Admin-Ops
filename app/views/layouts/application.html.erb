@@ -21,14 +21,30 @@
           </div>
 
           <nav class="flex-1 px-4 py-4 space-y-2 text-sm">
-            <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
-            <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
-            <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
-            <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
-            <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
-            <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
-            <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
-          </nav>
+  <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
+
+  <% if current_user.super_admin? || current_user.admin_officer? %>
+    <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
+    <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
+    <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
+  <% end %>
+
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.dispatch_officer? %>
+    <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
+  <% end %>
+
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.unit_officer? || current_user.reviewer? %>
+    <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
+  <% end %>
+
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
+    <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
+  <% end %>
+
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
+    <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
+  <% end %>
+</nav>
 
           <div class="px-4 py-4 border-t border-slate-700 text-sm">
             <p class="font-semibold"><%= current_user.display_name %></p>

@@ -1,7 +1,8 @@
 class UnitsController < ApplicationController
+  before_action :require_admin_access!
   before_action :set_unit, only: [:show, :edit, :update, :destroy]
   before_action :load_departments, only: [:new, :create, :edit, :update]
-
+  
   def index
     @units = Unit.includes(:department).order(:name)
   end

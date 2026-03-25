@@ -1,5 +1,6 @@
 module Reports
   class IncidentsController < ApplicationController
+    before_action :require_report_access!
     def index
       @incidents = Incident.includes(:log_report, :created_by, :reviewed_by).recent_first
 

@@ -1,2 +1,105 @@
-<h1>Reports::Summaries#monthly</h1>
-<p>Find me in app/views/reports/summaries/monthly.html.erb</p>
+<%= render "reports/nav" %>
+<% content_for :page_title, "Monthly Summary" %>
+<% content_for :page_subtitle, "Summary for #{@month_start.strftime('%B %Y')}" %>
+
+<div class="bg-white border border-gray-200 p-4 mb-4">
+  <%= form_with url: reports_monthly_summary_path, method: :get, local: true, class: "flex flex-wrap items-end gap-4" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">Month</label>
+      <%= month_field_tag :month, params[:month] || @month_start.strftime("%Y-%m"), class: "border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= submit_tag "Load Summary", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Total Dispatches</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @dispatches.count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Total Log Reports</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.count %></h3>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">Total Incidents</p>
+    <h3 class="text-2xl font-bold mt-2"><%= @incidents.count %></h3>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="text-base font-semibold mb-4">Dispatch Status Breakdown</h3>
+
+    <div class="space-y-3 text-sm">
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>Draft</span>
+        <span><%= @dispatches.select(&:draft?).count %></span>
+      </div>
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>Dispatched</span>
+        <span><%= @dispatches.select(&:dispatched?).count %></span>
+      </div>
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>Received</span>
+        <span><%= @dispatches.select(&:received?).count %></span>
+      </div>
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>Acknowledged</span>
+        <span><%= @dispatches.select(&:acknowledged?).count %></span>
+      </div>
+      <div class="flex justify-between">
+        <span>Filed</span>
+        <span><%= @dispatches.select(&:filed?).count %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="text-base font-semibold mb-4">Incident Severity Breakdown</h3>
+
+    <div class="space-y-3 text-sm">
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>Low</span>
+        <span><%= @incidents.select(&:low?).count %></span>
+      </div>
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>Medium</span>
+        <span><%= @incidents.select(&:medium?).count %></span>
+      </div>
+      <div class="flex justify-between border-b border-gray-100 pb-2">
+        <span>High</span>
+        <span><%= @incidents.select(&:high?).count %></span>
+      </div>
+      <div class="flex justify-between">
+        <span>Critical</span>
+        <span><%= @incidents.select(&:critical?).count %></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-6 bg-white border border-gray-200 p-5">
+  <h3 class="text-base font-semibold mb-4">Recent Incidents This Month</h3>
+
+  <% if @incidents.any? %>
+    <div class="space-y-3">
+      <% @incidents.first(10).each do |incident| %>
+        <div class="border-b border-gray-100 pb-3 last:border-b-0">
+          <p class="font-medium"><%= link_to incident.incident_number, incident_path(incident), class: "hover:underline" %></p>
+          <p class="text-sm text-gray-600"><%= incident.title %></p>
+          <p class="text-xs text-gray-500 mt-1">
+            <%= incident.severity.humanize %> • <%= incident.status.humanize %> • <%= incident.created_at.strftime("%d %b %Y") %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No incidents recorded this month.</p>
+  <% end %>
+</div>

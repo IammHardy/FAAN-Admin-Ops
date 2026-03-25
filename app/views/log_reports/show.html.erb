@@ -120,6 +120,19 @@
       <% end %>
     </div>
 
+    <div class="md:col-span-2">
+  <dt class="text-sm font-semibold text-gray-500">Attached Source Log Sheet</dt>
+  <dd class="mt-1 text-sm text-gray-700">
+    <% if @log_report.source_document.attached? %>
+      <%= link_to @log_report.source_document.filename.to_s,
+          rails_blob_path(@log_report.source_document, disposition: "attachment"),
+          class: "text-blue-600 hover:underline" %>
+    <% else %>
+      No source document attached.
+    <% end %>
+  </dd>
+</div>
+
     <div class="bg-white border border-gray-200 p-6">
       <h3 class="text-base font-semibold mb-4">Incidents from this Report</h3>
 

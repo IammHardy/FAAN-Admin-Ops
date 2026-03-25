@@ -33,16 +33,19 @@ class LogReport < ApplicationRecord
   scope :recent_first, -> { order(report_date: :desc, created_at: :desc) }
 
   def submit!
-    raise StandardError, "A report must have at least one log entry before submission" if log_entries.empty?
+  raise StandardError, "Only draft reports can be submitted" unless draft?
+  raise StandardError, "A report must have at least one log entry before submission" if log_entries.empty?
 
-    update!(status: :submitted)
-  end
+  update!(status: :submitted)
+end
 
-  def review!
-    update!(status: :reviewed)
-  end
+def review!
+  raise StandardError, "Only submitted reports can be reviewed" unless submitted?
 
-    def display_name
+  update!(status: :reviewed)
+end
+
+   def display_name
   "#{unit.name} - #{report_date.strftime('%d %b %Y')} (#{shift.humanize})"
 end
 

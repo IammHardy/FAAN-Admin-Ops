@@ -29,15 +29,18 @@ class Dispatch < ApplicationRecord
   scope :pending, -> { where(status: [:draft, :dispatched]) }
 
   def mark_as_dispatched!(user)
-    update!(
-      status: :dispatched,
-      dispatched_by: user,
-      dispatched_at: Time.current
-    )
-  end
+  raise StandardError, "Only draft dispatches can be marked as dispatched" unless draft?
 
-  def mark_as_received!(receiver_name:, receiver_designation: nil)
-  raise ArgumentError, "Dispatch must be dispatched first" unless dispatched?
+  update!(
+    status: :dispatched,
+    dispatched_by: user,
+    dispatched_at: Time.current
+  )
+end
+
+def mark_as_received!(receiver_name:, receiver_designation: nil)
+  raise StandardError, "Dispatch must be dispatched first" unless dispatched?
+  raise StandardError, "Receiver name is required" if receiver_name.blank?
 
   update!(
     status: :received,
@@ -47,13 +50,18 @@ class Dispatch < ApplicationRecord
   )
 end
 
-  def mark_as_acknowledged!
-    update!(status: :acknowledged)
-  end
+def mark_as_acknowledged!
+  raise StandardError, "Only received dispatches can be acknowledged" unless received?
 
-  def mark_as_filed!
-    update!(status: :filed)
-  end
+  update!(status: :acknowledged)
+end
+
+def mark_as_filed!
+  raise StandardError, "Only acknowledged dispatches can be filed" unless acknowledged?
+
+  update!(status: :filed)
+end
+
 
   private
 

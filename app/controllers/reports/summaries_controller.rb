@@ -1,5 +1,6 @@
 module Reports
   class SummariesController < ApplicationController
+    before_action :require_report_access!
     def daily
       @date = params[:date].present? ? Date.parse(params[:date]) : Date.current
 
