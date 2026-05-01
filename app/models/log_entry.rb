@@ -6,6 +6,11 @@ class LogEntry < ApplicationRecord
 
   scope :flagged_as_incident, -> { where(incident_flag: true) }
 
+  before_validation :set_entry_time, on: :create
+
+def set_entry_time
+  self.entry_time ||= Time.current
+end
   def short_description
   description.to_s.truncate(80)
 end

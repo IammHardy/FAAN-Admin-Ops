@@ -30,7 +30,18 @@ before_action :authorize_log_report_access!, only: [:show, :edit, :update, :dest
   @log_report.log_entries.build
 end
 
-  def create
+def create
+  existing_log = LogReport.find_by(
+    report_date: log_report_params[:report_date],
+    unit_id: current_user.unit_id,
+    shift: log_report_params[:shift]
+  )
+
+  if existing_log.present?
+    redirect_to existing_log, warning: "Log report already exists. Continue editing instead."
+    return
+  end
+
   @log_report = LogReport.new(log_report_params)
   @log_report.entered_by = current_user
 
@@ -51,21 +62,26 @@ end
     @log_report.log_entries.build if @log_report.log_entries.empty?
   end
 
-  def update
-    if @log_report.update(log_report_params)
-      AuditLogger.call(
-        user: current_user,
-        action: "update",
-        auditable: @log_report,
-        description: "Updated log report for #{@log_report.unit.name} on #{@log_report.report_date}"
-      )
-
-      redirect_to @log_report, success: "Log report updated successfully."
-    else
-      flash.now[:error] = "Unable to update log report."
-      render :edit, status: :unprocessable_entity
-    end
+def update
+  if @log_report.submitted? || @log_report.reviewed?
+    redirect_to @log_report, error: "Submitted or reviewed logs cannot be edited."
+    return
   end
+
+  if @log_report.update(log_report_params)
+    AuditLogger.call(
+      user: current_user,
+      action: "update",
+      auditable: @log_report,
+      description: "Updated log report for #{@log_report.unit.name} on #{@log_report.report_date}"
+    )
+
+    redirect_to @log_report, success: "Log report updated successfully."
+  else
+    flash.now[:error] = "Unable to update log report."
+    render :edit, status: :unprocessable_entity
+  end
+end
 
   def destroy
     unit_name = @log_report.unit.name

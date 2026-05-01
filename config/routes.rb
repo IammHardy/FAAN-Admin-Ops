@@ -94,7 +94,29 @@ Rails.application.routes.draw do
     resources :log_entries, only: [:create, :edit, :update, :destroy]
   end
 
+ namespace :reports do
+  resources :dispatches, only: [:index]
+  
+  resources :log_reports, only: [:index] do
+    collection do
+      get :export_csv
+      get :export_pdf
+    end
+  end
+
+  resources :incidents, only: [:index] do
+  collection do
+    get :export_csv
+    get :export_pdf
+  end
+end
+
+  get "summaries/daily", to: "summaries#daily", as: :daily_summary
+  get "summaries/monthly", to: "summaries#monthly", as: :monthly_summary
+end
+  
   resources :incidents do
+    
     member do
       patch :review
       patch :escalate
@@ -109,17 +131,5 @@ Rails.application.routes.draw do
     end
   end
 
-  namespace :reports do
-    get "summaries/daily"
-    get "summaries/monthly"
-    get "incidents/index"
-    get "log_reports/index"
-    get "dispatches/index"
-    resources :dispatches, only: [:index]
-    resources :log_reports, only: [:index]
-    resources :incidents, only: [:index]
-
-    get "summaries/daily", to: "summaries#daily", as: :daily_summary
-    get "summaries/monthly", to: "summaries#monthly", as: :monthly_summary
-  end
+ 
 end

@@ -33,8 +33,19 @@
     <div class="flex items-end gap-2">
       <%= submit_tag "Filter", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
       <%= link_to "Reset", reports_log_reports_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      
     </div>
   <% end %>
+</div>
+
+<div class="mt-4 flex flex-wrap gap-2">
+  <%= link_to "Export CSV",
+      export_csv_reports_log_reports_path(request.query_parameters),
+      class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+
+  <%= link_to "Export PDF",
+      export_pdf_reports_log_reports_path(request.query_parameters),
+      class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

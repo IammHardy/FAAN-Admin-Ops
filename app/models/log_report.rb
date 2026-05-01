@@ -22,13 +22,15 @@ class LogReport < ApplicationRecord
     submitted: 1,
     reviewed: 2
   }
-
-  validates :report_date, presence: true
   validates :shift, presence: true
   validates :department, presence: true
   validates :unit, presence: true
   validates :entered_by, presence: true
   validate :unit_belongs_to_department
+  validates :report_date, uniqueness: {
+  scope: [:unit_id, :shift],
+  message: "log report already exists for this unit and shift"
+}
 
   scope :recent_first, -> { order(report_date: :desc, created_at: :desc) }
 

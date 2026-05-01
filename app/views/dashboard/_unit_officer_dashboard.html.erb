@@ -1,6 +1,17 @@
 <% content_for :page_title, "Unit Officer Dashboard" %>
 <% content_for :page_subtitle, "Manage daily log reports for your unit." %>
 
+<% if @today_log.present? && @today_log.draft? %>
+  <div class="mb-4 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3">
+    ⚠️ You have not submitted today’s log report.
+
+    <%= link_to "Submit Now",
+        submit_report_log_report_path(@today_log),
+        data: { turbo_method: :patch, turbo_confirm: "Submit this log?" },
+        class: "ml-3 underline font-medium" %>
+  </div>
+<% end %>
+
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <div class="app-stat-card">
     <p class="app-stat-label">Draft Logs</p>
@@ -32,10 +43,10 @@
       </p>
 
       <div class="flex gap-3">
-        <%= link_to "View Log", log_report_path(@today_log), class: "text-blue-600 hover:underline" %>
+        <%= link_to "Continue Today's Log", log_report_path(@today_log), class: "text-blue-600 hover:underline" %>
 
         <% if @today_log.draft? %>
-          <%= link_to "Continue Editing", edit_log_report_path(@today_log), class: "text-amber-600 hover:underline" %>
+          <%= link_to "Edit Report Details", edit_log_report_path(@today_log), class: "text-amber-600 hover:underline" %>
         <% end %>
       </div>
     <% else %>
