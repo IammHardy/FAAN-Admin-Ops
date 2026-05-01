@@ -36,7 +36,11 @@ class LogReport < ApplicationRecord
   raise StandardError, "Only draft reports can be submitted" unless draft?
   raise StandardError, "A report must have at least one log entry before submission" if log_entries.empty?
 
-  update!(status: :submitted)
+  update!(
+  status: :submitted,
+  submitted_by: user,
+  submitted_at: Time.current
+)
 end
 
 def review!

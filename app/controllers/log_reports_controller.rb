@@ -1,10 +1,10 @@
 class LogReportsController < ApplicationController
   before_action :require_log_access!
-  before_action :require_reviewer_or_admin!, only: [:review]
-  before_action :require_admin_access!, only: [:destroy]
-  before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit_report, :review, :print]
-  before_action :load_log_report_form_collections, only: [:new, :create, :edit, :update]
-  before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit_report, :review, :print]
+before_action :require_log_manager!, only: [:new, :create, :edit, :update, :destroy, :submit_report]
+before_action :require_reviewer_or_admin!, only: [:review, :print]
+before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit_report, :review, :print]
+before_action :load_log_report_form_collections, only: [:new, :create, :edit, :update]
+before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit_report, :review, :print]
 
   def index
     @log_reports = LogReport.includes(:department, :unit, :entered_by).recent_first
@@ -77,7 +77,7 @@ class LogReportsController < ApplicationController
   end
 
   def submit_report
-    @log_report.submit!
+    @log_report.submit!(current_user)
 
     AuditLogger.call(
       user: current_user,
@@ -122,33 +122,38 @@ class LogReportsController < ApplicationController
     @units = Unit.active.includes(:department).order(:name)
   end
 
-  def authorize_log_report_access!
-    return if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer?
-    return if current_user.unit_officer? && current_user.unit_id == @log_report.unit_id
+ def authorize_log_report_access!
+  return if current_user.super_admin? || current_user.admin_officer?
 
-    redirect_to log_reports_path, error: "You are not authorized to access this log report."
+  if current_user.reviewer?
+    return if action_name.in?(%w[show review print])
   end
+
+  if current_user.unit_officer?
+    return if current_user.unit_id == @log_report.unit_id && action_name.in?(%w[show edit update submit_report print])
+  end
+
+  redirect_to log_reports_path, error: "You are not authorized to access this log report."
+end
 
   def log_report_params
-    params.require(:log_report).permit(
-      :report_date,
-      :shift,
-      :department_id,
-      :unit_id,
-      :summary,
-      :general_remarks,
-      :status,
-      :submitted_by_id,
-      :source_document,
-      log_entries_attributes: [
-        :id,
-        :entry_time,
-        :description,
-        :incident_flag,
-        :action_taken,
-        :follow_up_needed,
-        :_destroy
-      ]
-    )
-  end
+  params.require(:log_report).permit(
+    :report_date,
+    :shift,
+    :department_id,
+    :unit_id,
+    :summary,
+    :general_remarks,
+    :source_document,
+    log_entries_attributes: [
+      :id,
+      :entry_time,
+      :description,
+      :incident_flag,
+      :action_taken,
+      :follow_up_needed,
+      :_destroy
+    ]
+  )
+end
 end

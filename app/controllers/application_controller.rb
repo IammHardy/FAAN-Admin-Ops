@@ -68,6 +68,11 @@ class ApplicationController < ActionController::Base
 
     redirect_to dashboard_path, error: "You are not authorized to perform this action."
   end
+  def require_log_manager!
+  return if current_user&.super_admin? || current_user&.admin_officer? || current_user&.unit_officer?
+
+  redirect_to dashboard_path, error: "You are not authorized to manage log reports."
+end
 
   def layout_by_resource
   if devise_controller?
