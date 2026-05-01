@@ -32,7 +32,7 @@ class LogReport < ApplicationRecord
 
   scope :recent_first, -> { order(report_date: :desc, created_at: :desc) }
 
-  def submit!
+  def submit!(user)
   raise StandardError, "Only draft reports can be submitted" unless draft?
   raise StandardError, "A report must have at least one log entry before submission" if log_entries.empty?
 

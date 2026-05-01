@@ -1,0 +1,133 @@
+<% content_for :page_title, "Unit Officer Dashboard" %>
+<% content_for :page_subtitle, "Manage daily log reports for your unit." %>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="app-stat-card">
+    <p class="app-stat-label">Draft Logs</p>
+    <h3 class="app-stat-value"><%= @draft_logs.count %></h3>
+  </div>
+
+  <div class="app-stat-card">
+    <p class="app-stat-label">Submitted Logs</p>
+    <h3 class="app-stat-value"><%= @submitted_logs.count %></h3>
+  </div>
+
+  <div class="app-stat-card">
+    <p class="app-stat-label">Reviewed Logs</p>
+    <h3 class="app-stat-value"><%= @reviewed_logs.count %></h3>
+  </div>
+</div>
+
+<div class="app-card mb-6">
+  <div class="app-card-body">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="app-section-title">Today's Log</h3>
+      <%= link_to "View All Logs", log_reports_path, class: "text-sm text-amber-700 hover:underline" %>
+    </div>
+
+    <% if @today_log.present? %>
+      <p class="text-sm text-slate-600 mb-2">
+        Status:
+        <strong><%= @today_log.status.humanize %></strong>
+      </p>
+
+      <div class="flex gap-3">
+        <%= link_to "View Log", log_report_path(@today_log), class: "text-blue-600 hover:underline" %>
+
+        <% if @today_log.draft? %>
+          <%= link_to "Continue Editing", edit_log_report_path(@today_log), class: "text-amber-600 hover:underline" %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="app-muted mb-3">No log report has been created for today.</p>
+
+      <%= link_to "Create Today's Log",
+          new_log_report_path,
+          class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="app-card">
+    <div class="app-card-body">
+      <h3 class="app-section-title mb-4">Draft Logs</h3>
+
+      <% if @draft_logs.any? %>
+        <div class="space-y-3">
+          <% @draft_logs.each do |log| %>
+            <div class="border-b border-slate-100 pb-3 last:border-b-0">
+              <p class="font-medium">
+                <%= link_to "#{log.report_date.strftime('%d %b %Y')} - #{log.shift.humanize}",
+                    log_report_path(log),
+                    class: "hover:underline" %>
+              </p>
+
+              <p class="text-xs text-slate-500 mt-1">
+                <%= log.unit.name %> • Draft
+              </p>
+
+              <%= link_to "Edit",
+                  edit_log_report_path(log),
+                  class: "text-sm text-amber-600 hover:underline" %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="app-muted">No draft logs.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="app-card">
+    <div class="app-card-body">
+      <h3 class="app-section-title mb-4">Submitted Logs</h3>
+
+      <% if @submitted_logs.any? %>
+        <div class="space-y-3">
+          <% @submitted_logs.each do |log| %>
+            <div class="border-b border-slate-100 pb-3 last:border-b-0">
+              <p class="font-medium">
+                <%= link_to "#{log.report_date.strftime('%d %b %Y')} - #{log.shift.humanize}",
+                    log_report_path(log),
+                    class: "hover:underline" %>
+              </p>
+
+              <p class="text-xs text-slate-500 mt-1">
+                <%= log.unit.name %> • Submitted
+              </p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="app-muted">No submitted logs.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="app-card mt-6">
+  <div class="app-card-body">
+    <h3 class="app-section-title mb-4">Recently Reviewed Logs</h3>
+
+    <% if @reviewed_logs.any? %>
+      <div class="space-y-3">
+        <% @reviewed_logs.each do |log| %>
+          <div class="border-b border-slate-100 pb-3 last:border-b-0">
+            <p class="font-medium">
+              <%= link_to "#{log.report_date.strftime('%d %b %Y')} - #{log.shift.humanize}",
+                  log_report_path(log),
+                  class: "hover:underline" %>
+            </p>
+
+            <p class="text-xs text-slate-500 mt-1">
+              <%= log.unit.name %> • Reviewed
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="app-muted">No reviewed logs yet.</p>
+    <% end %>
+  </div>
+</div>

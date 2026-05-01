@@ -16,29 +16,36 @@ before_action :authorize_log_report_access!, only: [:show, :edit, :update, :dest
     @audit_logs = AuditLog.includes(:user).where(auditable: @log_report).recent_first
   end
 
-  def new
-    @log_report = LogReport.new(report_date: Date.current, entered_by: current_user)
-    @log_report.log_entries.build
+ def new
+  @log_report = LogReport.new(
+    report_date: Date.current,
+    entered_by: current_user
+  )
+
+  if current_user.unit_officer?
+    @log_report.department = current_user.department
+    @log_report.unit = current_user.unit
   end
+
+  @log_report.log_entries.build
+end
 
   def create
-    @log_report = LogReport.new(log_report_params)
-    @log_report.entered_by = current_user
+  @log_report = LogReport.new(log_report_params)
+  @log_report.entered_by = current_user
 
-    if @log_report.save
-      AuditLogger.call(
-        user: current_user,
-        action: "create",
-        auditable: @log_report,
-        description: "Created log report for #{@log_report.unit.name} on #{@log_report.report_date}"
-      )
-
-      redirect_to @log_report, success: "Log report created successfully."
-    else
-      flash.now[:error] = "Unable to create log report."
-      render :new, status: :unprocessable_entity
-    end
+  if current_user.unit_officer?
+    @log_report.department = current_user.department
+    @log_report.unit = current_user.unit
   end
+
+  if @log_report.save
+    redirect_to @log_report, success: "Log report created successfully."
+  else
+    flash.now[:error] = "Unable to create log report."
+    render :new, status: :unprocessable_entity
+  end
+end
 
   def edit
     @log_report.log_entries.build if @log_report.log_entries.empty?

@@ -15,6 +15,23 @@ module ApplicationHelper
     end
   end
 
+  def can_manage_dispatches?
+    current_user&.super_admin? || current_user&.admin_officer? || current_user&.dispatch_officer?
+  end
+
+  def can_create_incidents?
+    current_user&.super_admin? || current_user&.admin_officer?
+  end
+
+  def can_manage_logs?
+    current_user&.super_admin? || current_user&.admin_officer? || current_user&.unit_officer?
+  end
+
+  def can_delete_logs?
+    current_user&.super_admin? || current_user&.admin_officer?
+  end
+
+
 
   def nav_link_class(path)
     base = "block px-3 py-2"

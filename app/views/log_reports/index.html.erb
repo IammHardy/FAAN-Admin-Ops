@@ -3,8 +3,12 @@
 
 <div class="flex items-center justify-between mb-4">
   <div></div>
+  <% if can_manage_logs? %>
   <%= link_to "New Log Report", new_log_report_path, class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+<% end %>
 </div>
+
+
 
 <div class="bg-white border border-gray-200 overflow-hidden">
   <% if @log_reports.any? %>
@@ -41,16 +45,34 @@
                 <%= log_report.status.humanize %>
               </span>
             </td>
-            <td class="px-4 py-3 text-right space-x-2">
-              <%= link_to "View", log_report_path(log_report), class: "text-blue-600 hover:underline" %>
-              <%= link_to "Edit", edit_log_report_path(log_report), class: "text-amber-600 hover:underline" %>
-              <%= button_to "Delete",
-                  log_report_path(log_report),
-                  method: :delete,
-                  form: { class: "inline-block" },
-                  data: { turbo_confirm: "Are you sure you want to delete this log report?" },
-                  class: "text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
-            </td>
+           <td class="px-4 py-3 text-right space-x-2">
+  <%= link_to "View", log_report_path(log_report), class: "text-blue-600 hover:underline" %>
+
+  <% if current_user.reviewer? && log_report.submitted? %>
+    <%= link_to "Review",
+        review_log_report_path(log_report),
+        data: { turbo_method: :patch, turbo_confirm: "Mark this log report as reviewed?" },
+        class: "text-green-700 hover:underline" %>
+  <% end %>
+
+  <%= link_to "Print",
+      print_log_report_path(log_report),
+      target: "_blank",
+      class: "text-slate-700 hover:underline" %>
+
+  <% if can_manage_logs? %>
+    <%= link_to "Edit", edit_log_report_path(log_report), class: "text-amber-600 hover:underline" %>
+  <% end %>
+
+  <% if can_delete_logs? %>
+    <%= button_to "Delete",
+        log_report_path(log_report),
+        method: :delete,
+        form: { class: "inline-block" },
+        data: { turbo_confirm: "Are you sure you want to delete this log report?" },
+        class: "text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+  <% end %>
+</td>
           </tr>
         <% end %>
       </tbody>
