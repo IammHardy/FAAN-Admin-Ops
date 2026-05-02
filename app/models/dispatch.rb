@@ -3,6 +3,8 @@ class Dispatch < ApplicationRecord
   belongs_to :sender_unit, class_name: "Unit", optional: true
   belongs_to :receiving_department, class_name: "Department"
   belongs_to :receiving_unit, class_name: "Unit", optional: true
+  belongs_to :received_by, class_name: "User", optional: true
+  belongs_to :acknowledged_by, class_name: "User", optional: true
 
   belongs_to :created_by, class_name: "User"
   belongs_to :dispatched_by, class_name: "User", optional: true
@@ -21,7 +23,7 @@ class Dispatch < ApplicationRecord
   validates :memo_date, presence: true
   validates :sender_department, presence: true
   validates :receiving_department, presence: true
-  validate :sender_and_receiver_departments_must_differ
+  # validate :sender_and_receiver_departments_must_differ
 
   before_validation :assign_reference_number, on: :create
 
@@ -38,7 +40,7 @@ class Dispatch < ApplicationRecord
   )
 end
 
-def mark_as_received!(receiver_name:, receiver_designation: nil)
+def mark_as_received!(receiver_name:, receiver_designation: nil, user:)
   raise StandardError, "Dispatch must be dispatched first" unless dispatched?
   raise StandardError, "Receiver name is required" if receiver_name.blank?
 
@@ -46,14 +48,20 @@ def mark_as_received!(receiver_name:, receiver_designation: nil)
     status: :received,
     receiver_name: receiver_name,
     receiver_designation: receiver_designation,
+    received_by: user,
     received_at: Time.current
   )
 end
 
-def mark_as_acknowledged!
+def mark_as_acknowledged!(user:, note: nil)
   raise StandardError, "Only received dispatches can be acknowledged" unless received?
 
-  update!(status: :acknowledged)
+  update!(
+    status: :acknowledged,
+    acknowledged_by: user,
+    acknowledged_at: Time.current,
+    acknowledgement_note: note
+  )
 end
 
 def mark_as_filed!
@@ -65,12 +73,12 @@ end
 
   private
 
-  def sender_and_receiver_departments_must_differ
-    return if sender_department_id.blank? || receiving_department_id.blank?
-    return unless sender_department_id == receiving_department_id
+  # def sender_and_receiver_departments_must_differ
+  #   return if sender_department_id.blank? || receiving_department_id.blank?
+  #   return unless sender_department_id == receiving_department_id
 
-    errors.add(:receiving_department_id, "must be different from sender department")
-  end
+  #   errors.add(:receiving_department_id, "must be different from sender department")
+  # end
 
   def assign_reference_number
     return if reference_number.present?

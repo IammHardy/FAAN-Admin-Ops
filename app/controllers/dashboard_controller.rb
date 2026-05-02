@@ -50,6 +50,13 @@ end
     .where(unit_id: current_user.unit_id, status: :reviewed)
     .recent_first
     .limit(5)
+
+  @incoming_dispatches = Dispatch
+    .includes(:sender_department, :sender_unit, :created_by)
+    .where(receiving_unit_id: current_user.unit_id)
+    .where(status: [:dispatched, :received])
+    .recent_first
+    .limit(5)
 end
 
   def general_dashboard

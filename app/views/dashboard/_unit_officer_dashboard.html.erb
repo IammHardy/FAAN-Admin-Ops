@@ -12,6 +12,70 @@
   </div>
 <% end %>
 
+<div class="app-card mb-6">
+  <div class="app-card-body">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="app-section-title">Incoming Dispatches</h3>
+    </div>
+
+    <% if @incoming_dispatches.any? %>
+      <div class="space-y-3">
+        <% @incoming_dispatches.each do |dispatch| %>
+          <div class="border-b border-slate-100 pb-3 last:border-b-0">
+            <p class="font-medium">
+              <%= link_to dispatch.reference_number,
+                  dispatch_path(dispatch),
+                  class: "hover:underline" %>
+            </p>
+
+            <p class="text-sm text-slate-600">
+              <%= dispatch.subject %>
+            </p>
+
+            <p class="text-xs text-slate-500 mt-1">
+              From:
+              <%= dispatch.sender_unit&.name || dispatch.sender_department.name %>
+              • Status:
+              <%= dispatch.status.humanize %>
+            </p>
+
+            <div class="flex flex-wrap gap-3 mt-2">
+              <%= link_to "View Memo",
+                  dispatch_path(dispatch),
+                  class: "text-sm text-blue-600 hover:underline" %>
+
+              <% if dispatch.dispatched? %>
+                <%= button_to "Receive",
+                    mark_received_dispatch_path(dispatch),
+                    method: :patch,
+                    params: {
+                      receiver_name: current_user.display_name,
+                      receiver_designation: current_user.role.humanize
+                    },
+                    data: { turbo_confirm: "Confirm that you received this dispatch?" },
+                    class: "text-sm text-green-700 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+              <% end %>
+
+              <% if dispatch.received? %>
+                <%= button_to "Acknowledge",
+                    mark_acknowledged_dispatch_path(dispatch),
+                    method: :patch,
+                    params: {
+                      acknowledgement_note: "Acknowledged by #{current_user.display_name}"
+                    },
+                    data: { turbo_confirm: "Acknowledge this dispatch?" },
+                    class: "text-sm text-purple-700 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="app-muted">No incoming dispatches for your unit.</p>
+    <% end %>
+  </div>
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <div class="app-stat-card">
     <p class="app-stat-label">Draft Logs</p>

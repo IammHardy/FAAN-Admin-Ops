@@ -118,54 +118,58 @@
     </dl>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">
-      <%= link_to "Edit", edit_dispatch_path(@dispatch), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Print", print_dispatch_path(@dispatch), class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Back", dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-    </div>
+      <% if can_manage_dispatches? %>
+  <%= link_to "Edit", edit_dispatch_path(@dispatch), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
+<% end %>
+      <% if can_manage_dispatches? %>
+  <%= link_to "Print", print_dispatch_path(@dispatch), class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+<% end %>
+      <%= link_to "Back", dashboard_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
   </div>
 
   <div class="bg-white border border-gray-200 p-6">
     <h3 class="text-base font-semibold mb-4">Update Status</h3>
 
     <div class="space-y-4">
-      <% unless @dispatch.dispatched? || @dispatch.received? || @dispatch.acknowledged? || @dispatch.filed? %>
-        <%= button_to "Mark as Dispatched",
-            mark_dispatched_dispatch_path(@dispatch),
-            method: :patch,
-            class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
-      <% end %>
+      <% if can_manage_dispatches? && @dispatch.draft? %>
+  <%= button_to "Mark as Dispatched",
+      mark_dispatched_dispatch_path(@dispatch),
+      method: :patch,
+      class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
+<% end %>
 
-      <% if @dispatch.dispatched? %>
-        <div class="border border-gray-200 p-4">
-          <%= form_with url: mark_received_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
-            <div>
-              <label class="block text-sm font-medium mb-1">Receiver Name</label>
-              <%= text_field_tag :receiver_name, nil, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-            </div>
+<% if current_user.unit_officer? && @dispatch.dispatched? %>
+  <div class="border border-gray-200 p-4">
+    <%= form_with url: mark_received_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
+      <%= hidden_field_tag :receiver_name, current_user.display_name %>
+      <%= hidden_field_tag :receiver_designation, current_user.role.humanize %>
 
-            <div>
-              <label class="block text-sm font-medium mb-1">Receiver Designation</label>
-              <%= text_field_tag :receiver_designation, nil, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-            </div>
+      <p class="text-sm text-gray-600">
+        Receive as <strong><%= current_user.display_name %></strong>
+      </p>
 
-            <%= submit_tag "Mark as Received", class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
-          <% end %>
-        </div>
-      <% end %>
+      <%= submit_tag "Receive Dispatch", class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
+    <% end %>
+  </div>
+<% end %>
 
-      <% if @dispatch.received? %>
-        <%= button_to "Mark as Acknowledged",
-            mark_acknowledged_dispatch_path(@dispatch),
-            method: :patch,
-            class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-medium" %>
-      <% end %>
+<% if current_user.unit_officer? && @dispatch.received? %>
+  <%= form_with url: mark_acknowledged_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
+    <div>
+      <label class="block text-sm font-medium mb-1">Acknowledgement Note</label>
+      <%= text_area_tag :acknowledgement_note, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
 
-      <% if @dispatch.acknowledged? %>
-        <%= button_to "Mark as Filed",
-            mark_filed_dispatch_path(@dispatch),
-            method: :patch,
-            class: "w-full bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-      <% end %>
+    <%= submit_tag "Acknowledge Dispatch", class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-medium" %>
+  <% end %>
+<% end %>
+
+<% if can_manage_dispatches? && @dispatch.acknowledged? %>
+  <%= button_to "Mark as Filed",
+      mark_filed_dispatch_path(@dispatch),
+      method: :patch,
+      class: "w-full bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
+<% end %>
     </div>
   </div>
 </div>

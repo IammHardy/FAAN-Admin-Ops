@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_01_102456) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_02_094944) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -84,9 +84,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_01_102456) do
     t.text "remarks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "received_by_id"
+    t.integer "acknowledged_by_id"
+    t.datetime "acknowledged_at"
+    t.text "acknowledgement_note"
+    t.index ["acknowledged_by_id"], name: "index_dispatches_on_acknowledged_by_id"
     t.index ["created_by_id"], name: "index_dispatches_on_created_by_id"
     t.index ["dispatched_by_id"], name: "index_dispatches_on_dispatched_by_id"
     t.index ["memo_date"], name: "index_dispatches_on_memo_date"
+    t.index ["received_by_id"], name: "index_dispatches_on_received_by_id"
     t.index ["receiving_department_id"], name: "index_dispatches_on_receiving_department_id"
     t.index ["receiving_unit_id"], name: "index_dispatches_on_receiving_unit_id"
     t.index ["reference_number"], name: "index_dispatches_on_reference_number", unique: true

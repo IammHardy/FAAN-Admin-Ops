@@ -69,14 +69,14 @@
   <%= f.label :memo_file, "Attach Memo Copy", class: "block text-sm font-medium mb-1" %>
   <%= f.file_field :memo_file, class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" %>
 
-  <% if @dispatch.memo_file.attached? %>
-    <p class="text-xs text-gray-500 mt-2">
-      Current file:
-      <%= link_to @dispatch.memo_file.filename.to_s,
-          rails_blob_path(@dispatch.memo_file, disposition: "attachment"),
-          class: "text-blue-600 hover:underline" %>
-    </p>
-  <% end %>
+  <% if @dispatch.persisted? && @dispatch.memo_file.attached? %>
+  <p class="text-sm text-gray-600 mt-2">
+    Current file:
+    <%= link_to @dispatch.memo_file.filename.to_s,
+        rails_blob_path(@dispatch.memo_file, disposition: "attachment"),
+        class: "text-blue-600 hover:underline" %>
+  </p>
+<% end %>
 </div>
 
   <div class="flex items-center gap-3">

@@ -1,12 +1,15 @@
 class DispatchesController < ApplicationController
-  before_action :require_dispatch_access!
-  before_action :require_admin_access!, only: [:new, :create, :edit, :update, :destroy]
-  before_action :set_dispatch, only: [
-    :show, :edit, :update, :destroy,
-    :mark_dispatched, :mark_received, :mark_acknowledged, :mark_filed, :print
-  ]
-  before_action :load_dispatch_form_collections, only: [:new, :create, :edit, :update]
+ before_action :require_dispatch_access!, only: [:index, :new, :create, :edit, :update, :destroy, :pending, :search, :mark_dispatched, :mark_filed, :print]
+before_action :require_dispatch_receiver_access!, only: [:show, :mark_received, :mark_acknowledged]
+before_action :require_admin_access!, only: [:destroy]
 
+before_action :set_dispatch, only: [
+  :show, :edit, :update, :destroy,
+  :mark_dispatched, :mark_received, :mark_acknowledged, :mark_filed, :print
+]
+
+before_action :authorize_receiving_unit!, only: [:show, :mark_received, :mark_acknowledged]
+before_action :load_dispatch_form_collections, only: [:new, :create, :edit, :update]
   def index
     @dispatches = Dispatch.includes(:sender_department, :receiving_department, :created_by).recent_first
   end
@@ -115,41 +118,47 @@ end
     redirect_to @dispatch, error: e.message
   end
 
-  def mark_received
-    receiver_name = params[:receiver_name]
-    receiver_designation = params[:receiver_designation]
+ def mark_received
+  receiver_name = params[:receiver_name]
+  receiver_designation = params[:receiver_designation]
 
-    @dispatch.mark_as_received!(
-      receiver_name: receiver_name,
-      receiver_designation: receiver_designation
-    )
+  @dispatch.mark_as_received!(
+    receiver_name: receiver_name,
+    receiver_designation: receiver_designation,
+    user: current_user
+  )
 
-    AuditLogger.call(
-      user: current_user,
-      action: "mark_received",
-      auditable: @dispatch,
-      description: "Marked dispatch #{@dispatch.reference_number} as received by #{receiver_name}"
-    )
+  AuditLogger.call(
+    user: current_user,
+    action: "mark_received",
+    auditable: @dispatch,
+    description: "Marked dispatch #{@dispatch.reference_number} as received by #{receiver_name}"
+  )
 
-    redirect_to @dispatch, success: "Dispatch marked as received."
-  rescue StandardError => e
-    redirect_to @dispatch, error: e.message
-  end
+  redirect_to @dispatch, success: "Dispatch marked as received."
+rescue StandardError => e
+  redirect_to @dispatch, error: e.message
+end
 
   def mark_acknowledged
-    @dispatch.mark_as_acknowledged!
+  note = params[:acknowledgement_note]
 
-    AuditLogger.call(
-      user: current_user,
-      action: "mark_acknowledged",
-      auditable: @dispatch,
-      description: "Marked dispatch #{@dispatch.reference_number} as acknowledged"
-    )
+  @dispatch.mark_as_acknowledged!(
+    user: current_user,
+    note: note
+  )
 
-    redirect_to @dispatch, success: "Dispatch marked as acknowledged."
-  rescue StandardError => e
-    redirect_to @dispatch, error: e.message
-  end
+  AuditLogger.call(
+    user: current_user,
+    action: "mark_acknowledged",
+    auditable: @dispatch,
+    description: "Marked dispatch #{@dispatch.reference_number} as acknowledged"
+  )
+
+  redirect_to @dispatch, success: "Dispatch marked as acknowledged."
+rescue StandardError => e
+  redirect_to @dispatch, error: e.message
+end
 
   def mark_filed
     @dispatch.mark_as_filed!
@@ -196,4 +205,14 @@ end
       :memo_file
     )
   end
+
+  def authorize_receiving_unit!
+  return if current_user.super_admin? || current_user.admin_officer? || current_user.dispatch_officer?
+
+  if current_user.unit_officer?
+    return if current_user.unit_id == @dispatch.receiving_unit_id
+  end
+
+  redirect_to dashboard_path, error: "You are not authorized to access this dispatch."
+end
 end
