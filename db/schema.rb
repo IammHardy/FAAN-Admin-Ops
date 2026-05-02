@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_02_104206) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_02_134319) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,29 +92,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_02_104206) do
     t.bigint "sender_department_id", null: false
     t.bigint "sender_unit_id"
     t.bigint "receiving_department_id", null: false
-    t.bigint "receiving_unit_id"
     t.bigint "created_by_id", null: false
     t.bigint "dispatched_by_id"
-    t.string "receiver_name"
-    t.string "receiver_designation"
     t.datetime "dispatched_at"
-    t.datetime "received_at"
     t.integer "status", default: 0, null: false
     t.text "delivery_note"
     t.text "remarks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "received_by_id"
-    t.integer "acknowledged_by_id"
-    t.datetime "acknowledged_at"
-    t.text "acknowledgement_note"
-    t.index ["acknowledged_by_id"], name: "index_dispatches_on_acknowledged_by_id"
     t.index ["created_by_id"], name: "index_dispatches_on_created_by_id"
     t.index ["dispatched_by_id"], name: "index_dispatches_on_dispatched_by_id"
     t.index ["memo_date"], name: "index_dispatches_on_memo_date"
-    t.index ["received_by_id"], name: "index_dispatches_on_received_by_id"
     t.index ["receiving_department_id"], name: "index_dispatches_on_receiving_department_id"
-    t.index ["receiving_unit_id"], name: "index_dispatches_on_receiving_unit_id"
     t.index ["reference_number"], name: "index_dispatches_on_reference_number", unique: true
     t.index ["sender_department_id"], name: "index_dispatches_on_sender_department_id"
     t.index ["sender_unit_id"], name: "index_dispatches_on_sender_unit_id"
@@ -229,7 +218,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_02_104206) do
   add_foreign_key "dispatch_recipients", "users", column: "received_by_id"
   add_foreign_key "dispatches", "departments", column: "receiving_department_id"
   add_foreign_key "dispatches", "departments", column: "sender_department_id"
-  add_foreign_key "dispatches", "units", column: "receiving_unit_id"
   add_foreign_key "dispatches", "units", column: "sender_unit_id"
   add_foreign_key "dispatches", "users", column: "created_by_id"
   add_foreign_key "dispatches", "users", column: "dispatched_by_id"
