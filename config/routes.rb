@@ -79,9 +79,13 @@ Rails.application.routes.draw do
     end
 
     collection do
-      get :pending
-      get :search
-    end
+  get :incoming
+  get :pending
+  get :search
+  get :pending_acknowledgement
+  get :ready_to_file
+  get :filed
+end
   end
 
   resources :log_reports do

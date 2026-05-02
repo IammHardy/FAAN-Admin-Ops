@@ -9,6 +9,8 @@ class Dispatch < ApplicationRecord
   belongs_to :created_by, class_name: "User"
   belongs_to :dispatched_by, class_name: "User", optional: true
   has_one_attached :memo_file
+  has_many :dispatch_recipients, dependent: :destroy
+  has_many :receiving_units, through: :dispatch_recipients
 
   enum :status, {
     draft: 0,
@@ -65,11 +67,15 @@ def mark_as_acknowledged!(user:, note: nil)
 end
 
 def mark_as_filed!
-  raise StandardError, "Only acknowledged dispatches can be filed" unless acknowledged?
+  raise StandardError, "All recipient units must acknowledge before filing" unless all_recipients_acknowledged?
 
+  dispatch_recipients.find_each(&:mark_as_filed!)
   update!(status: :filed)
 end
 
+def all_recipients_acknowledged?
+  dispatch_recipients.any? && dispatch_recipients.all?(&:acknowledged?)
+end
 
   private
 

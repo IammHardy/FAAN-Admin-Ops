@@ -1,6 +1,6 @@
 class DispatchesController < ApplicationController
- before_action :require_dispatch_access!, only: [:index, :new, :create, :edit, :update, :destroy, :pending, :search, :mark_dispatched, :mark_filed, :print]
-before_action :require_dispatch_receiver_access!, only: [:show, :mark_received, :mark_acknowledged]
+ before_action :require_dispatch_access!, only: [:index, :new, :create, :edit, :update, :destroy, :pending, :search, :mark_dispatched, :mark_filed, :print, :pending_acknowledgement, :ready_to_file, :filed]
+before_action :require_dispatch_receiver_access!, only: [:show, :mark_received, :mark_acknowledged, :incoming]
 before_action :require_admin_access!, only: [:destroy]
 
 before_action :set_dispatch, only: [
@@ -27,6 +27,8 @@ end
     @dispatch.created_by = current_user
 
     if @dispatch.save
+  sync_dispatch_recipients
+
       AuditLogger.call(
         user: current_user,
         action: "create",
@@ -46,6 +48,7 @@ end
 
   def update
     if @dispatch.update(dispatch_params)
+  sync_dispatch_recipients
       AuditLogger.call(
         user: current_user,
         action: "update",
@@ -103,6 +106,29 @@ end
     render :index
   end
 
+  def pending_acknowledgement
+  @dispatches = Dispatch
+    .joins(:dispatch_recipients)
+    .where(dispatch_recipients: { status: [:dispatched, :received] })
+    .distinct
+    .recent_first
+
+  render :index
+end
+
+def ready_to_file
+  @dispatches = Dispatch
+    .includes(:dispatch_recipients)
+    .select(&:all_recipients_acknowledged?)
+
+  render :index
+end
+
+def filed
+  @dispatches = Dispatch.filed.recent_first
+  render :index
+end
+
   def mark_dispatched
     @dispatch.mark_as_dispatched!(current_user)
 
@@ -119,12 +145,13 @@ end
   end
 
  def mark_received
-  receiver_name = params[:receiver_name]
-  receiver_designation = params[:receiver_designation]
+  recipient = @dispatch.dispatch_recipients.find_by!(
+    receiving_unit_id: current_user.unit_id
+  )
 
-  @dispatch.mark_as_received!(
-    receiver_name: receiver_name,
-    receiver_designation: receiver_designation,
+  recipient.mark_as_received!(
+    receiver_name: params[:receiver_name],
+    receiver_designation: params[:receiver_designation],
     user: current_user
   )
 
@@ -132,30 +159,32 @@ end
     user: current_user,
     action: "mark_received",
     auditable: @dispatch,
-    description: "Marked dispatch #{@dispatch.reference_number} as received by #{receiver_name}"
+    description: "Received dispatch #{@dispatch.reference_number} for #{recipient.receiving_unit.name}"
   )
 
-  redirect_to @dispatch, success: "Dispatch marked as received."
+  redirect_to @dispatch, success: "Dispatch received successfully."
 rescue StandardError => e
   redirect_to @dispatch, error: e.message
 end
 
-  def mark_acknowledged
-  note = params[:acknowledgement_note]
+ def mark_acknowledged
+  recipient = @dispatch.dispatch_recipients.find_by!(
+    receiving_unit_id: current_user.unit_id
+  )
 
-  @dispatch.mark_as_acknowledged!(
+  recipient.mark_as_acknowledged!(
     user: current_user,
-    note: note
+    note: params[:acknowledgement_note]
   )
 
   AuditLogger.call(
     user: current_user,
     action: "mark_acknowledged",
     auditable: @dispatch,
-    description: "Marked dispatch #{@dispatch.reference_number} as acknowledged"
+    description: "Acknowledged dispatch #{@dispatch.reference_number} for #{recipient.receiving_unit.name}"
   )
 
-  redirect_to @dispatch, success: "Dispatch marked as acknowledged."
+  redirect_to @dispatch, success: "Dispatch acknowledged successfully."
 rescue StandardError => e
   redirect_to @dispatch, error: e.message
 end
@@ -179,6 +208,13 @@ end
     render layout: "print"
   end
 
+  def incoming
+  @dispatch_recipients = DispatchRecipient
+    .includes(:dispatch, :receiving_unit)
+    .where(receiving_unit_id: current_user.unit_id)
+    .recent_first
+end
+
   private
 
   def set_dispatch
@@ -191,26 +227,39 @@ end
     @users = User.active.order(:full_name)
   end
 
-  def dispatch_params
-    params.require(:dispatch).permit(
-      :reference_number,
-      :subject,
-      :memo_date,
-      :sender_department_id,
-      :sender_unit_id,
-      :receiving_department_id,
-      :receiving_unit_id,
-      :delivery_note,
-      :remarks,
-      :memo_file
-    )
+  
+  def sync_dispatch_recipients
+  unit_ids = params.dig(:dispatch, :receiving_unit_ids)&.reject(&:blank?) || []
+
+  @dispatch.dispatch_recipients.where.not(receiving_unit_id: unit_ids).destroy_all
+
+  unit_ids.each do |unit_id|
+    @dispatch.dispatch_recipients.find_or_create_by!(receiving_unit_id: unit_id) do |recipient|
+      recipient.status = @dispatch.dispatched? ? :dispatched : :dispatched
+    end
   end
+end
+
+  def dispatch_params
+  params.require(:dispatch).permit(
+    :reference_number,
+    :subject,
+    :memo_date,
+    :sender_department_id,
+    :sender_unit_id,
+    :receiving_department_id,
+    :delivery_note,
+    :remarks,
+    :memo_file,
+    receiving_unit_ids: []
+  )
+end
 
   def authorize_receiving_unit!
   return if current_user.super_admin? || current_user.admin_officer? || current_user.dispatch_officer?
 
   if current_user.unit_officer?
-    return if current_user.unit_id == @dispatch.receiving_unit_id
+    return if @dispatch.dispatch_recipients.exists?(receiving_unit_id: current_user.unit_id)
   end
 
   redirect_to dashboard_path, error: "You are not authorized to access this dispatch."

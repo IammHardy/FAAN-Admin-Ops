@@ -44,10 +44,7 @@
         <dd class="mt-1 text-sm"><%= @dispatch.receiving_department.name %></dd>
       </div>
 
-      <div>
-        <dt class="text-sm font-semibold text-gray-500">Receiving Unit</dt>
-        <dd class="mt-1 text-sm"><%= @dispatch.receiving_unit&.name || "-" %></dd>
-      </div>
+      
 
       <div>
         <dt class="text-sm font-semibold text-gray-500">Dispatched By</dt>
@@ -57,21 +54,6 @@
       <div>
         <dt class="text-sm font-semibold text-gray-500">Dispatched At</dt>
         <dd class="mt-1 text-sm"><%= @dispatch.dispatched_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></dd>
-      </div>
-
-      <div>
-        <dt class="text-sm font-semibold text-gray-500">Receiver Name</dt>
-        <dd class="mt-1 text-sm"><%= @dispatch.receiver_name.presence || "-" %></dd>
-      </div>
-
-      <div>
-        <dt class="text-sm font-semibold text-gray-500">Receiver Designation</dt>
-        <dd class="mt-1 text-sm"><%= @dispatch.receiver_designation.presence || "-" %></dd>
-      </div>
-
-      <div>
-        <dt class="text-sm font-semibold text-gray-500">Received At</dt>
-        <dd class="mt-1 text-sm"><%= @dispatch.received_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></dd>
       </div>
 
       <div class="md:col-span-2">
@@ -90,6 +72,42 @@
       No memo copy attached.
     <% end %>
   </dd>
+</div>
+
+<div class="md:col-span-2">
+  <dt class="text-sm font-semibold text-gray-500 mb-2">Recipient Units</dt>
+
+  <% if @dispatch.dispatch_recipients.any? %>
+    <div class="border border-gray-200 overflow-hidden">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="text-left px-3 py-2 font-semibold">Unit</th>
+            <th class="text-left px-3 py-2 font-semibold">Status</th>
+            <th class="text-left px-3 py-2 font-semibold">Received By</th>
+            <th class="text-left px-3 py-2 font-semibold">Received At</th>
+            <th class="text-left px-3 py-2 font-semibold">Acknowledged By</th>
+            <th class="text-left px-3 py-2 font-semibold">Acknowledged At</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @dispatch.dispatch_recipients.includes(:receiving_unit, :received_by, :acknowledged_by).each do |recipient| %>
+            <tr class="border-b border-gray-100">
+              <td class="px-3 py-2"><%= recipient.receiving_unit.name %></td>
+              <td class="px-3 py-2"><%= recipient.status.humanize %></td>
+              <td class="px-3 py-2"><%= recipient.received_by&.display_name || "-" %></td>
+              <td class="px-3 py-2"><%= recipient.received_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
+              <td class="px-3 py-2"><%= recipient.acknowledged_by&.display_name || "-" %></td>
+              <td class="px-3 py-2"><%= recipient.acknowledged_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <dd class="mt-1 text-sm text-gray-700">No recipient units assigned.</dd>
+  <% end %>
 </div>
 
 <div class="mt-6 bg-white border border-gray-200 p-6">
@@ -127,8 +145,10 @@
       <%= link_to "Back", dashboard_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
   </div>
 
+  
   <div class="bg-white border border-gray-200 p-6">
     <h3 class="text-base font-semibold mb-4">Update Status</h3>
+    <% current_recipient = @dispatch.dispatch_recipients.find_by(receiving_unit_id: current_user.unit_id) if current_user.unit_officer? %>
 
     <div class="space-y-4">
       <% if can_manage_dispatches? && @dispatch.draft? %>
@@ -138,7 +158,7 @@
       class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
 <% end %>
 
-<% if current_user.unit_officer? && @dispatch.dispatched? %>
+<% if current_user.unit_officer? && current_recipient&.dispatched? %>
   <div class="border border-gray-200 p-4">
     <%= form_with url: mark_received_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
       <%= hidden_field_tag :receiver_name, current_user.display_name %>
@@ -153,7 +173,7 @@
   </div>
 <% end %>
 
-<% if current_user.unit_officer? && @dispatch.received? %>
+<% if current_user.unit_officer? && current_recipient&.received? %>
   <%= form_with url: mark_acknowledged_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
     <div>
       <label class="block text-sm font-medium mb-1">Acknowledgement Note</label>
@@ -164,7 +184,7 @@
   <% end %>
 <% end %>
 
-<% if can_manage_dispatches? && @dispatch.acknowledged? %>
+<% if can_manage_dispatches? && @dispatch.all_recipients_acknowledged? %>
   <%= button_to "Mark as Filed",
       mark_filed_dispatch_path(@dispatch),
       method: :patch,

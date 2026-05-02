@@ -1,0 +1,98 @@
+<% content_for :page_title, "Dispatch Officer Dashboard" %>
+<% content_for :page_subtitle, "Create, send, and track official memos." %>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="app-stat-card">
+    <p class="app-stat-label">Dispatches Today</p>
+    <h3 class="app-stat-value"><%= @dispatches_today %></h3>
+  </div>
+
+  <div class="app-stat-card">
+    <p class="app-stat-label">Draft Dispatches</p>
+    <h3 class="app-stat-value"><%= @draft_dispatches.count %></h3>
+  </div>
+
+  <div class="app-stat-card">
+    <p class="app-stat-label">Pending Acknowledgement</p>
+    <h3 class="app-stat-value"><%= @pending_acknowledgement_count %></h3>
+  </div>
+</div>
+
+<div class="app-card mb-6">
+  <div class="app-card-body">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="app-section-title">Quick Actions</h3>
+    </div>
+
+    <%= link_to "Create New Dispatch",
+        new_dispatch_path,
+        class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="app-card">
+    <div class="app-card-body">
+      <h3 class="app-section-title mb-4">Draft Dispatches</h3>
+
+      <% if @draft_dispatches.any? %>
+        <div class="space-y-3">
+          <% @draft_dispatches.each do |dispatch| %>
+            <div class="border-b border-slate-100 pb-3 last:border-b-0">
+              <p class="font-medium">
+                <%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "hover:underline" %>
+              </p>
+              <p class="text-sm text-slate-600"><%= dispatch.subject %></p>
+              <p class="text-xs text-slate-500 mt-1"><%= dispatch.memo_date&.strftime("%d %b %Y") %></p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="app-muted">No draft dispatches.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="app-card">
+    <div class="app-card-body">
+      <h3 class="app-section-title mb-4">Recently Dispatched</h3>
+
+      <% if @dispatched_dispatches.any? %>
+        <div class="space-y-3">
+          <% @dispatched_dispatches.each do |dispatch| %>
+            <div class="border-b border-slate-100 pb-3 last:border-b-0">
+              <p class="font-medium">
+                <%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "hover:underline" %>
+              </p>
+              <p class="text-sm text-slate-600"><%= dispatch.subject %></p>
+              <p class="text-xs text-slate-500 mt-1"><%= dispatch.memo_date&.strftime("%d %b %Y") %></p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="app-muted">No dispatched memos yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="app-card mt-6">
+  <div class="app-card-body">
+    <h3 class="app-section-title mb-4">Ready to File</h3>
+
+    <% if @ready_to_file_dispatches.any? %>
+      <div class="space-y-3">
+        <% @ready_to_file_dispatches.each do |dispatch| %>
+          <div class="border-b border-slate-100 pb-3 last:border-b-0">
+            <p class="font-medium">
+              <%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "hover:underline" %>
+            </p>
+            <p class="text-sm text-slate-600"><%= dispatch.subject %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="app-muted">No dispatches ready to file.</p>
+    <% end %>
+  </div>
+</div>

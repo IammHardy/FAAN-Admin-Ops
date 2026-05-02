@@ -20,7 +20,8 @@
 
     <% if @incoming_dispatches.any? %>
       <div class="space-y-3">
-        <% @incoming_dispatches.each do |dispatch| %>
+       <% @incoming_dispatches.each do |recipient| %>
+  <% dispatch = recipient.dispatch %>
           <div class="border-b border-slate-100 pb-3 last:border-b-0">
             <p class="font-medium">
               <%= link_to dispatch.reference_number,
@@ -36,7 +37,7 @@
               From:
               <%= dispatch.sender_unit&.name || dispatch.sender_department.name %>
               • Status:
-              <%= dispatch.status.humanize %>
+              <%= recipient.status.humanize %>
             </p>
 
             <div class="flex flex-wrap gap-3 mt-2">
@@ -44,7 +45,7 @@
                   dispatch_path(dispatch),
                   class: "text-sm text-blue-600 hover:underline" %>
 
-              <% if dispatch.dispatched? %>
+              <% if recipient.dispatched? %>
                 <%= button_to "Receive",
                     mark_received_dispatch_path(dispatch),
                     method: :patch,
@@ -56,7 +57,7 @@
                     class: "text-sm text-green-700 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
               <% end %>
 
-              <% if dispatch.received? %>
+              <% if recipient.received? %>
                 <%= button_to "Acknowledge",
                     mark_acknowledged_dispatch_path(dispatch),
                     method: :patch,

@@ -2,6 +2,8 @@
   <%= render "reviewer_dashboard" %>
 <% elsif current_user.unit_officer? %>
   <%= render "unit_officer_dashboard" %>
+<% elsif current_user.dispatch_officer? %>
+  <%= render "dispatch_officer_dashboard" %>
 <% else %>
   <%= render "general_dashboard" %>
 <% end %>

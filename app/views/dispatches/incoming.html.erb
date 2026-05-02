@@ -1,0 +1,40 @@
+<% content_for :page_title, "Incoming Memos" %>
+<% content_for :page_subtitle, "Memos sent to your unit." %>
+
+<div class="bg-white border border-gray-200 overflow-hidden">
+  <% if @dispatch_recipients.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Reference No.</th>
+          <th class="text-left px-4 py-3 font-semibold">Subject</th>
+          <th class="text-left px-4 py-3 font-semibold">From</th>
+          <th class="text-left px-4 py-3 font-semibold">Memo Date</th>
+          <th class="text-left px-4 py-3 font-semibold">Status</th>
+          <th class="text-right px-4 py-3 font-semibold">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @dispatch_recipients.each do |recipient| %>
+          <% dispatch = recipient.dispatch %>
+
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3 font-medium"><%= dispatch.reference_number %></td>
+            <td class="px-4 py-3"><%= dispatch.subject %></td>
+            <td class="px-4 py-3"><%= dispatch.sender_unit&.name || dispatch.sender_department.name %></td>
+            <td class="px-4 py-3"><%= dispatch.memo_date&.strftime("%d %b %Y") %></td>
+            <td class="px-4 py-3"><%= recipient.status.humanize %></td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to "Open", dispatch_path(dispatch), class: "text-blue-600 hover:underline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-gray-500">
+      No incoming memos for your unit.
+    </div>
+  <% end %>
+</div>

@@ -30,10 +30,6 @@
     <%= link_to "Audit Logs", audit_logs_path, class: current_page?(audit_logs_path) ? "app-nav-link-active" : "app-nav-link" %>
   <% end %>
 
-  <% if current_user.super_admin? || current_user.admin_officer? || current_user.dispatch_officer? %>
-    <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
-  <% end %>
-
   <% if current_user.super_admin? || current_user.admin_officer? || current_user.unit_officer? || current_user.reviewer? %>
     <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
   <% end %>
@@ -46,6 +42,17 @@
     <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
   <% end %>
 
+  <% if current_user.unit_officer? %>
+  <%= link_to "Incoming Memos", incoming_dispatches_path, class: nav_link_class(incoming_dispatches_path) %>
+<% end %>
+
+<% if current_user.dispatch_officer? || current_user.admin_officer? || current_user.super_admin? %>
+  <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
+  <%= link_to "New Dispatch", new_dispatch_path, class: nav_link_class(new_dispatch_path) %>
+  <%= link_to "Pending Acknowledgements", pending_acknowledgement_dispatches_path, class: nav_link_class(pending_acknowledgement_dispatches_path) %>
+  <%= link_to "Ready to File", ready_to_file_dispatches_path, class: nav_link_class(ready_to_file_dispatches_path) %>
+  <%= link_to "Filed Dispatches", filed_dispatches_path, class: nav_link_class(filed_dispatches_path) %>
+<% end %>
   
 </nav>
 

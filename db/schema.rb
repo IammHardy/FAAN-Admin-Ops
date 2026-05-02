@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_02_094944) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_02_104206) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_02_094944) do
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_departments_on_active"
     t.index ["name"], name: "index_departments_on_name", unique: true
+  end
+
+  create_table "dispatch_recipients", force: :cascade do |t|
+    t.bigint "dispatch_id", null: false
+    t.bigint "receiving_unit_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "receiver_name"
+    t.string "receiver_designation"
+    t.bigint "received_by_id"
+    t.bigint "acknowledged_by_id"
+    t.datetime "received_at"
+    t.datetime "acknowledged_at"
+    t.text "acknowledgement_note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["acknowledged_by_id"], name: "index_dispatch_recipients_on_acknowledged_by_id"
+    t.index ["dispatch_id", "receiving_unit_id"], name: "index_dispatch_recipients_on_dispatch_id_and_receiving_unit_id", unique: true
+    t.index ["dispatch_id"], name: "index_dispatch_recipients_on_dispatch_id"
+    t.index ["received_by_id"], name: "index_dispatch_recipients_on_received_by_id"
+    t.index ["receiving_unit_id"], name: "index_dispatch_recipients_on_receiving_unit_id"
   end
 
   create_table "dispatches", force: :cascade do |t|
@@ -203,6 +223,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_02_094944) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "dispatch_recipients", "dispatches"
+  add_foreign_key "dispatch_recipients", "units", column: "receiving_unit_id"
+  add_foreign_key "dispatch_recipients", "users", column: "acknowledged_by_id"
+  add_foreign_key "dispatch_recipients", "users", column: "received_by_id"
   add_foreign_key "dispatches", "departments", column: "receiving_department_id"
   add_foreign_key "dispatches", "departments", column: "sender_department_id"
   add_foreign_key "dispatches", "units", column: "receiving_unit_id"

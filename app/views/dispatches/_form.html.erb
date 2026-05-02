@@ -49,11 +49,22 @@
     </div>
 
     <div>
-      <%= f.label :receiving_unit_id, "Receiving Unit", class: "block text-sm font-medium mb-1" %>
-      <%= f.collection_select :receiving_unit_id, @units, :id, :name,
-          { prompt: "Select Receiving Unit" },
-          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
-    </div>
+  <%= f.label :receiving_unit_ids, "Receiving Units", class: "block text-sm font-medium mb-1" %>
+
+  <%= select_tag "dispatch[receiving_unit_ids][]",
+      options_from_collection_for_select(
+        @units,
+        :id,
+        :name,
+        @dispatch.receiving_units.pluck(:id)
+      ),
+      multiple: true,
+      class: "w-full border border-gray-300 px-3 py-2 text-sm min-h-32" %>
+
+  <p class="text-xs text-gray-500 mt-1">
+    Hold Ctrl on Windows to select multiple units.
+  </p>
+</div>
 
     <div class="md:col-span-2">
       <%= f.label :delivery_note, class: "block text-sm font-medium mb-1" %>

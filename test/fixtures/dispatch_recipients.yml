@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  dispatch: one
+  receiving_unit: one
+  status: 1
+  receiver_name: MyString
+  receiver_designation: MyString
+  received_by: one
+  acknowledged_by: one
+  received_at: 2026-05-02 11:42:06
+  acknowledged_at: 2026-05-02 11:42:06
+  acknowledgement_note: MyText
+
+two:
+  dispatch: two
+  receiving_unit: two
+  status: 1
+  receiver_name: MyString
+  receiver_designation: MyString
+  received_by: two
+  acknowledged_by: two
+  received_at: 2026-05-02 11:42:06
+  acknowledged_at: 2026-05-02 11:42:06
+  acknowledgement_note: MyText
