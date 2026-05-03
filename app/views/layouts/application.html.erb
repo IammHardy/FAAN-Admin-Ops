@@ -117,6 +117,8 @@
               <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
             <% end %>
 
+            
+
             <% unread_notifications_count = current_user.notifications.unread.count %>
 
 <%= link_to notifications_path, class: "block px-3 py-2 text-slate-200 hover:bg-slate-800 hover:text-white" do %>
@@ -128,6 +130,10 @@
   <% end %>
 <% end %>
           </nav>
+
+          <%= link_to "My Account",
+    edit_account_path,
+    class: "block w-full text-center border border-slate-600 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800 mb-2" %>
 
           <div class="px-4 py-4 border-t border-slate-700 text-sm">
             <p class="font-semibold"><%= current_user.display_name %></p>

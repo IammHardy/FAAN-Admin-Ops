@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "accounts/edit"
+  get "accounts/update"
   get "notifications/index"
   get "notifications/mark_as_read"
   get "incidents/index"
@@ -143,5 +145,6 @@ end
   end
 end
 
+resource :account, only: [:edit, :update]
  
 end
