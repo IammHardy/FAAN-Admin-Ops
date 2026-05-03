@@ -1,10 +1,11 @@
 puts "Seeding FAAN Admin Operations System..."
 
-# Clear old seed data in development if needed
 if Rails.env.development?
   puts "Clearing existing development seed data..."
 
+  Notification.delete_all if defined?(Notification)
   AuditLog.delete_all
+  DispatchRecipient.delete_all
   Incident.delete_all
   LogEntry.delete_all
   LogReport.delete_all
@@ -99,6 +100,19 @@ super_admin.assign_attributes(
 )
 super_admin.save!
 
+real_admin = User.find_or_initialize_by(email: "yusufabdulhadi567@gmail.com")
+real_admin.assign_attributes(
+  full_name: "Yusuf Abdulhadi Adavize",
+  password: "password123",
+  password_confirmation: "password123",
+  role: :super_admin,
+  phone_number: "08000000000",
+  department: operations,
+  unit: airport_admin,
+  active: true
+)
+real_admin.save!
+
 admin_officer = User.find_or_initialize_by(email: "adminofficer@faan.local")
 admin_officer.assign_attributes(
   full_name: "Admin Officer",
@@ -161,13 +175,16 @@ dispatch_1.assign_attributes(
   sender_department: operations,
   sender_unit: airport_admin,
   receiving_department: engineering,
-  receiving_unit: electrical_unit,
   created_by: admin_officer,
   delivery_note: "Kindly receive and review.",
   remarks: "Urgent memo for action.",
   status: :draft
 )
 dispatch_1.save!
+
+dispatch_1.dispatch_recipients.find_or_create_by!(receiving_unit: electrical_unit) do |recipient|
+  recipient.status = :dispatched
+end
 
 dispatch_2 = Dispatch.find_or_initialize_by(reference_number: "DPT-#{Date.current.year}-0002")
 dispatch_2.assign_attributes(
@@ -176,7 +193,6 @@ dispatch_2.assign_attributes(
   sender_department: operations,
   sender_unit: terminal_operations,
   receiving_department: security,
-  receiving_unit: aviation_security,
   created_by: admin_officer,
   dispatched_by: dispatch_officer,
   dispatched_at: Time.current - 12.hours,
@@ -186,6 +202,10 @@ dispatch_2.assign_attributes(
 )
 dispatch_2.save!
 
+dispatch_2.dispatch_recipients.find_or_create_by!(receiving_unit: aviation_security) do |recipient|
+  recipient.status = :dispatched
+end
+
 dispatch_3 = Dispatch.find_or_initialize_by(reference_number: "DPT-#{Date.current.year}-0003")
 dispatch_3.assign_attributes(
   subject: "Maintenance Request for Office Printer",
@@ -193,18 +213,22 @@ dispatch_3.assign_attributes(
   sender_department: operations,
   sender_unit: airport_admin,
   receiving_department: engineering,
-  receiving_unit: mechanical_unit,
   created_by: admin_officer,
   dispatched_by: dispatch_officer,
   dispatched_at: Time.current - 2.days,
-  receiver_name: "Engr. Musa",
-  receiver_designation: "Maintenance Supervisor",
-  received_at: Time.current - 1.day,
   delivery_note: "For urgent repair.",
   remarks: "Printer in admin office not functioning.",
-  status: :received
+  status: :dispatched
 )
 dispatch_3.save!
+
+dispatch_3.dispatch_recipients.find_or_create_by!(receiving_unit: mechanical_unit) do |recipient|
+  recipient.status = :received
+  recipient.receiver_name = "Engr. Musa" if recipient.respond_to?(:receiver_name=)
+  recipient.receiver_designation = "Maintenance Supervisor" if recipient.respond_to?(:receiver_designation=)
+  recipient.received_by = unit_officer if recipient.respond_to?(:received_by=)
+  recipient.received_at = Time.current - 1.day if recipient.respond_to?(:received_at=)
+end
 
 puts "Dispatches created."
 
@@ -214,6 +238,7 @@ log_report_1 = LogReport.find_or_initialize_by(
   department: operations,
   unit: terminal_operations
 )
+
 log_report_1.assign_attributes(
   shift: :morning,
   entered_by: admin_officer,
@@ -284,7 +309,7 @@ end
 
 puts "Log reports, log entries, and incidents created."
 
-# Optional audit logs
+# Optional Audit Logs
 AuditLog.find_or_create_by!(
   user: admin_officer,
   action: "create",
@@ -306,6 +331,7 @@ puts "Audit logs created."
 puts "Seed complete."
 puts
 puts "Login accounts:"
+puts "Real Admin: yusufabdulhadi567@gmail.com / password123"
 puts "Super Admin: admin@faan.local / password123"
 puts "Admin Officer: adminofficer@faan.local / password123"
 puts "Dispatch Officer: dispatch@faan.local / password123"
