@@ -44,8 +44,8 @@ class DispatchesController < ApplicationController
     @dispatch.created_by = current_user
 
     if @dispatch.save
-  sync_dispatch_recipients
-  notify_receiving_units(@dispatch) if @dispatch.dispatched?
+      sync_dispatch_recipients
+      notify_receiving_units(@dispatch) if @dispatch.dispatched?
 
       AuditLogger.call(
         user: current_user,
@@ -108,21 +108,10 @@ class DispatchesController < ApplicationController
       .includes(:sender_department, :receiving_department, :created_by)
       .recent_first
 
-    if params[:reference_number].present?
-      @dispatches = @dispatches.where("reference_number ILIKE ?", "%#{params[:reference_number]}%")
-    end
-
-    if params[:subject].present?
-      @dispatches = @dispatches.where("subject ILIKE ?", "%#{params[:subject]}%")
-    end
-
-    if params[:status].present?
-      @dispatches = @dispatches.where(status: params[:status])
-    end
-
-    if params[:memo_date].present?
-      @dispatches = @dispatches.where(memo_date: params[:memo_date])
-    end
+    @dispatches = @dispatches.where("reference_number ILIKE ?", "%#{params[:reference_number]}%") if params[:reference_number].present?
+    @dispatches = @dispatches.where("subject ILIKE ?", "%#{params[:subject]}%") if params[:subject].present?
+    @dispatches = @dispatches.where(status: params[:status]) if params[:status].present?
+    @dispatches = @dispatches.where(memo_date: params[:memo_date]) if params[:memo_date].present?
 
     render :index
   end
@@ -179,9 +168,10 @@ class DispatchesController < ApplicationController
     )
 
     notify_dispatch_managers(
-  title: "Dispatch Received",
-  message: "#{recipient.receiving_unit.name} received dispatch #{@dispatch.reference_number}."
-)
+      title: "Dispatch Received",
+      message: "#{recipient.receiving_unit.name} received dispatch #{@dispatch.reference_number}."
+    )
+
     AuditLogger.call(
       user: current_user,
       action: "mark_received",
@@ -205,16 +195,16 @@ class DispatchesController < ApplicationController
     )
 
     notify_dispatch_managers(
-  title: "Dispatch Acknowledged",
-  message: "#{recipient.receiving_unit.name} acknowledged dispatch #{@dispatch.reference_number}."
-)
+      title: "Dispatch Acknowledged",
+      message: "#{recipient.receiving_unit.name} acknowledged dispatch #{@dispatch.reference_number}."
+    )
 
-if @dispatch.ready_to_file?
-  notify_dispatch_managers(
-    title: "Dispatch Ready to File",
-    message: "All receiving units have acknowledged dispatch #{@dispatch.reference_number}."
-  )
-end
+    if @dispatch.ready_to_file?
+      notify_dispatch_managers(
+        title: "Dispatch Ready to File",
+        message: "All receiving units have acknowledged dispatch #{@dispatch.reference_number}."
+      )
+    end
 
     AuditLogger.call(
       user: current_user,
@@ -283,30 +273,43 @@ end
   end
 
   def notify_receiving_units(dispatch)
-  dispatch.dispatch_recipients.includes(receiving_unit: :users).find_each do |recipient|
-    recipient.receiving_unit.users.active.find_each do |user|
-      Notification.create!(
+    dispatch.dispatch_recipients.includes(receiving_unit: :users).find_each do |recipient|
+      recipient.receiving_unit.users.active.find_each do |user|
+        create_notification(
+          user: user,
+          title: "New Dispatch Received",
+          message: "Dispatch #{dispatch.reference_number} has been sent to your unit."
+        )
+      end
+    end
+  end
+
+  def dispatch_managers
+    User.active.where(role: [:super_admin, :admin_officer, :dispatch_officer])
+  end
+
+  def notify_dispatch_managers(title:, message:)
+    dispatch_managers.find_each do |user|
+      create_notification(
         user: user,
-        title: "New Dispatch Received",
-        message: "Dispatch #{dispatch.reference_number} has been sent to your unit."
+        title: title,
+        message: message
       )
     end
   end
-end
 
-def dispatch_managers
-  User.active.where(role: [:super_admin, :admin_officer, :dispatch_officer])
-end
-
-def notify_dispatch_managers(title:, message:)
-  dispatch_managers.find_each do |user|
+  def create_notification(user:, title:, message:)
     Notification.create!(
       user: user,
       title: title,
       message: message
     )
+
+    NotificationMailer
+      .with(user: user, title: title, message: message)
+      .notification_email
+      .deliver_later
   end
-end
 
   def dispatch_params
     params.require(:dispatch).permit(
