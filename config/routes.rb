@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get "minutes/index"
+  get "minutes/show"
+  get "minutes/new"
+  get "minutes/create"
   get "accounts/edit"
   get "accounts/update"
   get "notifications/index"
@@ -146,5 +150,10 @@ end
 end
 
 resource :account, only: [:edit, :update]
+resources :minutes, only: [:index, :show, :new, :create] do
+  member do
+    post :process_minutes
+  end
+end
  
 end

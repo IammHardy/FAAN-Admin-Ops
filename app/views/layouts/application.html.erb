@@ -117,7 +117,9 @@
               <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
             <% end %>
 
-            
+            <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
+  <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
+<% end %>
 
             <% unread_notifications_count = current_user.notifications.unread.count %>
 

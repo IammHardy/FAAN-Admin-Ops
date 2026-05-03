@@ -1,0 +1,41 @@
+<% content_for :page_title, "Upload Audio" %>
+<% content_for :page_subtitle, "Upload meeting audio for transcription and minutes extraction." %>
+
+<div class="max-w-xl bg-white border border-gray-200 p-6">
+  <% if @minute.errors.any? %>
+    <div class="border border-red-300 bg-red-50 p-4 text-sm text-red-800 mb-5">
+      <p class="font-semibold mb-2">Please fix the following errors:</p>
+      <ul class="list-disc ml-5 space-y-1">
+        <% @minute.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @minute, class: "space-y-5" do |f| %>
+    <div>
+      <%= f.label :title, "Meeting Title", class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :title,
+          class: "w-full border border-gray-300 px-3 py-2 text-sm",
+          placeholder: "e.g. Weekly Operations Meeting" %>
+    </div>
+
+    <div>
+      <%= f.label :audio_file, "Audio File", class: "block text-sm font-medium mb-1" %>
+      <%= f.file_field :audio_file,
+          accept: "audio/*",
+          class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" %>
+      <p class="text-xs text-gray-500 mt-1">
+        Upload MP3, WAV, M4A, or other supported audio formats.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= f.submit "Upload Audio",
+          class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      <%= link_to "Cancel", minutes_path,
+          class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    </div>
+  <% end %>
+</div>

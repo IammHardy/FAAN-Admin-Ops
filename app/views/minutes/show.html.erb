@@ -1,0 +1,52 @@
+<% content_for :page_title, @minute.title %>
+<% content_for :page_subtitle, "Generated meeting transcript and minutes." %>
+
+<div class="space-y-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <p class="text-sm text-gray-500">
+      Uploaded by <%= @minute.created_by.display_name %> ·
+      <%= @minute.created_at.strftime("%d %b %Y, %I:%M %p") %>
+    </p>
+
+    <p class="text-sm mt-2">
+      Status:
+      <span class="font-semibold capitalize"><%= @minute.status %></span>
+    </p>
+
+    <% if @minute.audio_file.attached? %>
+      <div class="mt-4">
+        <audio controls class="w-full">
+          <source src="<%= url_for(@minute.audio_file) %>">
+        </audio>
+      </div>
+    <% end %>
+  </div>
+<% if @minute.pending? || @minute.failed? %>
+  <div class="mt-4">
+    <%= button_to "Process Minutes",
+        process_minutes_minute_path(@minute),
+        method: :post,
+        class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+  </div>
+<% end %>
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="font-semibold text-gray-900 mb-3">Transcript</h3>
+    <p class="text-sm text-gray-700 whitespace-pre-line">
+      <%= @minute.transcript.presence || "Transcript has not been generated yet." %>
+    </p>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="font-semibold text-gray-900 mb-3">Generated Minutes</h3>
+    <p class="text-sm text-gray-700 whitespace-pre-line">
+      <%= @minute.summary.presence || "Meeting minutes have not been generated yet." %>
+    </p>
+  </div>
+
+  <div class="bg-white border border-gray-200 p-5">
+    <h3 class="font-semibold text-gray-900 mb-3">Action Items</h3>
+    <p class="text-sm text-gray-700 whitespace-pre-line">
+      <%= @minute.action_items.presence || "No action items generated yet." %>
+    </p>
+  </div>
+</div>
