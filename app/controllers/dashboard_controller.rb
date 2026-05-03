@@ -1,6 +1,8 @@
 class DashboardController < ApplicationController
 
   def index
+
+     @unread_notifications_count = current_user.notifications.unread.count
   if current_user.reviewer?
     reviewer_dashboard
   elsif current_user.unit_officer?
@@ -72,9 +74,15 @@ def dispatch_officer_dashboard
     .count
 
   @ready_to_file_dispatches = Dispatch
-    .includes(:dispatch_recipients)
-    .select(&:all_recipients_acknowledged?)
-    .first(5)
+  .includes(:dispatch_recipients)
+  .recent_first
+  .select(&:ready_to_file?)
+  .first(5)
+
+  @ready_to_file_count = Dispatch
+  .includes(:dispatch_recipients)
+  .select(&:ready_to_file?)
+  .count
 
   @dispatches_today = Dispatch.where(created_at: Time.zone.today.all_day).count
 end
