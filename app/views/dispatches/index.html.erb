@@ -64,23 +64,33 @@
             <td class="px-4 py-3"><%= dispatch.memo_date&.strftime("%d %b %Y") %></td>
             <td class="px-4 py-3"><%= dispatch.sender_department.name %></td>
             <td class="px-4 py-3"><%= dispatch.receiving_department.name %></td>
-            <td class="px-4 py-3">
-              <span class="inline-block px-2 py-1 text-xs border
-                <%= case dispatch.status
-                    when 'draft'
-                      'bg-gray-50 border-gray-300 text-gray-700'
-                    when 'dispatched'
-                      'bg-blue-50 border-blue-300 text-blue-700'
-                    when 'received'
-                      'bg-green-50 border-green-300 text-green-700'
-                    when 'acknowledged'
-                      'bg-purple-50 border-purple-300 text-purple-700'
-                    when 'filed'
-                      'bg-amber-50 border-amber-300 text-amber-700'
-                    end %>">
-                <%= dispatch.status.humanize %>
-              </span>
-            </td>
+           <td class="px-4 py-3">
+  <% display_status = dispatch.display_status %>
+
+  <span class="inline-block px-2 py-1 text-xs border
+    <%= case display_status
+        when 'Draft'
+          'bg-gray-50 border-gray-300 text-gray-700'
+        when 'Dispatched'
+          'bg-blue-50 border-blue-300 text-blue-700'
+        when 'Ready to File'
+          'bg-indigo-50 border-indigo-300 text-indigo-700'
+        when 'Received'
+          'bg-green-50 border-green-300 text-green-700'
+        when 'Acknowledged'
+          'bg-purple-50 border-purple-300 text-purple-700'
+        when 'Filed'
+          'bg-amber-50 border-amber-300 text-amber-700'
+        else
+          'bg-gray-50 border-gray-300 text-gray-700'
+        end %>">
+    <%= display_status %>
+    
+  </span>
+  <p class="text-xs text-gray-500 mt-1">
+  <%= dispatch.acknowledgement_progress %>
+</p>
+</td>
             <td class="px-4 py-3 text-right space-x-2">
               <%= link_to "View", dispatch_path(dispatch), class: "text-blue-600 hover:underline" %>
               <%= link_to "Edit", edit_dispatch_path(dispatch), class: "text-amber-600 hover:underline" %>

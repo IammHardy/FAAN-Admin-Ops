@@ -11,104 +11,80 @@
     <%= javascript_importmap_tags %>
 
     <style>
-      @media (min-width: 768px) {
-        .mobile-only { display: none !important; }
-        .desktop-sidebar { display: flex !important; }
-      }
+  .app-shell {
+    min-height: 100vh;
+  }
 
-      @media (max-width: 767px) {
-        .desktop-sidebar { display: none !important; }
-      }
-    </style>
+ .app-sidebar {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  z-index: 40;
+  transition: max-height 0.3s ease;
+}
+
+.app-sidebar.open {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .app-shell {
+    display: flex;
+  }
+
+  .app-sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 16rem;
+    height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .app-content {
+    flex: 1;
+  }
+
+  #sidebar-open,
+  #sidebar-overlay,
+  #sidebar-close {
+    display: none !important;
+  }
+}
+</style>
   </head>
 
   <body class="bg-gray-100 text-gray-900 min-h-screen">
-    <% if user_signed_in? %>
-      <!-- Mobile Header -->
-      <header class="mobile-only flex bg-slate-900 text-white px-4 py-3 items-center justify-between">
-        <div>
-          <h1 class="text-base font-bold">FAAN Admin Ops</h1>
-          <p class="text-xs text-slate-300"><%= current_user.role.humanize %></p>
-        </div>
-
-        <button
-          type="button"
-          id="mobile-menu-button"
-          class="border border-slate-600 px-3 py-2 text-sm bg-slate-800 hover:bg-slate-700">
-          Menu
-        </button>
-      </header>
-
-      <div id="mobile-overlay" class="mobile-only hidden fixed inset-0 bg-black/50 z-40"></div>
-
-      <!-- Mobile Sidebar -->
-      <aside
-        id="mobile-sidebar"
-        class="mobile-only fixed left-0 top-0 h-screen w-64 bg-slate-900 text-white z-50 -translate-x-full transition-transform duration-300 flex flex-col">
-
-        <div class="px-4 py-4 border-b border-slate-700 flex items-center justify-between">
-          <div>
-            <h1 class="text-base font-bold">FAAN Admin Ops</h1>
-            <p class="text-xs text-slate-300">Operations Support</p>
-          </div>
-
-          <button type="button" id="mobile-menu-close" class="text-sm border border-slate-600 px-2 py-1">
-            X
-          </button>
-        </div>
-
-        <nav class="flex-1 px-3 py-3 space-y-2 text-sm overflow-y-auto">
-          <%= link_to "Dashboard", dashboard_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-
-          <% if current_user.super_admin? || current_user.admin_officer? %>
-            <%= link_to "Departments", departments_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Units", units_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Users", users_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Audit Logs", audit_logs_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-          <% end %>
-
-          <% if current_user.unit_officer? %>
-            <%= link_to "Incoming Memos", incoming_dispatches_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-          <% end %>
-
-          <% if current_user.super_admin? || current_user.admin_officer? || current_user.unit_officer? || current_user.reviewer? %>
-            <%= link_to "Daily Logs", log_reports_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-          <% end %>
-
-          <% if current_user.dispatch_officer? || current_user.admin_officer? || current_user.super_admin? %>
-            <%= link_to "Dispatch Register", dispatches_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "New Dispatch", new_dispatch_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Pending Acknowledgements", pending_acknowledgement_dispatches_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Ready to File", ready_to_file_dispatches_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Filed Dispatches", filed_dispatches_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-          <% end %>
-
-          <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
-            <%= link_to "Incidents", incidents_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-            <%= link_to "Reports", reports_dispatches_path, class: "block px-3 py-2 rounded hover:bg-slate-700" %>
-          <% end %>
-        </nav>
-
-        <div class="px-4 py-4 border-t border-slate-700 text-sm">
-          <p class="font-semibold"><%= current_user.display_name %></p>
-          <p class="text-slate-300 capitalize mb-3"><%= current_user.role.humanize %></p>
-
-          <%= button_to "Sign Out",
-              destroy_user_session_path,
-              method: :delete,
-              class: "w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-medium" %>
-        </div>
-      </aside>
-    <% end %>
-
-    <div class="flex min-h-screen">
+    <div class="app-shell">
       <% if user_signed_in? %>
-        <!-- Desktop Sidebar -->
-        <aside class="desktop-sidebar hidden w-64 min-h-screen bg-slate-900 text-white flex-col flex-shrink-0">
-          <div class="px-6 py-6">
-            <h1 class="text-lg font-bold">FAAN Admin Ops</h1>
-            <p class="text-sm text-slate-300 mt-1">Operations Support System</p>
-          </div>
+        <!-- Mobile Overlay -->
+        <div
+          id="sidebar-overlay"
+          class="fixed inset-0 bg-black/50 z-30 hidden md:hidden">
+        </div>
+
+        <!-- Shared Sidebar -->
+        <aside id="sidebar" class="app-sidebar bg-slate-900 text-white flex flex-col">
+
+          <div class="px-6 py-6 border-b border-slate-700 flex items-start justify-between gap-4">
+  <div>
+    <h1 class="text-lg font-bold">FAAN Admin Ops</h1>
+    <p class="text-sm text-slate-300 mt-1">Operations Support System</p>
+  </div>
+
+  <button
+    type="button"
+    id="sidebar-close"
+    class="md:hidden border border-slate-600 px-2 py-1 text-sm hover:bg-slate-800">
+    X
+  </button>
+</div>
 
           <nav class="flex-1 px-4 py-4 space-y-2 text-sm overflow-y-auto">
             <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
@@ -140,6 +116,17 @@
               <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
               <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
             <% end %>
+
+            <% unread_notifications_count = current_user.notifications.unread.count %>
+
+<%= link_to notifications_path, class: "block px-3 py-2 text-slate-200 hover:bg-slate-800 hover:text-white" do %>
+  Notifications
+  <% if unread_notifications_count.positive? %>
+    <span class="ml-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+      <%= unread_notifications_count %>
+    </span>
+  <% end %>
+<% end %>
           </nav>
 
           <div class="px-4 py-4 border-t border-slate-700 text-sm">
@@ -156,20 +143,43 @@
         </aside>
       <% end %>
 
-      <main class="flex-1 min-w-0">
+      <!-- Main Content -->
+      <div class="app-content">
         <% if user_signed_in? %>
-          <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
-            <h2 class="text-lg md:text-xl font-semibold">
-              <%= content_for?(:page_title) ? yield(:page_title) : "FAAN Admin Operations System" %>
-            </h2>
+ <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+  <div>
+    <h2 class="text-lg md:text-xl font-semibold">
+      <%= content_for?(:page_title) ? yield(:page_title) : "FAAN Admin Operations System" %>
+    </h2>
 
-            <% if content_for?(:page_subtitle) %>
-              <p class="text-sm text-gray-500 mt-1"><%= yield(:page_subtitle) %></p>
-            <% end %>
-          </header>
+    <% if content_for?(:page_subtitle) %>
+      <p class="text-sm text-gray-500 mt-1"><%= yield(:page_subtitle) %></p>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <% unread_notifications_count = current_user.notifications.unread.count %>
+
+    <%= link_to notifications_path, class: "relative text-sm border border-gray-300 px-3 py-2 bg-white hover:bg-gray-50" do %>
+      🔔
+      <% if unread_notifications_count.positive? %>
+        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+          <%= unread_notifications_count %>
+        </span>
+      <% end %>
+    <% end %>
+
+    <button
+      type="button"
+      id="sidebar-open"
+      class="md:hidden inline-flex items-center justify-center border border-gray-300 px-3 py-2 text-sm bg-white hover:bg-gray-100">
+      ☰
+    </button>
+  </div>
+</header>
         <% end %>
 
-        <div class="px-4 md:px-6 py-6">
+        <main class="px-4 md:px-6 py-6">
           <% flash.each do |type, message| %>
             <div class="<%= flash_class(type) %> mb-4 px-4 py-3 border text-sm">
               <%= message %>
@@ -177,40 +187,44 @@
           <% end %>
 
           <%= yield %>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
 
-    <script>
-      function setupMobileMenu() {
-        const button = document.getElementById("mobile-menu-button");
-        const closeButton = document.getElementById("mobile-menu-close");
-        const sidebar = document.getElementById("mobile-sidebar");
-        const overlay = document.getElementById("mobile-overlay");
+  <script>
+  function setupSidebarMenu() {
+    const sidebar = document.getElementById("sidebar");
+    const openButton = document.getElementById("sidebar-open");
+    const closeButton = document.getElementById("sidebar-close");
+    const overlay = document.getElementById("sidebar-overlay");
 
-        if (!button || !closeButton || !sidebar || !overlay) return;
+    if (!sidebar || !openButton || !closeButton || !overlay) return;
 
-        function openMenu() {
-          sidebar.classList.remove("-translate-x-full");
-          overlay.classList.remove("hidden");
-        }
+    function openSidebar() {
+      sidebar.classList.add("open");
+      overlay.classList.remove("hidden");
+    }
 
-        function closeMenu() {
-          sidebar.classList.add("-translate-x-full");
-          overlay.classList.add("hidden");
-        }
+    function closeSidebar() {
+      sidebar.classList.remove("open");
+      overlay.classList.add("hidden");
+    }
 
-        button.onclick = openMenu;
-        closeButton.onclick = closeMenu;
-        overlay.onclick = closeMenu;
+    openButton.onclick = openSidebar;
+    closeButton.onclick = closeSidebar;
+    overlay.onclick = closeSidebar;
 
-        window.onresize = function () {
-          if (window.innerWidth >= 768) closeMenu();
-        };
-      }
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeSidebar();
+    });
 
-      document.addEventListener("DOMContentLoaded", setupMobileMenu);
-      document.addEventListener("turbo:load", setupMobileMenu);
-    </script>
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 768) closeSidebar();
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", setupSidebarMenu);
+  document.addEventListener("turbo:load", setupSidebarMenu);
+</script>
   </body>
 </html>

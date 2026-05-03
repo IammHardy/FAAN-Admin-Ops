@@ -5,10 +5,11 @@ class Dispatch < ApplicationRecord
   belongs_to :receiving_unit, class_name: "Unit", optional: true
   belongs_to :received_by, class_name: "User", optional: true
   belongs_to :acknowledged_by, class_name: "User", optional: true
-
   belongs_to :created_by, class_name: "User"
   belongs_to :dispatched_by, class_name: "User", optional: true
+
   has_one_attached :memo_file
+
   has_many :dispatch_recipients, dependent: :destroy
   has_many :receiving_units, through: :dispatch_recipients
 
@@ -25,7 +26,6 @@ class Dispatch < ApplicationRecord
   validates :memo_date, presence: true
   validates :sender_department, presence: true
   validates :receiving_department, presence: true
-  # validate :sender_and_receiver_departments_must_differ
 
   before_validation :assign_reference_number, on: :create
 
@@ -33,64 +33,95 @@ class Dispatch < ApplicationRecord
   scope :pending, -> { where(status: [:draft, :dispatched]) }
 
   def mark_as_dispatched!(user)
-  raise StandardError, "Only draft dispatches can be marked as dispatched" unless draft?
+    raise StandardError, "Only draft dispatches can be marked as dispatched" unless draft?
 
-  update!(
-    status: :dispatched,
-    dispatched_by: user,
-    dispatched_at: Time.current
-  )
+    update!(
+      status: :dispatched,
+      dispatched_by: user,
+      dispatched_at: Time.current
+    )
+  end
+
+  def mark_as_received!(receiver_name:, receiver_designation: nil, user:)
+    raise StandardError, "Dispatch must be dispatched first" unless dispatched?
+    raise StandardError, "Receiver name is required" if receiver_name.blank?
+
+    update!(
+      status: :received,
+      receiver_name: receiver_name,
+      receiver_designation: receiver_designation,
+      received_by: user,
+      received_at: Time.current
+    )
+  end
+
+  def mark_as_acknowledged!(user:, note: nil)
+    raise StandardError, "Only received dispatches can be acknowledged" unless received?
+
+    update!(
+      status: :acknowledged,
+      acknowledged_by: user,
+      acknowledged_at: Time.current,
+      acknowledgement_note: note
+    )
+  end
+
+  def mark_as_filed!
+    raise StandardError, "All recipient units must acknowledge before filing" unless all_recipients_acknowledged?
+
+    dispatch_recipients.find_each(&:mark_as_filed!)
+    update!(status: :filed)
+  end
+
+  def all_recipients_acknowledged?
+    dispatch_recipients.any? && dispatch_recipients.all?(&:acknowledged?)
+  end
+
+  def acknowledgement_progress
+  total = dispatch_recipients.count
+  acknowledged = dispatch_recipients.select(&:acknowledged?).count
+
+  "#{acknowledged} / #{total} Units Acknowledged"
 end
 
-def mark_as_received!(receiver_name:, receiver_designation: nil, user:)
-  raise StandardError, "Dispatch must be dispatched first" unless dispatched?
-  raise StandardError, "Receiver name is required" if receiver_name.blank?
+  def display_status
+    if filed?
+      "Filed"
+    elsif all_recipients_acknowledged?
+      "Ready to File"
+    else
+      status.to_s.humanize
+    end
+  end
 
-  update!(
-    status: :received,
-    receiver_name: receiver_name,
-    receiver_designation: receiver_designation,
-    received_by: user,
-    received_at: Time.current
-  )
+ def ready_to_file?
+  !filed? && all_recipients_acknowledged?
 end
 
-def mark_as_acknowledged!(user:, note: nil)
-  raise StandardError, "Only received dispatches can be acknowledged" unless received?
+def self.visible_to(user)
+  return none unless user
 
-  update!(
-    status: :acknowledged,
-    acknowledged_by: user,
-    acknowledged_at: Time.current,
-    acknowledgement_note: note
-  )
+  if user.super_admin? || user.admin_officer? || user.dispatch_officer?
+    all
+  elsif user.unit_officer?
+    joins(:dispatch_recipients)
+      .where(dispatch_recipients: { receiving_unit_id: user.unit_id })
+      .distinct
+  else
+    none
+  end
 end
-
-def mark_as_filed!
-  raise StandardError, "All recipient units must acknowledge before filing" unless all_recipients_acknowledged?
-
-  dispatch_recipients.find_each(&:mark_as_filed!)
-  update!(status: :filed)
-end
-
-def all_recipients_acknowledged?
-  dispatch_recipients.any? && dispatch_recipients.all?(&:acknowledged?)
-end
-
   private
-
-  # def sender_and_receiver_departments_must_differ
-  #   return if sender_department_id.blank? || receiving_department_id.blank?
-  #   return unless sender_department_id == receiving_department_id
-
-  #   errors.add(:receiving_department_id, "must be different from sender department")
-  # end
 
   def assign_reference_number
     return if reference_number.present?
 
     year = Date.current.year
-    last_dispatch = Dispatch.where("reference_number LIKE ?", "DPT-#{year}-%").order(:created_at).last
+    last_dispatch = Dispatch
+                    .where("reference_number LIKE ?", "DPT-#{year}-%")
+                    .order(:created_at)
+                    .last
+
     next_number =
       if last_dispatch&.reference_number.present?
         last_dispatch.reference_number.split("-").last.to_i + 1
@@ -98,6 +129,10 @@ end
         1
       end
 
-    self.reference_number = format("DPT-%<year>d-%<number>04d", year: year, number: next_number)
+    self.reference_number = format(
+      "DPT-%<year>d-%<number>04d",
+      year: year,
+      number: next_number
+    )
   end
 end

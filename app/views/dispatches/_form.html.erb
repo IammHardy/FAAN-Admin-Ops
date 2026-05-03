@@ -31,40 +31,39 @@
       <%= f.label :sender_department_id, "Sender Department", class: "block text-sm font-medium mb-1" %>
       <%= f.collection_select :sender_department_id, @departments, :id, :name,
           { prompt: "Select Sender Department" },
-          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" } %>
     </div>
 
     <div>
       <%= f.label :sender_unit_id, "Sender Unit", class: "block text-sm font-medium mb-1" %>
       <%= f.collection_select :sender_unit_id, @units, :id, :name,
           { prompt: "Select Sender Unit" },
-          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" } %>
     </div>
 
     <div>
       <%= f.label :receiving_department_id, "Receiving Department", class: "block text-sm font-medium mb-1" %>
       <%= f.collection_select :receiving_department_id, @departments, :id, :name,
           { prompt: "Select Receiving Department" },
-          { class: "w-full border border-gray-300 px-3 py-2 text-sm" } %>
+          { class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" } %>
     </div>
 
     <div>
-  <%= f.label :receiving_unit_ids, "Receiving Units", class: "block text-sm font-medium mb-1" %>
+      <p class="block text-sm font-medium mb-1">Receiving Units</p>
 
-  <%= select_tag "dispatch[receiving_unit_ids][]",
-      options_from_collection_for_select(
-        @units,
-        :id,
-        :name,
-        @dispatch.receiving_units.pluck(:id)
-      ),
-      multiple: true,
-      class: "w-full border border-gray-300 px-3 py-2 text-sm min-h-32" %>
+      <div class="border border-gray-300 bg-white p-3 max-h-56 overflow-y-auto space-y-2">
+        <%= f.collection_check_boxes :receiving_unit_ids, @units, :id, :name do |b| %>
+          <label class="flex items-center gap-2 text-sm border border-gray-200 rounded px-3 py-2">
+            <%= b.check_box class: "h-4 w-4" %>
+            <span><%= b.text %></span>
+          </label>
+        <% end %>
+      </div>
 
-  <p class="text-xs text-gray-500 mt-1">
-    Hold Ctrl on Windows to select multiple units.
-  </p>
-</div>
+      <p class="text-xs text-gray-500 mt-1">
+        Tap each unit you want to receive this dispatch.
+      </p>
+    </div>
 
     <div class="md:col-span-2">
       <%= f.label :delivery_note, class: "block text-sm font-medium mb-1" %>
@@ -75,23 +74,24 @@
       <%= f.label :remarks, class: "block text-sm font-medium mb-1" %>
       <%= f.text_area :remarks, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
     </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :memo_file, "Attach Memo Copy", class: "block text-sm font-medium mb-1" %>
+      <%= f.file_field :memo_file, class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" %>
+
+      <% if @dispatch.persisted? && @dispatch.memo_file.attached? %>
+        <p class="text-sm text-gray-600 mt-2">
+          Current file:
+          <%= link_to @dispatch.memo_file.filename.to_s,
+              rails_blob_path(@dispatch.memo_file, disposition: "attachment"),
+              class: "text-blue-600 hover:underline" %>
+        </p>
+      <% end %>
+    </div>
   </div>
-  <div class="md:col-span-2">
-  <%= f.label :memo_file, "Attach Memo Copy", class: "block text-sm font-medium mb-1" %>
-  <%= f.file_field :memo_file, class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" %>
 
-  <% if @dispatch.persisted? && @dispatch.memo_file.attached? %>
-  <p class="text-sm text-gray-600 mt-2">
-    Current file:
-    <%= link_to @dispatch.memo_file.filename.to_s,
-        rails_blob_path(@dispatch.memo_file, disposition: "attachment"),
-        class: "text-blue-600 hover:underline" %>
-  </p>
-<% end %>
-</div>
-
-  <div class="flex items-center gap-3">
+  <div class="flex flex-col sm:flex-row sm:items-center gap-3">
     <%= f.submit class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-    <%= link_to "Cancel", dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <%= link_to "Cancel", dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 text-center" %>
   </div>
 <% end %>

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "notifications/index"
+  get "notifications/mark_as_read"
   get "incidents/index"
   get "incidents/show"
   get "incidents/new"
@@ -134,6 +136,12 @@ end
       get :escalated
     end
   end
+
+  resources :notifications, only: [:index] do
+  member do
+    patch :mark_as_read
+  end
+end
 
  
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_02_134319) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_03_074109) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -175,6 +175,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_02_134319) do
     t.index ["unit_id"], name: "index_log_reports_on_unit_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "message"
+    t.boolean "read"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "units", force: :cascade do |t|
     t.bigint "department_id", null: false
     t.string "name", null: false
@@ -230,6 +240,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_02_134319) do
   add_foreign_key "log_reports", "units"
   add_foreign_key "log_reports", "users", column: "entered_by_id"
   add_foreign_key "log_reports", "users", column: "submitted_by_id"
+  add_foreign_key "notifications", "users"
   add_foreign_key "units", "departments"
   add_foreign_key "users", "departments"
   add_foreign_key "users", "units"

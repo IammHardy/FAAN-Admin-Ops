@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   belongs_to :department, optional: true
   belongs_to :unit, optional: true
+  has_many :notifications, dependent: :destroy
 
   has_many :created_dispatches, class_name: "Dispatch", foreign_key: :created_by_id, dependent: :nullify
   has_many :dispatched_dispatches, class_name: "Dispatch", foreign_key: :dispatched_by_id, dependent: :nullify
