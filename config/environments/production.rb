@@ -91,19 +91,19 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
   config.hosts << /.*\.up\.railway\.app/
 
-  config.action_mailer.delivery_method = :smtp
+config.action_mailer.delivery_method = :smtp
 config.action_mailer.perform_deliveries = true
-config.action_mailer.raise_delivery_errors = true
+config.action_mailer.raise_delivery_errors = false
 
 config.action_mailer.smtp_settings = {
-  address: ENV.fetch("SMTP_ADDRESS", "smtp-relay.brevo.com"),
+  address: ENV["SMTP_ADDRESS"],
   port: ENV.fetch("SMTP_PORT", 587).to_i,
   domain: "web-production-9272f.up.railway.app",
   user_name: ENV["SMTP_USERNAME"],
   password: ENV["SMTP_PASSWORD"],
   authentication: "plain",
   enable_starttls_auto: true,
-  open_timeout: 10,
-  read_timeout: 10
+  open_timeout: 5,
+  read_timeout: 5
 }
 end
