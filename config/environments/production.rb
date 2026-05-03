@@ -96,11 +96,11 @@ config.action_mailer.perform_deliveries = true
 config.action_mailer.raise_delivery_errors = true
 
 config.action_mailer.smtp_settings = {
-  address: ENV.fetch("SMTP_ADDRESS"),
+  address: ENV.fetch("SMTP_ADDRESS", "smtp-relay.brevo.com"),
   port: ENV.fetch("SMTP_PORT", 587).to_i,
   domain: "web-production-9272f.up.railway.app",
-  user_name: ENV.fetch("SMTP_USERNAME"),
-  password: ENV.fetch("SMTP_PASSWORD"),
+  user_name: ENV["SMTP_USERNAME"],
+  password: ENV["SMTP_PASSWORD"],
   authentication: "plain",
   enable_starttls_auto: true,
   open_timeout: 10,
