@@ -52,4 +52,11 @@ end
 def can_access_reports?
   super_admin? || admin_officer? || reviewer?
 end
+def send_devise_notification(notification, *args)
+  if notification == :reset_password_instructions
+    BrevoEmailService.send_reset_password_email(self, args.first)
+  else
+    super
+  end
+end
 end
