@@ -1,18 +1,23 @@
+
 puts "Seeding FAAN Admin Operations System..."
 
-if Rails.env.development?
-  puts "Clearing existing development seed data..."
+if Rails.env.development? || Rails.env.test?
+  puts "Clearing existing development/test seed data..."
 
-  Notification.delete_all if defined?(Notification)
-  AuditLog.delete_all
-  DispatchRecipient.delete_all
-  Incident.delete_all
-  LogEntry.delete_all
-  LogReport.delete_all
-  Dispatch.delete_all
-  User.delete_all
-  Unit.delete_all
-  Department.delete_all
+  MinuteAudioPart.destroy_all
+  Minute.destroy_all
+  Notification.destroy_all
+  AuditLog.destroy_all
+  Incident.destroy_all
+  LogEntry.destroy_all
+  LogReport.destroy_all
+  DispatchRecipient.destroy_all
+  Dispatch.destroy_all
+  User.destroy_all
+  Unit.destroy_all
+  Department.destroy_all
+else
+  puts "Production environment detected. Skipping destructive seed cleanup."
 end
 
 # Departments
@@ -236,7 +241,8 @@ puts "Dispatches created."
 log_report_1 = LogReport.find_or_initialize_by(
   report_date: Date.current,
   department: operations,
-  unit: terminal_operations
+  unit: terminal_operations,
+  shift: :morning
 )
 
 log_report_1.assign_attributes(
