@@ -55,14 +55,14 @@
   <%= f.label :source_document, "Attach Source Log Sheet", class: "block text-sm font-medium mb-1" %>
   <%= f.file_field :source_document, class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" %>
 
-  <% if @log_report.source_document.attached? %>
-    <p class="text-xs text-gray-500 mt-2">
-      Current file:
-      <%= link_to @log_report.source_document.filename.to_s,
-          rails_blob_path(@log_report.source_document, disposition: "attachment"),
-          class: "text-blue-600 hover:underline" %>
-    </p>
-  <% end %>
+  <% if @log_report.persisted? && @log_report.source_document.attached? %>
+  <p class="text-xs text-gray-500 mt-2">
+    Current file:
+    <%= link_to @log_report.source_document.filename.to_s,
+        rails_blob_path(@log_report.source_document, disposition: "attachment"),
+        class: "text-blue-600 hover:underline" %>
+  </p>
+<% end %>
 </div>
 
 
