@@ -1,6 +1,5 @@
-class Minute < ApplicationRecord
-  belongs_to :created_by, class_name: "User"
-  has_many :minute_audio_parts, dependent: :destroy
+class MinuteAudioPart < ApplicationRecord
+  belongs_to :minute
   has_one_attached :audio_file
 
   enum :status, {
@@ -10,8 +9,9 @@ class Minute < ApplicationRecord
     failed: 3
   }
 
-  validates :title, presence: true
   validates :audio_file, presence: true
+  validates :position, presence: true
+  validates :status, presence: true
   validate :audio_file_type_and_size
 
   private
@@ -34,8 +34,8 @@ class Minute < ApplicationRecord
       errors.add(:audio_file, "must be an audio file")
     end
 
-    if audio_file.blob.byte_size > 50.megabytes
-      errors.add(:audio_file, "must be less than 50MB")
+    if audio_file.blob.byte_size > 25.megabytes
+      errors.add(:audio_file, "must be less than 25MB per part")
     end
   end
 end

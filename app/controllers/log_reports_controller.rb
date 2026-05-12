@@ -1,10 +1,10 @@
 class LogReportsController < ApplicationController
   before_action :require_log_access!
-before_action :require_log_manager!, only: [:new, :create, :edit, :update, :destroy, :submit_report]
+before_action :require_log_manager!, only: [:new, :create, :edit, :update, :destroy, :submit]
 before_action :require_reviewer_or_admin!, only: [:review, :print]
-before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit_report, :review, :print]
+before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
 before_action :load_log_report_form_collections, only: [:new, :create, :edit, :update]
-before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit_report, :review, :print]
+before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
 
   def index
     @log_reports = LogReport.includes(:department, :unit, :entered_by).recent_first
@@ -99,7 +99,7 @@ end
     redirect_to log_reports_path, success: "Log report deleted successfully."
   end
 
-  def submit_report
+  def submit
     @log_report.submit!(current_user)
 
     AuditLogger.call(

@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "log_entries_list" do %>
+  <%= render "log_reports/log_entries_list",
+      log_report: @log_report,
+      log_entries: @log_entries %>
+<% end %>
+
+<%= turbo_stream.replace "quick_log_entry_form" do %>
+  <%= render "log_reports/quick_log_entry_form",
+      log_report: @log_report,
+      log_entry: LogEntry.new %>
+<% end %>

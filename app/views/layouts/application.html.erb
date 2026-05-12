@@ -121,13 +121,14 @@
   <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
 <% end %>
 
-            <% unread_notifications_count = current_user.notifications.unread.count %>
+         <% unread_count = current_user.notifications.unread.count %>
 
-<%= link_to notifications_path, class: "block px-3 py-2 text-slate-200 hover:bg-slate-800 hover:text-white" do %>
-  Notifications
-  <% if unread_notifications_count.positive? %>
-    <span class="ml-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
-      <%= unread_notifications_count %>
+<%= link_to notifications_path, class: "relative" do %>
+  🔔
+
+  <% if unread_count.positive? %>
+    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
+      <%= unread_count %>
     </span>
   <% end %>
 <% end %>

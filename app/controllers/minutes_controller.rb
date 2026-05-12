@@ -6,7 +6,17 @@ class MinutesController < ApplicationController
   end
 
   def show
+  @minute = Minute.find(params[:id])
+
+  respond_to do |format|
+    format.html
+    format.pdf do
+      render pdf: "minute_#{@minute.id}",
+             template: "minutes/show",
+             layout: "pdf"
+    end
   end
+end
 
   def new
     @minute = Minute.new
@@ -24,11 +34,14 @@ class MinutesController < ApplicationController
     end
   end
 def process_minutes
-  MinutesExtractionService.new(@minute).call
+  if @minute.processing?
+    redirect_to @minute, alert: "Minutes are already being processed."
+    return
+  end
 
-  redirect_to @minute, success: "Minutes extracted successfully."
-rescue StandardError => e
-  redirect_to @minute, error: "Extraction failed: #{e.message}"
+  ProcessMinuteJob.perform_later(@minute.id)
+
+  redirect_to @minute, notice: "Minutes processing started. Check back shortly."
 end
   private
 

@@ -65,22 +65,6 @@
   <% end %>
 </div>
 
-  <div class="bg-white border border-gray-200 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-base font-semibold">Log Entries</h3>
-      <p class="text-sm text-gray-500">Add one or more entries for this report.</p>
-    </div>
-
-    <div class="space-y-4">
-      <%= f.fields_for :log_entries do |entry_form| %>
-        <%= render "log_entry_fields", f: entry_form %>
-      <% end %>
-    </div>
-
-    <div class="mt-4 p-4 border border-amber-200 bg-amber-50 text-sm text-amber-800">
-      To add more entries dynamically later, you can use Stimulus or Cocoon. For now, build a few entries before saving, or edit the report and add more entries afterward.
-    </div>
-  </div>
 
   <div class="flex items-center gap-3">
     <%= f.submit class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>

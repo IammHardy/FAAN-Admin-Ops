@@ -1,0 +1,42 @@
+<%= turbo_frame_tag "log_entries_list" do %>
+  <% if log_entries.any? %>
+    <div class="space-y-4">
+      <% log_entries.each do |entry| %>
+        <div class="border border-gray-200 p-4">
+          <p class="text-sm font-medium">
+            <%= entry.entry_time&.strftime("%I:%M %p") || "-" %>
+          </p>
+
+          <p class="text-sm text-gray-800 mt-2">
+            <%= entry.description %>
+          </p>
+
+          <p class="text-sm text-gray-600 mt-2">
+            <strong>Action Taken:</strong> <%= entry.action_taken.presence || "-" %>
+          </p>
+
+          <div class="mt-3 flex gap-3">
+            <%= link_to "Edit", edit_log_report_log_entry_path(log_report, entry), class: "text-amber-600 text-sm" %>
+
+            <% if entry.incident_flag? && entry.incident.blank? %>
+              <%= button_to "Create Incident",
+                  create_incident_log_report_log_entry_path(log_report, entry),
+                  method: :post,
+                  class: "text-blue-600 bg-transparent border-0 p-0 text-sm" %>
+            <% elsif entry.incident.present? %>
+              <%= link_to "View Incident", incident_path(entry.incident), class: "text-green-600 text-sm" %>
+            <% end %>
+
+            <%= button_to "Delete",
+                log_report_log_entry_path(log_report, entry),
+                method: :delete,
+                data: { turbo_confirm: "Are you sure?" },
+                class: "text-red-600 bg-transparent border-0 p-0 text-sm" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No log entries added yet.</p>
+  <% end %>
+<% end %>

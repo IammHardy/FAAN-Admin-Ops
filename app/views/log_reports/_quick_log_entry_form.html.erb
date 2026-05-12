@@ -1,0 +1,33 @@
+<%= turbo_frame_tag "quick_log_entry_form" do %>
+  <%= form_with model: [log_report, log_entry], class: "space-y-4" do |f| %>
+    <div>
+      <%= f.label :entry_time, class: "block text-sm font-medium mb-1" %>
+      <%= f.time_field :entry_time, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :description, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :description, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :action_taken, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :action_taken, rows: 2, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <label class="text-sm">
+        <%= f.check_box :incident_flag %>
+        Incident
+      </label>
+
+      <label class="text-sm">
+        <%= f.check_box :follow_up_needed %>
+        Follow-up
+      </label>
+    </div>
+
+    <%= f.submit "Add Entry",
+        class: "w-full bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+  <% end %>
+<% end %>

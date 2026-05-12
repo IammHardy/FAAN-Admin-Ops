@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  minute: one
+  position: 1
+  transcript: MyText
+  status: 1
+
+two:
+  minute: two
+  position: 1
+  transcript: MyText
+  status: 1

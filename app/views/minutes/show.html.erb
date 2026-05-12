@@ -29,6 +29,15 @@
         class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
   </div>
 <% end %>
+
+<p class="text-sm mt-2">
+  Status:
+  <span class="font-semibold capitalize">
+    <%= @minute.status %>
+  </span>
+</p>
+
+
   <div class="bg-white border border-gray-200 p-5">
     <h3 class="font-semibold text-gray-900 mb-3">Transcript</h3>
     <p class="text-sm text-gray-700 whitespace-pre-line">
@@ -50,3 +59,10 @@
     </p>
   </div>
 </div>
+<% if @minute.completed? %>
+  <div class="mt-4">
+    <%= link_to "Download PDF",
+        minute_path(@minute, format: :pdf),
+        class: "bg-green-600 text-white px-4 py-2 text-sm" %>
+  </div>
+<% end %>

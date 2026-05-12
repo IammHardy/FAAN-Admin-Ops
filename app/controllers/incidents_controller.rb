@@ -2,8 +2,8 @@ class IncidentsController < ApplicationController
   before_action :require_incident_access!
   before_action :set_incident, only: [:show, :edit, :update, :destroy, :review, :escalate, :resolve, :close, :print]
   before_action :load_incident_form_collections, only: [:new, :create, :edit, :update]
+  before_action :require_admin_access!, only: [:new, :create, :edit, :update, :destroy]
   before_action :require_reviewer_or_admin!, only: [:review, :escalate, :resolve, :close]
-  before_action :require_admin_access!, only: [:destroy]
 
   def index
     @incidents = Incident.includes(:log_report, :log_entry, :created_by, :reviewed_by).recent_first

@@ -306,9 +306,9 @@ class DispatchesController < ApplicationController
     )
 
     NotificationMailer
-      .with(user: user, title: title, message: message)
-      .notification_email
-      .deliver_now
+  .with(user: user, title: title, message: message)
+  .notification_email
+  .deliver_later
   end
 
   def dispatch_params

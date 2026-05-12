@@ -27,6 +27,7 @@ class LogReport < ApplicationRecord
   validates :unit, presence: true
   validates :entered_by, presence: true
   validate :unit_belongs_to_department
+  validate :source_document_type_and_size
   validates :report_date, uniqueness: {
   scope: [:unit_id, :shift],
   message: "log report already exists for this unit and shift"
@@ -55,6 +56,25 @@ end
   "#{unit.name} - #{report_date.strftime('%d %b %Y')} (#{shift.humanize})"
 end
 
+def source_document_type_and_size
+  return unless source_document.attached?
+
+  allowed_types = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/png",
+    "image/jpeg"
+  ]
+
+  unless allowed_types.include?(source_document.content_type)
+    errors.add(:source_document, "must be a PDF, Word document, PNG, or JPG")
+  end
+
+  if source_document.blob.byte_size > 10.megabytes
+    errors.add(:source_document, "must be less than 10MB")
+  end
+end
 
   private
 

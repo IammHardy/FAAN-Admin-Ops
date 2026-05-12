@@ -8,10 +8,11 @@ class LogEntry < ApplicationRecord
 
   before_validation :set_entry_time, on: :create
 
-def set_entry_time
-  self.entry_time ||= Time.current
-end
+  def set_entry_time
+    self.entry_time ||= Time.current
+  end
+
   def short_description
-  description.to_s.truncate(80)
-end
+    description.to_s.truncate(80)
+  end
 end

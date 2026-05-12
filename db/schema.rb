@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_12_135727) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -83,6 +83,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.index ["dispatch_id"], name: "index_dispatch_recipients_on_dispatch_id"
     t.index ["received_by_id"], name: "index_dispatch_recipients_on_received_by_id"
     t.index ["receiving_unit_id"], name: "index_dispatch_recipients_on_receiving_unit_id"
+    t.index ["status"], name: "index_dispatch_recipients_on_status"
   end
 
   create_table "dispatches", force: :cascade do |t|
@@ -133,6 +134,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.index ["incident_number"], name: "index_incidents_on_incident_number", unique: true
     t.index ["incident_type"], name: "index_incidents_on_incident_type"
     t.index ["log_entry_id"], name: "index_incidents_on_log_entry_id"
+    t.index ["log_entry_id"], name: "index_incidents_on_unique_log_entry", unique: true
     t.index ["log_report_id"], name: "index_incidents_on_log_report_id"
     t.index ["reviewed_by_id"], name: "index_incidents_on_reviewed_by_id"
     t.index ["severity"], name: "index_incidents_on_severity"
@@ -150,6 +152,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.datetime "updated_at", null: false
     t.index ["follow_up_needed"], name: "index_log_entries_on_follow_up_needed"
     t.index ["incident_flag"], name: "index_log_entries_on_incident_flag"
+    t.index ["log_report_id", "entry_time"], name: "index_log_entries_on_report_and_entry_time"
     t.index ["log_report_id"], name: "index_log_entries_on_log_report_id"
   end
 
@@ -168,6 +171,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.datetime "submitted_at"
     t.index ["department_id"], name: "index_log_reports_on_department_id"
     t.index ["entered_by_id"], name: "index_log_reports_on_entered_by_id"
+    t.index ["report_date", "unit_id", "shift"], name: "index_log_reports_on_date_unit_shift_unique", unique: true
     t.index ["report_date"], name: "index_log_reports_on_report_date"
     t.index ["shift"], name: "index_log_reports_on_shift"
     t.index ["status"], name: "index_log_reports_on_status"
@@ -175,8 +179,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.index ["unit_id"], name: "index_log_reports_on_unit_id"
   end
 
+  create_table "minute_audio_parts", force: :cascade do |t|
+    t.bigint "minute_id", null: false
+    t.integer "position", null: false
+    t.text "transcript"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["minute_id", "position"], name: "index_minute_audio_parts_on_minute_and_position", unique: true
+    t.index ["minute_id"], name: "index_minute_audio_parts_on_minute_id"
+    t.index ["status"], name: "index_minute_audio_parts_on_status"
+  end
+
   create_table "minutes", force: :cascade do |t|
-    t.string "title"
+    t.string "title", null: false
     t.text "transcript"
     t.text "summary"
     t.text "action_items"
@@ -184,16 +200,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.bigint "created_by_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_minutes_on_created_at"
+    t.index ["created_by_id", "status"], name: "index_minutes_on_created_by_id_and_status"
     t.index ["created_by_id"], name: "index_minutes_on_created_by_id"
+    t.index ["status"], name: "index_minutes_on_status"
   end
 
   create_table "notifications", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "title"
-    t.text "message"
-    t.boolean "read"
+    t.string "title", null: false
+    t.text "message", null: false
+    t.boolean "read", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["read"], name: "index_notifications_on_read"
+    t.index ["user_id", "read"], name: "index_notifications_on_user_id_and_read"
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
@@ -217,7 +238,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "full_name"
+    t.string "full_name", null: false
     t.integer "role", default: 1, null: false
     t.string "phone_number"
     t.bigint "department_id"
@@ -252,6 +273,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_03_162655) do
   add_foreign_key "log_reports", "units"
   add_foreign_key "log_reports", "users", column: "entered_by_id"
   add_foreign_key "log_reports", "users", column: "submitted_by_id"
+  add_foreign_key "minute_audio_parts", "minutes"
   add_foreign_key "minutes", "users", column: "created_by_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "units", "departments"

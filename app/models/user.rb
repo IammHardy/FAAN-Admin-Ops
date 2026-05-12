@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_many :reviewed_incidents, class_name: "Incident", foreign_key: :reviewed_by_id, dependent: :nullify
 
   has_many :audit_logs, dependent: :destroy
+  validates :full_name, presence: true
 
   enum :role, {
     super_admin: 0,
