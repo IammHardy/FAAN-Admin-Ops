@@ -3,6 +3,7 @@ module Reports
     before_action :require_report_access!
     def index
       @dispatches = Dispatch.includes(:sender_department, :receiving_department, :created_by).recent_first
+      .page(params[:page]).per(15)
 
       if params[:from].present?
         @dispatches = @dispatches.where("memo_date >= ?", params[:from])

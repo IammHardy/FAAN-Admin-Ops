@@ -8,6 +8,7 @@ module Reports
 
     def index
       @log_reports = filtered_log_reports
+      .page(params[:page]).per(15)
     end
 
     def export_csv

@@ -6,6 +6,7 @@ module Reports
 
     def index
       @incidents = filtered_incidents
+      .page(params[:page]).per(15)
     end
 
     def export_csv

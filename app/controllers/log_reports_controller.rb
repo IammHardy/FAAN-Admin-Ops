@@ -11,7 +11,7 @@ before_action :authorize_log_report_access!, only: [:show, :edit, :update, :dest
   .includes(:department, :unit, :entered_by)
   .recent_first
   .page(params[:page])
-  .per(15)
+  .per(2)
   end
   
 
