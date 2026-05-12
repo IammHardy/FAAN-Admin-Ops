@@ -1,10 +1,11 @@
 class LogEntriesController < ApplicationController
+  before_action :set_log_report
+  before_action :set_log_entry, only: [:edit, :update, :destroy, :create_incident]
   before_action :require_log_access!
 before_action :authorize_log_entry_access!
 before_action :ensure_log_report_is_editable!, only: [:new, :create, :edit, :update, :destroy]
 before_action :require_reviewer_or_admin!, only: [:create_incident]
-  before_action :set_log_report
-  before_action :set_log_entry, only: [:edit, :update, :destroy, :create_incident]
+  
 
   def new
     @log_entry = @log_report.log_entries.new
@@ -72,6 +73,8 @@ end
   def set_log_report
     @log_report = LogReport.find(params[:log_report_id])
   end
+
+  
 
   def set_log_entry
     @log_entry = @log_report.log_entries.find(params[:id])

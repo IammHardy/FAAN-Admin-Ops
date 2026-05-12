@@ -20,11 +20,15 @@
 
             <% if entry.incident_flag? && entry.incident.blank? %>
               <%= button_to "Create Incident",
-                  create_incident_log_report_log_entry_path(log_report, entry),
-                  method: :post,
-                  class: "text-blue-600 bg-transparent border-0 p-0 text-sm" %>
+    create_incident_log_report_log_entry_path(log_report, entry),
+    method: :post,
+    data: { turbo_frame: "_top" },
+    class: "text-blue-600 hover:underline bg-transparent border-0 p-0 cursor-pointer text-sm" %>
             <% elsif entry.incident.present? %>
-              <%= link_to "View Incident", incident_path(entry.incident), class: "text-green-600 text-sm" %>
+              <%= link_to "View Incident",
+    incident_path(entry.incident),
+    data: { turbo_frame: "_top" },
+    class: "text-green-600 hover:underline text-sm" %>
             <% end %>
 
             <%= button_to "Delete",
