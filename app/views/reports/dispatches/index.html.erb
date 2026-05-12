@@ -79,4 +79,7 @@
   <% else %>
     <div class="p-6 text-sm text-gray-500">No dispatch records found for this filter.</div>
   <% end %>
+  <div class="mt-6">
+  <%= paginate @dispatches %>
+</div>
 </div>

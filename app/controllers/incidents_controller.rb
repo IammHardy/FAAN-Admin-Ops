@@ -6,7 +6,11 @@ class IncidentsController < ApplicationController
   before_action :require_reviewer_or_admin!, only: [:review, :escalate, :resolve, :close]
 
   def index
-    @incidents = Incident.includes(:log_report, :log_entry, :created_by, :reviewed_by).recent_first
+    @incidents = Incident
+  .includes(:log_report, :log_entry, :created_by, :reviewed_by)
+  .recent_first
+  .page(params[:page])
+  .per(15)
   end
 
   def show

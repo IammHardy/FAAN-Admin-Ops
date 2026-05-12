@@ -7,8 +7,13 @@ before_action :load_log_report_form_collections, only: [:new, :create, :edit, :u
 before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
 
   def index
-    @log_reports = LogReport.includes(:department, :unit, :entered_by).recent_first
+    @log_reports = LogReport
+  .includes(:department, :unit, :entered_by)
+  .recent_first
+  .page(params[:page])
+  .per(15)
   end
+  
 
   def show
     @log_entries = @log_report.log_entries.order(:entry_time)

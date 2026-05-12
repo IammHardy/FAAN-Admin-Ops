@@ -29,6 +29,8 @@ class DispatchesController < ApplicationController
     @dispatches = dispatch_scope
       .includes(:sender_department, :receiving_department, :created_by)
       .recent_first
+      .page(params[:page])
+      .per(15)
   end
 
   def show
@@ -99,7 +101,13 @@ class DispatchesController < ApplicationController
   end
 
   def pending
-    @dispatches = dispatch_scope.pending.recent_first
+    @dispatches = dispatch_scope
+      .pending
+      .includes(:sender_department, :receiving_department, :created_by)
+      .recent_first
+      .page(params[:page])
+      .per(15)
+
     render :index
   end
 
@@ -108,10 +116,23 @@ class DispatchesController < ApplicationController
       .includes(:sender_department, :receiving_department, :created_by)
       .recent_first
 
-    @dispatches = @dispatches.where("reference_number ILIKE ?", "%#{params[:reference_number]}%") if params[:reference_number].present?
-    @dispatches = @dispatches.where("subject ILIKE ?", "%#{params[:subject]}%") if params[:subject].present?
-    @dispatches = @dispatches.where(status: params[:status]) if params[:status].present?
-    @dispatches = @dispatches.where(memo_date: params[:memo_date]) if params[:memo_date].present?
+    if params[:reference_number].present?
+      @dispatches = @dispatches.where("reference_number ILIKE ?", "%#{params[:reference_number]}%")
+    end
+
+    if params[:subject].present?
+      @dispatches = @dispatches.where("subject ILIKE ?", "%#{params[:subject]}%")
+    end
+
+    if params[:status].present?
+      @dispatches = @dispatches.where(status: params[:status])
+    end
+
+    if params[:memo_date].present?
+      @dispatches = @dispatches.where(memo_date: params[:memo_date])
+    end
+
+    @dispatches = @dispatches.page(params[:page]).per(15)
 
     render :index
   end
@@ -119,24 +140,41 @@ class DispatchesController < ApplicationController
   def pending_acknowledgement
     @dispatches = dispatch_scope
       .joins(:dispatch_recipients)
+      .includes(:sender_department, :receiving_department, :created_by)
       .where(dispatch_recipients: { status: [:dispatched, :received] })
       .distinct
       .recent_first
+      .page(params[:page])
+      .per(15)
 
     render :index
   end
 
   def ready_to_file
-    @dispatches = dispatch_scope
+    dispatch_ids = dispatch_scope
       .includes(:dispatch_recipients)
       .recent_first
       .select(&:ready_to_file?)
+      .map(&:id)
+
+    @dispatches = dispatch_scope
+      .includes(:sender_department, :receiving_department, :created_by)
+      .where(id: dispatch_ids)
+      .recent_first
+      .page(params[:page])
+      .per(15)
 
     render :index
   end
 
   def filed
-    @dispatches = dispatch_scope.filed.recent_first
+    @dispatches = dispatch_scope
+      .filed
+      .includes(:sender_department, :receiving_department, :created_by)
+      .recent_first
+      .page(params[:page])
+      .per(15)
+
     render :index
   end
 
@@ -242,6 +280,8 @@ class DispatchesController < ApplicationController
       .includes(:dispatch, :receiving_unit)
       .where(receiving_unit_id: current_user.unit_id)
       .recent_first
+      .page(params[:page])
+      .per(15)
   end
 
   private
@@ -306,9 +346,9 @@ class DispatchesController < ApplicationController
     )
 
     NotificationMailer
-  .with(user: user, title: title, message: message)
-  .notification_email
-  .deliver_later
+      .with(user: user, title: title, message: message)
+      .notification_email
+      .deliver_later
   end
 
   def dispatch_params
