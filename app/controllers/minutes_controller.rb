@@ -1,4 +1,5 @@
 class MinutesController < ApplicationController
+  before_action :require_admin_access!
   before_action :set_minute, only: [:show, :process_minutes]
 
   def index

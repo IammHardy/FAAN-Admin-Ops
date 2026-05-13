@@ -328,6 +328,7 @@ class DispatchesController < ApplicationController
     User.active.where(role: [:super_admin, :admin_officer, :dispatch_officer])
   end
 
+
   def notify_dispatch_managers(title:, message:)
     dispatch_managers.find_each do |user|
       create_notification(

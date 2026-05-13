@@ -18,7 +18,7 @@
           <div class="mt-3 flex gap-3">
             <%= link_to "Edit", edit_log_report_log_entry_path(log_report, entry), class: "text-amber-600 text-sm" %>
 
-            <% if entry.incident_flag? && entry.incident.blank? %>
+            <% if can_manage_logs? && entry.incident_flag? && entry.incident.blank? %>
               <%= button_to "Create Incident",
     create_incident_log_report_log_entry_path(log_report, entry),
     method: :post,
