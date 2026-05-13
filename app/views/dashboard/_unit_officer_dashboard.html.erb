@@ -4,11 +4,10 @@
 <% if @today_log.present? && @today_log.draft? %>
   <div class="mb-4 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3">
     ⚠️ You have not submitted today’s log report.
-
-    <%= link_to "Submit Now",
-        submit_report_log_report_path(@today_log),
-        data: { turbo_method: :patch, turbo_confirm: "Submit this log?" },
-        class: "ml-3 underline font-medium" %>
+          <%= link_to "Submit Now",
+    submit_log_report_path(@today_log),
+    data: { turbo_method: :patch, turbo_confirm: "Submit this log?" },
+    class: "ml-3 underline font-medium" %>
   </div>
 <% end %>
 

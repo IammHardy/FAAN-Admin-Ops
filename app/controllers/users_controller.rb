@@ -4,8 +4,12 @@ class UsersController < ApplicationController
   before_action :load_form_collections, only: [:new, :create, :edit, :update]
 
   def index
-    @users = User.includes(:department, :unit).order(:full_name)
-  end
+  @users = User
+    .includes(:department, :unit)
+    .order(:full_name)
+    .page(params[:page])
+    .per(15)
+end
 
   def show
   end
