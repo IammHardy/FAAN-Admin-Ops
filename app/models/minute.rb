@@ -34,8 +34,8 @@ class Minute < ApplicationRecord
       errors.add(:audio_file, "must be an audio file")
     end
 
-    if audio_file.blob.byte_size > 50.megabytes
-      errors.add(:audio_file, "must be less than 50MB")
-    end
+   if audio_file.blob.byte_size > 25.megabytes
+  errors.add(:audio_file, "must be less than 25MB")
+end
   end
 end
