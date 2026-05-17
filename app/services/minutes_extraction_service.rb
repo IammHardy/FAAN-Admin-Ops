@@ -52,7 +52,7 @@ class MinutesExtractionService
     "curl",
     "https://api.openai.com/v1/audio/transcriptions",
     "-H", "Authorization: Bearer #{ENV.fetch("OPENAI_API_KEY")}",
-    "-F", "model=gpt-4o-mini-transcribe",
+    "-F", "model=whisper-1",
     "-F", "file=@#{audio_path}"
   ]
 
