@@ -2,7 +2,6 @@ require "faraday"
 require "json"
 require "tempfile"
 require "faraday/multipart"
-require "open3"
 
 class MinutesExtractionService
   OPENAI_BASE_URL = "https://api.openai.com/v1"
@@ -37,21 +36,24 @@ class MinutesExtractionService
   def transcribe_audio
   raise "No audio file attached" unless @minute.audio_file.attached?
 
-  original_path = Rails.root.join("tmp", "minute-original-#{@minute.id}-#{Time.current.to_i}")
-  converted_path = Rails.root.join("tmp", "minute-converted-#{@minute.id}-#{Time.current.to_i}.mp3")
+  original_filename = @minute.audio_file.filename.to_s
+  extension = File.extname(original_filename).presence || ".mp3"
 
-  File.open(original_path, "wb") do |file|
+  audio_path = Rails.root.join(
+    "tmp",
+    "minute-audio-#{@minute.id}-#{Time.current.to_i}#{extension}"
+  )
+
+  File.open(audio_path, "wb") do |file|
     file.write(@minute.audio_file.download)
   end
-
-  convert_audio_to_mp3(original_path, converted_path)
 
   command = [
     "curl",
     "https://api.openai.com/v1/audio/transcriptions",
     "-H", "Authorization: Bearer #{ENV.fetch("OPENAI_API_KEY")}",
     "-F", "model=gpt-4o-mini-transcribe",
-    "-F", "file=@#{converted_path}"
+    "-F", "file=@#{audio_path}"
   ]
 
   stdout, stderr, status = Open3.capture3(*command)
@@ -68,29 +70,9 @@ class MinutesExtractionService
 rescue JSON::ParserError
   raise "OpenAI transcription returned invalid JSON: #{stdout}"
 ensure
-  File.delete(original_path) if defined?(original_path) && File.exist?(original_path)
-  File.delete(converted_path) if defined?(converted_path) && File.exist?(converted_path)
+  File.delete(audio_path) if defined?(audio_path) && File.exist?(audio_path)
 end
 
-def convert_audio_to_mp3(input_path, output_path)
-  command = [
-    "ffmpeg",
-    "-y",
-    "-i", input_path.to_s,
-    "-vn",
-    "-acodec", "libmp3lame",
-    "-ar", "16000",
-    "-ac", "1",
-    "-b:a", "32k",
-    output_path.to_s
-  ]
-
-  stdout, stderr, status = Open3.capture3(*command)
-
-  unless status.success? && File.exist?(output_path)
-    raise "Audio conversion failed: #{stderr.presence || stdout}"
-  end
-end
   # =========================
   # SUMMARY + ACTION ITEMS
   # =========================
