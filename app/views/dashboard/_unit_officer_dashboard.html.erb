@@ -2,47 +2,43 @@
 <% content_for :page_subtitle, "Manage daily log reports for your unit." %>
 
 <% if @today_log.present? && @today_log.draft? %>
-  <div class="mb-4 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3">
+  <div class="mb-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">
     ⚠️ You have not submitted today’s log report.
-          <%= link_to "Submit Now",
-    submit_log_report_path(@today_log),
-    data: { turbo_method: :patch, turbo_confirm: "Submit this log?" },
-    class: "ml-3 underline font-medium" %>
+
+    <%= link_to "Submit Now",
+        submit_log_report_path(@today_log),
+        data: { turbo_method: :patch, turbo_confirm: "Submit this log?" },
+        class: "ml-3 text-amber-900 font-semibold hover:underline" %>
   </div>
 <% end %>
 
 <div class="app-card mb-6">
   <div class="app-card-body">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="app-section-title">Incoming Dispatches</h3>
-    </div>
+    <h3 class="app-section-title mb-4">Incoming Dispatches</h3>
 
     <% if @incoming_dispatches.any? %>
       <div class="space-y-3">
-       <% @incoming_dispatches.each do |recipient| %>
-  <% dispatch = recipient.dispatch %>
+        <% @incoming_dispatches.each do |recipient| %>
+          <% dispatch = recipient.dispatch %>
+
           <div class="border-b border-slate-100 pb-3 last:border-b-0">
             <p class="font-medium">
               <%= link_to dispatch.reference_number,
                   dispatch_path(dispatch),
-                  class: "hover:underline" %>
+                  class: "text-green-700 hover:text-green-800 font-medium" %>
             </p>
 
-            <p class="text-sm text-slate-600">
-              <%= dispatch.subject %>
-            </p>
+            <p class="text-sm text-slate-600"><%= dispatch.subject %></p>
 
             <p class="text-xs text-slate-500 mt-1">
-              From:
-              <%= dispatch.sender_unit&.name || dispatch.sender_department.name %>
-              • Status:
-              <%= recipient.status.humanize %>
+              From: <%= dispatch.sender_unit&.name || dispatch.sender_department.name %>
+              • Status: <%= recipient.status.humanize %>
             </p>
 
             <div class="flex flex-wrap gap-3 mt-2">
               <%= link_to "View Memo",
                   dispatch_path(dispatch),
-                  class: "text-sm text-blue-600 hover:underline" %>
+                  class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
 
               <% if recipient.dispatched? %>
                 <%= button_to "Receive",
@@ -53,7 +49,7 @@
                       receiver_designation: current_user.role.humanize
                     },
                     data: { turbo_confirm: "Confirm that you received this dispatch?" },
-                    class: "text-sm text-green-700 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+                    class: "text-sm text-green-700 hover:text-green-800 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
               <% end %>
 
               <% if recipient.received? %>
@@ -64,7 +60,7 @@
                       acknowledgement_note: "Acknowledged by #{current_user.display_name}"
                     },
                     data: { turbo_confirm: "Acknowledge this dispatch?" },
-                    class: "text-sm text-purple-700 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+                    class: "text-sm text-green-700 hover:text-green-800 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
               <% end %>
             </div>
           </div>
@@ -97,20 +93,26 @@
   <div class="app-card-body">
     <div class="flex items-center justify-between mb-4">
       <h3 class="app-section-title">Today's Log</h3>
-      <%= link_to "View All Logs", log_reports_path, class: "text-sm text-amber-700 hover:underline" %>
+
+      <%= link_to "View All Logs",
+          log_reports_path,
+          class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
     </div>
 
     <% if @today_log.present? %>
       <p class="text-sm text-slate-600 mb-2">
-        Status:
-        <strong><%= @today_log.status.humanize %></strong>
+        Status: <strong><%= @today_log.status.humanize %></strong>
       </p>
 
-      <div class="flex gap-3">
-        <%= link_to "Continue Today's Log", log_report_path(@today_log), class: "text-blue-600 hover:underline" %>
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "Continue Today's Log",
+            log_report_path(@today_log),
+            class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
 
         <% if @today_log.draft? %>
-          <%= link_to "Edit Report Details", edit_log_report_path(@today_log), class: "text-amber-600 hover:underline" %>
+          <%= link_to "Edit Report Details",
+              edit_log_report_path(@today_log),
+              class: "text-sm text-slate-600 hover:text-slate-900 font-medium" %>
         <% end %>
       </div>
     <% else %>
@@ -118,7 +120,7 @@
 
       <%= link_to "Create Today's Log",
           new_log_report_path,
-          class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+          class: btn_primary %>
     <% end %>
   </div>
 </div>
@@ -135,7 +137,7 @@
               <p class="font-medium">
                 <%= link_to "#{log.report_date.strftime('%d %b %Y')} - #{log.shift.humanize}",
                     log_report_path(log),
-                    class: "hover:underline" %>
+                    class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
 
               <p class="text-xs text-slate-500 mt-1">
@@ -144,7 +146,7 @@
 
               <%= link_to "Edit",
                   edit_log_report_path(log),
-                  class: "text-sm text-amber-600 hover:underline" %>
+                  class: "text-sm text-slate-600 hover:text-slate-900 font-medium" %>
             </div>
           <% end %>
         </div>
@@ -165,7 +167,7 @@
               <p class="font-medium">
                 <%= link_to "#{log.report_date.strftime('%d %b %Y')} - #{log.shift.humanize}",
                     log_report_path(log),
-                    class: "hover:underline" %>
+                    class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
 
               <p class="text-xs text-slate-500 mt-1">
@@ -192,7 +194,7 @@
             <p class="font-medium">
               <%= link_to "#{log.report_date.strftime('%d %b %Y')} - #{log.shift.humanize}",
                   log_report_path(log),
-                  class: "hover:underline" %>
+                  class: "text-green-700 hover:text-green-800 font-medium" %>
             </p>
 
             <p class="text-xs text-slate-500 mt-1">

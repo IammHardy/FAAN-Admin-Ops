@@ -70,7 +70,7 @@
             <td class="px-4 py-3"><%= dispatch.receiving_department.name %></td>
             <td class="px-4 py-3"><%= dispatch.status.humanize %></td>
             <td class="px-4 py-3 text-right">
-              <%= link_to "Open", dispatch_path(dispatch), "text-green-700 hover:text-green-800 font-medium"%>
+              <%= link_to "Open", dispatch_path(dispatch), class:"text-green-700 hover:text-green-800 font-medium"%>
             </td>
           </tr>
         <% end %>
