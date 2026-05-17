@@ -2,6 +2,9 @@ class Minute < ApplicationRecord
   belongs_to :created_by, class_name: "User"
   has_many :minute_audio_parts, dependent: :destroy
   has_one_attached :audio_file
+  validates :meeting_date, presence: true
+  validates :venue, presence: true
+
 
   enum :status, {
     pending: 0,

@@ -1,7 +1,24 @@
 <% content_for :page_title, @minute.title %>
 <% content_for :page_subtitle, "Generated meeting transcript and minutes." %>
 
-<div class="space-y-6">
+<div
+  class="space-y-6"
+  data-controller="auto-refresh"
+  data-auto-refresh-status-value="<%= @minute.status %>"
+  data-auto-refresh-interval-value="5000"
+>
+  <% if @minute.processing? %>
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 text-sm">
+      Minutes are currently processing. This page will refresh automatically.
+    </div>
+  <% end %>
+
+  <% if @minute.failed? %>
+    <div class="bg-red-50 border border-red-200 text-red-800 p-4 text-sm">
+      Minutes extraction failed. Please try again or upload a smaller/clearer audio file.
+    </div>
+  <% end %>
+
   <div class="bg-white border border-gray-200 p-5">
     <p class="text-sm text-gray-500">
       Uploaded by <%= @minute.created_by.display_name %> ·
@@ -20,23 +37,24 @@
         </audio>
       </div>
     <% end %>
-  </div>
-<% if @minute.pending? || @minute.failed? %>
-  <div class="mt-4">
-    <%= button_to "Process Minutes",
-        process_minutes_minute_path(@minute),
-        method: :post,
-        class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-  </div>
-<% end %>
 
-<p class="text-sm mt-2">
-  Status:
-  <span class="font-semibold capitalize">
-    <%= @minute.status %>
-  </span>
-</p>
+    <% if @minute.pending? || @minute.failed? %>
+      <div class="mt-4">
+        <%= button_to "Process Minutes",
+            process_minutes_minute_path(@minute),
+            method: :post,
+            class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      </div>
+    <% end %>
 
+    <% if @minute.completed? %>
+      <div class="mt-4">
+        <%= link_to "Download PDF",
+            minute_path(@minute, format: :pdf),
+            class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
+      </div>
+    <% end %>
+  </div>
 
   <div class="bg-white border border-gray-200 p-5">
     <h3 class="font-semibold text-gray-900 mb-3">Transcript</h3>
@@ -59,10 +77,3 @@
     </p>
   </div>
 </div>
-<% if @minute.completed? %>
-  <div class="mt-4">
-    <%= link_to "Download PDF",
-        minute_path(@minute, format: :pdf),
-        class: "bg-green-600 text-white px-4 py-2 text-sm" %>
-  </div>
-<% end %>

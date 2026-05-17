@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_12_135727) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_105334) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -200,6 +200,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_12_135727) do
     t.bigint "created_by_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "meeting_date"
+    t.string "venue"
     t.index ["created_at"], name: "index_minutes_on_created_at"
     t.index ["created_by_id", "status"], name: "index_minutes_on_created_by_id_and_status"
     t.index ["created_by_id"], name: "index_minutes_on_created_by_id"

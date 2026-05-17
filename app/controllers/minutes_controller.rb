@@ -66,9 +66,14 @@ class MinutesController < ApplicationController
     @minute = Minute.find(params[:id])
   end
 
-  def minute_params
-    params.require(:minute).permit(:title, :audio_file)
-  end
+ def minute_params
+  params.require(:minute).permit(
+    :title,
+    :meeting_date,
+    :venue,
+    :audio_file
+  )
+end
 
   def rate_limited?
     key = "minutes_extraction:user:#{current_user.id}"

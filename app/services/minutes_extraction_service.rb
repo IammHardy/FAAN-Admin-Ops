@@ -77,45 +77,49 @@ end
   # SUMMARY + ACTION ITEMS
   # =========================
   def generate_minutes(transcript)
+  meeting_date = @minute.meeting_date&.strftime("%d %B %Y") || "Not stated"
+
   prompt = <<~PROMPT
-  You are an administrative officer preparing official FAAN meeting minutes.
+    You are an administrative officer preparing official FAAN meeting minutes.
 
-  Generate the minutes using this exact office format:
+    Generate the minutes using this exact office format:
 
-  MINUTES OF MEETING HELD WITH [MEETING TITLE] ON [DATE] IN [VENUE].
+    MINUTES OF MEETING HELD WITH #{@minute.title.upcase} ON #{meeting_date.upcase} IN #{@minute.venue.to_s.upcase}.
 
-  S/N    DISCUSSIONS
+    S/N    DISCUSSIONS
 
-  1      OPENING.
-         State when the meeting commenced and who welcomed attendees.
+    1      OPENING.
+           State when the meeting commenced and who welcomed attendees.
 
-  2      AGENDA FOR THE MEETING
-         State why the meeting was convened.
+    2      AGENDA FOR THE MEETING
+           State why the meeting was convened.
 
-  3      Key Discussions
-         Summarize the main issues discussed in clear paragraphs.
+    3      KEY DISCUSSIONS
+           Summarize the main issues discussed in clear paragraphs.
 
-  4      Contributions
-         Capture relevant contributions from participants if mentioned.
+    4      CONTRIBUTIONS
+           Capture relevant contributions from participants if mentioned.
 
-  5      Resolutions / Action Points
-         Use bullet points for resolutions and action points.
+    5      RESOLUTIONS / ACTION POINTS
+           Use bullet points for resolutions and action points.
 
-  6      Closing
-         State appreciation, closing remarks, and adjournment time if mentioned.
+    6      CLOSING
+           State appreciation, closing remarks, and adjournment time if mentioned.
 
-  End with:
+    End with:
 
-  HOD OPERATIONS                 SECRETARY
-  ........................       ........................
+    HOD OPERATIONS                 SECRETARY
+    ........................       ........................
 
-  Keep the tone formal, administrative, and concise.
-  Do not invent names, dates, venue, or time if not clearly mentioned.
-  If any detail is missing, write "Not stated".
+    Keep the tone formal, administrative, and concise.
+    Use the provided meeting title, date, and venue exactly.
+    Do not invent names, time, attendees, or extra facts.
+    If any detail is missing from the transcript, write "Not stated".
 
-  Transcript:
-  #{transcript}
-PROMPT
+    Transcript:
+    #{transcript}
+  PROMPT
+
   response = Faraday.post("https://api.openai.com/v1/responses") do |req|
     req.headers["Authorization"] = "Bearer #{ENV.fetch("OPENAI_API_KEY")}"
     req.headers["Content-Type"] = "application/json"
@@ -131,11 +135,10 @@ PROMPT
   text = body.dig("output", 0, "content", 0, "text").to_s
 
   {
-    summary: extract_section(text, "SUMMARY:", "ACTION ITEMS:"),
-    action_items: extract_section(text, "ACTION ITEMS:", nil)
+    summary: text.strip,
+    action_items: extract_action_items(text)
   }
 end
-
   # =========================
   # HELPERS
   # =========================
@@ -152,6 +155,11 @@ end
       text[start_index..].strip
     end
   end
+
+  def extract_action_items(text)
+  section = text[/5\s+RESOLUTIONS \/ ACTION POINTS(.*?)(6\s+CLOSING|$)/m, 1]
+  section.to_s.strip.presence || "No action items stated."
+end
 
   def parse_json_response(response)
     unless response.success?

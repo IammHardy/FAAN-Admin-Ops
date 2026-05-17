@@ -14,6 +14,7 @@
   <% end %>
 
   <%= form_with model: @minute, class: "space-y-5" do |f| %>
+
     <div>
       <%= f.label :title, "Meeting Title", class: "block text-sm font-medium mb-1" %>
       <%= f.text_field :title,
@@ -22,20 +23,36 @@
     </div>
 
     <div>
+      <%= f.label :meeting_date, "Meeting Date", class: "block text-sm font-medium mb-1" %>
+      <%= f.date_field :meeting_date,
+          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :venue, "Venue", class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :venue,
+          class: "w-full border border-gray-300 px-3 py-2 text-sm",
+          placeholder: "e.g. HOD Operations Conference Room" %>
+    </div>
+
+    <div>
       <%= f.label :audio_file, "Audio File", class: "block text-sm font-medium mb-1" %>
       <%= f.file_field :audio_file,
           accept: "audio/*",
           class: "w-full border border-gray-300 px-3 py-2 text-sm bg-white" %>
+
       <p class="text-xs text-gray-500 mt-1">
-        Upload MP3, WAV, M4A, or other supported audio formats.
+        Upload MP3, WAV, M4A, or other supported audio formats (max 25MB).
       </p>
     </div>
 
     <div class="flex items-center gap-3">
       <%= f.submit "Upload Audio",
           class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+
       <%= link_to "Cancel", minutes_path,
           class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
     </div>
+
   <% end %>
 </div>

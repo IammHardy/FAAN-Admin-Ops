@@ -1,11 +1,23 @@
-<h2 style="text-align:center;">FEDERAL AIRPORTS AUTHORITY OF NIGERIA</h2>
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
 
-<h3 style="text-align:center;">
+  <div>
+    <%= image_tag wicked_pdf_asset_base64("faan-logo.png"),
+        style: "width:220px; height:auto;" %>
+  </div>
+
+  <div style="font-size:13px; text-align:right;">
+    <strong>Date:</strong><br>
+    <%= Date.current.strftime("%d %B %Y") %>
+  </div>
+
+</div>
+
+<h3 style="text-align:center; margin-top:20px; text-transform:uppercase;">
   <%= @minute.title.presence || "MINUTES OF MEETING" %>
 </h3>
 
-<hr>
+<hr style="margin: 20px 0;">
 
-<pre style="font-family: Arial; font-size: 12px;">
-<%= @minute.summary %>
-</pre>
+<div style="font-family: Arial, sans-serif; font-size: 12px; line-height: 1.8;">
+  <%= simple_format(@minute.summary) %>
+</div>
