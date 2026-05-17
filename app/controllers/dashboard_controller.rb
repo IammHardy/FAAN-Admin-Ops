@@ -1,7 +1,6 @@
 class DashboardController < ApplicationController
 
   def index
-    Sentry.capture_message("test message")
      @unread_notifications_count = current_user.notifications.unread.count
   if current_user.reviewer?
     reviewer_dashboard
