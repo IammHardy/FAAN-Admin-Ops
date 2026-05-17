@@ -32,12 +32,12 @@
   </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
   <div class="app-card">
     <div class="app-card-body">
       <div class="flex items-center justify-between mb-4">
         <h3 class="app-section-title">Recent Dispatches</h3>
-        <%= link_to "View All", dispatches_path, class: "text-sm text-amber-700 hover:underline" %>
+        <%= link_to "View All", dispatches_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
       </div>
 
       <% if @recent_dispatches.any? %>
@@ -45,7 +45,7 @@
           <% @recent_dispatches.each do |dispatch| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
               <p class="font-medium">
-                <%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "hover:underline" %>
+                <%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
               <p class="text-sm text-slate-600"><%= dispatch.subject %></p>
               <p class="text-xs text-slate-500 mt-1">
@@ -64,7 +64,7 @@
     <div class="app-card-body">
       <div class="flex items-center justify-between mb-4">
         <h3 class="app-section-title">Recent Log Reports</h3>
-        <%= link_to "View All", log_reports_path, class: "text-sm text-amber-700 hover:underline" %>
+        <%= link_to "View All", log_reports_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
       </div>
 
       <% if @recent_log_reports.any? %>
@@ -72,7 +72,7 @@
           <% @recent_log_reports.each do |report| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
               <p class="font-medium">
-                <%= link_to "#{report.unit.name} Log", log_report_path(report), class: "hover:underline" %>
+                <%= link_to "#{report.unit.name} Log", log_report_path(report), class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
               <p class="text-sm text-slate-600"><%= report.department.name %> • <%= report.unit.name %></p>
               <p class="text-xs text-slate-500 mt-1">
@@ -87,35 +87,38 @@
     </div>
   </div>
 
-  <div class="mt-6 bg-white border border-gray-200 p-5">
+  <div class="app-card">
+  <div class="app-card-body">
   <div class="flex items-center justify-between mb-4">
-    <h3 class="text-base font-semibold">Recent Activity</h3>
+    <h3 class="app-section-title">Recent Activity</h3>
     <% if current_user.super_admin? || current_user.admin_officer? %>
-      <%= link_to "View Audit Logs", audit_logs_path, class: "text-sm text-blue-600 hover:underline" %>
+      <%= link_to "View Audit Logs", audit_logs_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
     <% end %>
   </div>
 
   <% if @recent_audit_logs.any? %>
     <div class="space-y-3">
       <% @recent_audit_logs.each do |log| %>
-        <div class="border-b border-gray-100 pb-3 last:border-b-0">
-          <p class="text-sm font-medium"><%= log.description %></p>
-          <p class="text-xs text-gray-500 mt-1">
+        <div class="border-b border-slate-100 pb-3 last:border-b-0">
+          <p class="text-sm font-medium text-slate-900"><%= log.description %></p>
+          <p class="text-xs text-slate-500 mt-1">
             <%= log.user.display_name %> • <%= log.created_at.strftime("%d %b %Y, %I:%M %p") %>
           </p>
         </div>
       <% end %>
     </div>
   <% else %>
-    <p class="text-sm text-gray-500">No recent activity found.</p>
+    <p class="text-sm text-slate-500">No recent activity found.</p>
   <% end %>
 </div>
+</div>
+
 
   <div class="app-card">
     <div class="app-card-body">
       <div class="flex items-center justify-between mb-4">
         <h3 class="app-section-title">Recent Incidents</h3>
-        <%= link_to "View All", incidents_path, class: "text-sm text-amber-700 hover:underline" %>
+        <%= link_to "View All", incidents_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
       </div>
 
       <% if @recent_incidents.any? %>
@@ -123,7 +126,7 @@
           <% @recent_incidents.each do |incident| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
               <p class="font-medium">
-                <%= link_to incident.incident_number, incident_path(incident), class: "hover:underline" %>
+                <%= link_to incident.incident_number, incident_path(incident), class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
               <p class="text-sm text-slate-600"><%= incident.title %></p>
               <p class="text-xs text-slate-500 mt-1">

@@ -23,8 +23,8 @@
     </div>
 
     <div class="flex items-end gap-2">
-      <%= submit_tag "Filter", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Reset", reports_dispatches_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      <%= submit_tag "Filter", class:btn_primary %>
+      <%= link_to "Reset", reports_dispatches_path, class: btn_secondary %>
     </div>
   <% end %>
 </div>
@@ -70,7 +70,7 @@
             <td class="px-4 py-3"><%= dispatch.receiving_department.name %></td>
             <td class="px-4 py-3"><%= dispatch.status.humanize %></td>
             <td class="px-4 py-3 text-right">
-              <%= link_to "Open", dispatch_path(dispatch), class: "text-blue-600 hover:underline" %>
+              <%= link_to "Open", dispatch_path(dispatch), "text-green-700 hover:text-green-800 font-medium"%>
             </td>
           </tr>
         <% end %>

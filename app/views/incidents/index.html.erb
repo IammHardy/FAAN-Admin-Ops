@@ -9,7 +9,7 @@
   </div>
 
   <% if can_create_incidents? %>
-  <%= link_to "New Incident", new_incident_path, class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+  <%= link_to "New Incident", new_incident_path, class: btn_primary %>
 <% end %>
 </div>
 
@@ -51,7 +51,7 @@
             <td class="px-4 py-3"><%= incident.status.humanize %></td>
             <td class="px-4 py-3"><%= incident.created_by.display_name %></td>
             <td class="px-4 py-3 text-right space-x-2">
-  <%= link_to "View", incident_path(incident), class: "text-blue-600 hover:underline" %>
+  <%= link_to "View", incident_path(incident), class: "text-green-700 hover:text-green-800 font-medium" %>
 
   <% if can_create_incidents? %>
     <%= link_to "Edit", edit_incident_path(incident), class: "text-amber-600 hover:underline" %>

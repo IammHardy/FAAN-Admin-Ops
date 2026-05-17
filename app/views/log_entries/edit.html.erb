@@ -31,8 +31,8 @@
     </div>
 
     <div class="flex gap-3">
-      <%= form.submit "Update Entry", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Cancel", log_report_path(@log_report), class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      <%= form.submit "Update Entry", class: btn_primary %>
+      <%= link_to "Cancel", log_report_path(@log_report), class: btn_secondary %>
     </div>
   <% end %>
 </div>

@@ -1,102 +1,122 @@
 <%= render "reports/nav" %>
-<% content_for :page_title, "Log Reports Report" %>
+
+<% content_for :page_title, "Log Reports" %>
 <% content_for :page_subtitle, "Filter and review submitted daily log reports." %>
 
-<div class="bg-white border border-gray-200 p-4 mb-4">
+<div class="bg-white border border-slate-200 shadow-sm p-4 mb-4">
   <%= form_with url: reports_log_reports_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-5 gap-4" do %>
     <div>
-      <label class="block text-sm font-medium mb-1">From</label>
-      <%= date_field_tag :from, params[:from], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+      <label class="block text-sm font-medium text-slate-700 mb-1">From</label>
+      <%= date_field_tag :from, params[:from], class: "w-full border border-slate-300 px-3 py-2 text-sm focus:border-green-700 focus:ring-green-700" %>
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-1">To</label>
-      <%= date_field_tag :to, params[:to], class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+      <label class="block text-sm font-medium text-slate-700 mb-1">To</label>
+      <%= date_field_tag :to, params[:to], class: "w-full border border-slate-300 px-3 py-2 text-sm focus:border-green-700 focus:ring-green-700" %>
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-1">Department</label>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Department</label>
       <%= select_tag :department_id,
           options_from_collection_for_select(Department.order(:name), :id, :name, params[:department_id]),
           include_blank: "All Departments",
-          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+          class: "w-full border border-slate-300 px-3 py-2 text-sm focus:border-green-700 focus:ring-green-700" %>
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-1">Unit</label>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
       <%= select_tag :unit_id,
           options_from_collection_for_select(Unit.includes(:department).order(:name), :id, :name, params[:unit_id]),
           include_blank: "All Units",
-          class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+          class: "w-full border border-slate-300 px-3 py-2 text-sm focus:border-green-700 focus:ring-green-700" %>
     </div>
 
     <div class="flex items-end gap-2">
-      <%= submit_tag "Filter", class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Reset", reports_log_reports_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-      
+      <%= submit_tag "Filter", class: btn_primary %>
+      <%= link_to "Reset", reports_log_reports_path, class: btn_secondary %>
     </div>
   <% end %>
 </div>
 
-<div class="mt-4 flex flex-wrap gap-2">
+<div class="mt-4 mb-6 flex flex-wrap gap-2">
   <%= link_to "Export CSV",
       export_csv_reports_log_reports_path(request.query_parameters),
-      class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      class: btn_secondary %>
 
   <%= link_to "Export PDF",
       export_pdf_reports_log_reports_path(request.query_parameters),
-      class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      class: btn_secondary %>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-  <div class="bg-white border border-gray-200 p-5">
-    <p class="text-sm text-gray-500">Total Log Reports</p>
-    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.count %></h3>
+  <div class="bg-white border border-slate-200 shadow-sm p-5">
+    <p class="text-sm text-slate-500">Total Log Reports</p>
+    <h3 class="text-2xl font-bold text-slate-900 mt-2"><%= @log_reports.count %></h3>
   </div>
 
-  <div class="bg-white border border-gray-200 p-5">
-    <p class="text-sm text-gray-500">Submitted</p>
-    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.select(&:submitted?).count %></h3>
+  <div class="bg-white border border-slate-200 shadow-sm p-5">
+    <p class="text-sm text-slate-500">Submitted</p>
+    <h3 class="text-2xl font-bold text-slate-900 mt-2"><%= @log_reports.select(&:submitted?).count %></h3>
   </div>
 
-  <div class="bg-white border border-gray-200 p-5">
-    <p class="text-sm text-gray-500">Reviewed</p>
-    <h3 class="text-2xl font-bold mt-2"><%= @log_reports.select(&:reviewed?).count %></h3>
+  <div class="bg-white border border-slate-200 shadow-sm p-5">
+    <p class="text-sm text-slate-500">Reviewed</p>
+    <h3 class="text-2xl font-bold text-slate-900 mt-2"><%= @log_reports.select(&:reviewed?).count %></h3>
   </div>
 </div>
 
-<div class="bg-white border border-gray-200 overflow-x-auto">
+<div class="bg-white border border-slate-200 shadow-sm overflow-x-auto">
   <% if @log_reports.any? %>
     <table class="min-w-full text-sm">
-      <thead class="bg-gray-50 border-b border-gray-200">
+      <thead class="bg-slate-50 border-b border-slate-200">
         <tr>
-          <th class="text-left px-4 py-3 font-semibold">Report Date</th>
-          <th class="text-left px-4 py-3 font-semibold">Shift</th>
-          <th class="text-left px-4 py-3 font-semibold">Department</th>
-          <th class="text-left px-4 py-3 font-semibold">Unit</th>
-          <th class="text-left px-4 py-3 font-semibold">Status</th>
-          <th class="text-right px-4 py-3 font-semibold">View</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Report Date</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Shift</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Department</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Unit</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Status</th>
+          <th class="text-right px-4 py-3 font-semibold text-slate-700">View</th>
         </tr>
       </thead>
+
       <tbody>
         <% @log_reports.each do |report| %>
-          <tr class="border-b border-gray-100">
-            <td class="px-4 py-3"><%= report.report_date.strftime("%d %b %Y") %></td>
-            <td class="px-4 py-3"><%= report.shift.humanize %></td>
-            <td class="px-4 py-3"><%= report.department.name %></td>
-            <td class="px-4 py-3"><%= report.unit.name %></td>
-            <td class="px-4 py-3"><%= report.status.humanize %></td>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="px-4 py-3 text-slate-700"><%= report.report_date.strftime("%d %b %Y") %></td>
+            <td class="px-4 py-3 text-slate-700"><%= report.shift.humanize %></td>
+            <td class="px-4 py-3 text-slate-700"><%= report.department.name %></td>
+            <td class="px-4 py-3 text-slate-700"><%= report.unit.name %></td>
+
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium border
+                <%= case report.status
+                    when 'draft'
+                      'bg-slate-50 border-slate-300 text-slate-700'
+                    when 'submitted'
+                      'bg-amber-50 border-amber-200 text-amber-700'
+                    when 'reviewed'
+                      'bg-green-50 border-green-200 text-green-700'
+                    else
+                      'bg-slate-50 border-slate-300 text-slate-700'
+                    end %>">
+                <%= report.status.humanize %>
+              </span>
+            </td>
+
             <td class="px-4 py-3 text-right">
-              <%= link_to "Open", log_report_path(report), class: "text-blue-600 hover:underline" %>
+              <%= link_to "Open", log_report_path(report), class: "text-green-700 hover:text-green-800 font-medium" %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
   <% else %>
-    <div class="p-6 text-sm text-gray-500">No log reports found for this filter.</div>
+    <div class="p-6 text-sm text-slate-500">
+      No log reports found for this filter.
+    </div>
   <% end %>
-  <div class="mt-6">
-  <%= paginate @log_reports %>
-</div>
+
+  <div class="mt-6 px-4 pb-4">
+    <%= paginate @log_reports %>
+  </div>
 </div>

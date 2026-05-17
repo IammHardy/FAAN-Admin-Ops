@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>FAAN Admin Operations System</title>
+    <title>
+      <%= content_for?(:page_title) ? "#{yield(:page_title)} | FAAN Admin Ops" : "FAAN Admin Ops" %>
+    </title>
+
+    <%= favicon_link_tag "favicon.png", type: "image/png" %>
+
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,83 +15,85 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-  .app-shell {
-    min-height: 100vh;
-  }
+      .app-shell { min-height: 100vh; }
 
- .app-sidebar {
-  position: relative;
-  top: auto;
-  left: auto;
-  width: 100%;
-  max-height: 0;
-  overflow: hidden;
-  z-index: 40;
-  transition: max-height 0.3s ease;
-}
+      .app-sidebar {
+        position: relative;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        z-index: 40;
+        transition: max-height 0.3s ease;
+      }
 
-.app-sidebar.open {
-  max-height: 80vh;
-  overflow-y: auto;
-}
+      .app-sidebar.open {
+        max-height: 80vh;
+        overflow-y: auto;
+      }
 
-@media (min-width: 768px) {
-  .app-shell {
-    display: flex;
-  }
+      @media (min-width: 768px) {
+        .app-shell { display: flex; }
 
-  .app-sidebar {
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 16rem;
-    height: 100vh;
-    max-height: none;
-    overflow-y: auto;
-    flex-shrink: 0;
-  }
+        .app-sidebar {
+          position: sticky;
+          top: 0;
+          width: 18rem;
+          height: 100vh;
+          max-height: none;
+          overflow-y: auto;
+          flex-shrink: 0;
+        }
 
-  .app-content {
-    flex: 1;
-  }
+        .app-content { flex: 1; }
 
-  #sidebar-open,
-  #sidebar-overlay,
-  #sidebar-close {
-    display: none !important;
-  }
-}
-</style>
+        #sidebar-open,
+        #sidebar-overlay,
+        #sidebar-close {
+          display: none !important;
+        }
+      }
+    </style>
   </head>
 
-  <body class="bg-gray-100 text-gray-900 min-h-screen">
+  <body
+  class="bg-slate-50 text-slate-900 min-h-screen antialiased"
+  style="font-family: 'Manrope', sans-serif;">
     <div class="app-shell">
       <% if user_signed_in? %>
-        <!-- Mobile Overlay -->
-        <div
-          id="sidebar-overlay"
-          class="fixed inset-0 bg-black/50 z-30 hidden md:hidden">
-        </div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
 
-        <!-- Shared Sidebar -->
-        <aside id="sidebar" class="app-sidebar bg-slate-900 text-white flex flex-col">
+        <aside id="sidebar" class="app-sidebar bg-white text-slate-900 border-r border-slate-200 flex flex-col">
+          <div class="px-5 py-4 border-b border-slate-200">
+  <div class="flex flex-col items-center text-center">
 
-          <div class="px-6 py-6 border-b border-slate-700 flex items-start justify-between gap-4">
-  <div>
-    <h1 class="text-lg font-bold">FAAN Admin Ops</h1>
-    <p class="text-sm text-slate-300 mt-1">Operations Support System</p>
+    <%= image_tag "faan-logo.png",
+        class: "w-48 object-contain" %>
+
+    <p class="text-[11px] text-slate-400 mt-2 uppercase tracking-[0.12em]">
+      Abuja Station
+    </p>
+
+    <p class="text-xs text-green-700 font-medium mt-1">
+      Operations Admin
+    </p>
+
   </div>
 
-  <button
-    type="button"
-    id="sidebar-close"
-    class="md:hidden border border-slate-600 px-2 py-1 text-sm hover:bg-slate-800">
-    X
-  </button>
-</div>
+            <button
+              type="button"
+              id="sidebar-close"
+              class="md:hidden mt-4 w-full border border-slate-300 px-2 py-2 text-sm hover:bg-slate-50">
+              Close Menu
+            </button>
+          </div>
 
-          <nav class="flex-1 px-4 py-4 space-y-2 text-sm overflow-y-auto">
+          <nav class="flex-1 px-4 py-3 space-y-1 text-sm overflow-y-auto">
             <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
 
             <% if current_user.super_admin? || current_user.admin_officer? %>
@@ -118,29 +125,31 @@
             <% end %>
 
             <% if current_user.super_admin? || current_user.admin_officer? %>
-  <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
-<% end %>
+              <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
+            <% end %>
 
-         <% unread_count = current_user.notifications.unread.count %>
+            <% unread_count = current_user.notifications.unread.count %>
 
-<%= link_to notifications_path, class: "relative" do %>
-  🔔
+            <%= link_to notifications_path, class: "relative flex items-center px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-800" do %>
+              🔔 Notifications
 
-  <% if unread_count.positive? %>
-    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
-      <%= unread_count %>
-    </span>
-  <% end %>
-<% end %>
+              <% if unread_count.positive? %>
+                <span class="absolute top-2 right-3 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
+                  <%= unread_count %>
+                </span>
+              <% end %>
+            <% end %>
           </nav>
 
-          <%= link_to "My Account",
-    edit_account_path,
-    class: "block w-full text-center border border-slate-600 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800 mb-2" %>
+          <div class="px-4 py-3 border-t border-slate-200">
+            <%= link_to "My Account",
+                edit_account_path,
+                class: "block w-full text-center border border-slate-300 text-green-800 px-4 py-2 text-sm font-medium hover:bg-green-50" %>
+          </div>
 
-          <div class="px-4 py-4 border-t border-slate-700 text-sm">
-            <p class="font-semibold"><%= current_user.display_name %></p>
-            <p class="text-slate-300 capitalize"><%= current_user.role.humanize %></p>
+          <div class="px-4 py-4 border-t border-slate-200 text-sm">
+            <p class="font-semibold text-slate-900"><%= current_user.display_name %></p>
+            <p class="text-slate-500 capitalize"><%= current_user.role.humanize %></p>
 
             <div class="mt-4">
               <%= button_to "Sign Out",
@@ -152,40 +161,39 @@
         </aside>
       <% end %>
 
-      <!-- Main Content -->
       <div class="app-content">
         <% if user_signed_in? %>
- <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between gap-4">
-  <div>
-    <h2 class="text-lg md:text-xl font-semibold">
-      <%= content_for?(:page_title) ? yield(:page_title) : "FAAN Admin Operations System" %>
-    </h2>
+          <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                <%= content_for?(:page_title) ? yield(:page_title) : "FAAN Admin Operations System" %>
+              </h2>
 
-    <% if content_for?(:page_subtitle) %>
-      <p class="text-sm text-gray-500 mt-1"><%= yield(:page_subtitle) %></p>
-    <% end %>
-  </div>
+              <% if content_for?(:page_subtitle) %>
+                <p class="text-sm text-slate-500 mt-1"><%= yield(:page_subtitle) %></p>
+              <% end %>
+            </div>
 
-  <div class="flex items-center gap-2">
-    <% unread_notifications_count = current_user.notifications.unread.count %>
+            <div class="flex items-center gap-2">
+              <% unread_notifications_count = current_user.notifications.unread.count %>
 
-    <%= link_to notifications_path, class: "relative text-sm border border-gray-300 px-3 py-2 bg-white hover:bg-gray-50" do %>
-      🔔
-      <% if unread_notifications_count.positive? %>
-        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
-          <%= unread_notifications_count %>
-        </span>
-      <% end %>
-    <% end %>
+              <%= link_to notifications_path, class: "relative text-sm border border-slate-300 px-3 py-2 bg-white hover:bg-slate-50" do %>
+                🔔
+                <% if unread_notifications_count.positive? %>
+                  <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    <%= unread_notifications_count %>
+                  </span>
+                <% end %>
+              <% end %>
 
-    <button
-      type="button"
-      id="sidebar-open"
-      class="md:hidden inline-flex items-center justify-center border border-gray-300 px-3 py-2 text-sm bg-white hover:bg-gray-100">
-      ☰
-    </button>
-  </div>
-</header>
+              <button
+                type="button"
+                id="sidebar-open"
+                class="md:hidden inline-flex items-center justify-center border border-slate-300 px-3 py-2 text-sm bg-white hover:bg-slate-100">
+                ☰
+              </button>
+            </div>
+          </header>
         <% end %>
 
         <main class="px-4 md:px-6 py-6">
@@ -200,40 +208,40 @@
       </div>
     </div>
 
-  <script>
-  function setupSidebarMenu() {
-    const sidebar = document.getElementById("sidebar");
-    const openButton = document.getElementById("sidebar-open");
-    const closeButton = document.getElementById("sidebar-close");
-    const overlay = document.getElementById("sidebar-overlay");
+    <script>
+      function setupSidebarMenu() {
+        const sidebar = document.getElementById("sidebar");
+        const openButton = document.getElementById("sidebar-open");
+        const closeButton = document.getElementById("sidebar-close");
+        const overlay = document.getElementById("sidebar-overlay");
 
-    if (!sidebar || !openButton || !closeButton || !overlay) return;
+        if (!sidebar || !openButton || !closeButton || !overlay) return;
 
-    function openSidebar() {
-      sidebar.classList.add("open");
-      overlay.classList.remove("hidden");
-    }
+        function openSidebar() {
+          sidebar.classList.add("open");
+          overlay.classList.remove("hidden");
+        }
 
-    function closeSidebar() {
-      sidebar.classList.remove("open");
-      overlay.classList.add("hidden");
-    }
+        function closeSidebar() {
+          sidebar.classList.remove("open");
+          overlay.classList.add("hidden");
+        }
 
-    openButton.onclick = openSidebar;
-    closeButton.onclick = closeSidebar;
-    overlay.onclick = closeSidebar;
+        openButton.onclick = openSidebar;
+        closeButton.onclick = closeSidebar;
+        overlay.onclick = closeSidebar;
 
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") closeSidebar();
-    });
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") closeSidebar();
+        });
 
-    window.addEventListener("resize", function () {
-      if (window.innerWidth >= 768) closeSidebar();
-    });
-  }
+        window.addEventListener("resize", function () {
+          if (window.innerWidth >= 768) closeSidebar();
+        });
+      }
 
-  document.addEventListener("DOMContentLoaded", setupSidebarMenu);
-  document.addEventListener("turbo:load", setupSidebarMenu);
-</script>
+      document.addEventListener("DOMContentLoaded", setupSidebarMenu);
+      document.addEventListener("turbo:load", setupSidebarMenu);
+    </script>
   </body>
 </html>

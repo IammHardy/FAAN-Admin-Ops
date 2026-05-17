@@ -3,7 +3,7 @@
 
 <div class="flex items-center justify-between mb-4">
   <div></div>
-  <%= link_to "New User", new_user_path, class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+  <%= link_to "New User", new_user_path, class: btn_primary %>
 </div>
 
 <div class="bg-white border border-gray-200 overflow-hidden">
@@ -34,8 +34,8 @@
               </span>
             </td>
             <td class="px-4 py-3 text-right space-x-2">
-              <%= link_to "View", user_path(user), class: "text-blue-600 hover:underline" %>
-              <%= link_to "Edit", edit_user_path(user), class: "text-amber-600 hover:underline" %>
+              <%= link_to "View", user_path(user), class: "text-green-700 hover:text-green-800 font-medium" %>
+              <%= link_to "Edit", edit_user_path(user), class: "text-slate-600 hover:text-slate-900 font-medium" %>
               <%= button_to "Deactivate",
                   user_path(user),
                   method: :delete,
