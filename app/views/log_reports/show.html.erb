@@ -58,7 +58,7 @@
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <%= link_to "Edit", edit_log_report_path(@log_report), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-        <%= link_to "Print", print_log_report_path(@log_report), class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+        <%= link_to "Print", print_log_report_path(@log_report), class: btn_primary %>
         <%= link_to "Back", log_reports_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
       </div>
     </div>
@@ -140,19 +140,19 @@
          <%= button_to "Submit Report",
     submit_log_report_path(@log_report),
     method: :patch,
-    class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
+    class: btn_primary %>
         <% end %>
 
         <% if @log_report.submitted? %>
           <%= button_to "Mark as Reviewed",
               review_log_report_path(@log_report),
               method: :patch,
-              class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
+              class: btn_primary %>
         <% end %>
 
         <%= link_to "Add Log Entry",
     new_log_report_log_entry_path(@log_report),
-    class: "block text-center bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+    class: btn_secondary %>
       </div>
     </div>
 <% if can_manage_logs? && @log_report.draft? %>

@@ -1,77 +1,134 @@
-<div class="max-w-4xl mx-auto">
-  <div class="text-center mb-8">
-    <h1 class="text-2xl font-bold">FAAN Admin Operations System</h1>
-    <p class="text-sm mt-2">Dispatch Record</p>
+<div style="max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif; color: #111827;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #166534; padding-bottom: 16px; margin-bottom: 24px;">
+    <div>
+      <%= image_tag wicked_pdf_asset_base64("faan-logo.png"),
+          style: "width: 150px; height: auto;" %>
+    </div>
+
+    <div style="text-align: right;">
+      <h1 style="font-size: 20px; margin: 0; font-weight: 700;">
+        FAAN Admin Operations System
+      </h1>
+
+      <p style="font-size: 13px; margin: 6px 0 0; color: #4b5563;">
+        Dispatch Record
+      </p>
+
+      <p style="font-size: 12px; margin: 6px 0 0; color: #6b7280;">
+        Printed: <%= Time.current.strftime("%d %b %Y, %I:%M %p") %>
+      </p>
+    </div>
   </div>
 
-  <div class="border border-gray-300">
-    <table class="w-full text-sm border-collapse">
-      <tbody>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 w-1/3 bg-gray-100">Reference Number</th>
-          <td class="p-3"><%= @dispatch.reference_number %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Subject</th>
-          <td class="p-3"><%= @dispatch.subject %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Memo Date</th>
-          <td class="p-3"><%= @dispatch.memo_date&.strftime("%d %b %Y") %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Sender Department</th>
-          <td class="p-3"><%= @dispatch.sender_department.name %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Sender Unit</th>
-          <td class="p-3"><%= @dispatch.sender_unit&.name || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Receiving Department</th>
-          <td class="p-3"><%= @dispatch.receiving_department.name %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Receiving Unit</th>
-          <td class="p-3"><%= @dispatch.receiving_unit&.name || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Status</th>
-          <td class="p-3"><%= @dispatch.status.humanize %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Dispatched By</th>
-          <td class="p-3"><%= @dispatch.dispatched_by&.display_name || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Dispatched At</th>
-          <td class="p-3"><%= @dispatch.dispatched_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Receiver Name</th>
-          <td class="p-3"><%= @dispatch.receiver_name.presence || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Receiver Designation</th>
-          <td class="p-3"><%= @dispatch.receiver_designation.presence || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Received At</th>
-          <td class="p-3"><%= @dispatch.received_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Delivery Note</th>
-          <td class="p-3"><%= @dispatch.delivery_note.presence || "-" %></td>
-        </tr>
-        <tr>
-          <th class="text-left p-3 bg-gray-100">Remarks</th>
-          <td class="p-3"><%= @dispatch.remarks.presence || "-" %></td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Dispatch Summary -->
+  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 14px 16px; margin-bottom: 20px;">
+    <p style="margin: 0; font-size: 13px; color: #166534; font-weight: 700;">
+      Reference Number
+    </p>
+
+    <p style="margin: 4px 0 0; font-size: 18px; font-weight: 700; color: #111827;">
+      <%= @dispatch.reference_number %>
+    </p>
   </div>
 
-  <div class="mt-8 text-sm">
-    <p><strong>Printed On:</strong> <%= Time.current.strftime("%d %b %Y, %I:%M %p") %></p>
+  <!-- Details Table -->
+  <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
+    <tbody>
+      <tr>
+        <th style="width: 32%; text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Subject</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.subject %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Memo Date</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.memo_date&.strftime("%d %b %Y") || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Sender Department</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.sender_department&.name || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Sender Unit</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.sender_unit&.name || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Receiving Department</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.receiving_department&.name || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Receiving Unit(s)</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;">
+          <%= @dispatch.dispatch_recipients
+              .map { |recipient| recipient.receiving_unit&.name }
+              .compact
+              .join(", ")
+              .presence || "-" %>
+        </td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Status</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.display_status %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Acknowledgement Progress</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.acknowledgement_progress %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Dispatched By</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.dispatched_by&.display_name || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Dispatched At</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.dispatched_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Received By</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;">
+          <%= @dispatch.dispatch_recipients
+              .map { |recipient| recipient.received_by&.display_name }
+              .compact
+              .join(", ")
+              .presence || "-" %>
+        </td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Acknowledged By</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;">
+          <%= @dispatch.dispatch_recipients
+              .map { |recipient| recipient.acknowledged_by&.display_name }
+              .compact
+              .join(", ")
+              .presence || "-" %>
+        </td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Delivery Note</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.delivery_note.presence || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align: left; padding: 10px; background: #f3f4f6; border: 1px solid #d1d5db;">Remarks</th>
+        <td style="padding: 10px; border: 1px solid #d1d5db;"><%= @dispatch.remarks.presence || "-" %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <div style="border-top: 1px solid #d1d5db; padding-top: 12px; font-size: 11px; color: #6b7280; display: flex; justify-content: space-between;">
+    <span>Generated from FAAN Admin Operations System</span>
+    <span>Abuja Station - Operations Admin</span>
   </div>
 </div>
