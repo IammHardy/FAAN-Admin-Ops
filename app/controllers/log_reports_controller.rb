@@ -158,7 +158,8 @@ end
   end
 
   if current_user.unit_officer?
-    return if current_user.unit_id == @log_report.unit_id && action_name.in?(%w[show edit update submit_report print])
+    return if current_user.unit_id == @log_report.unit_id &&
+              action_name.in?(%w[show edit update submit print])
   end
 
   redirect_to log_reports_path, error: "You are not authorized to access this log report."
