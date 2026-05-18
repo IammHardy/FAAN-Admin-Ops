@@ -1,6 +1,8 @@
 class DashboardController < ApplicationController
 
   def index
+    @monthly_reports_count = MonthlyReport.count
+@pending_monthly_reviews_count = MonthlyReport.submitted.count
      @unread_notifications_count = current_user.notifications.unread.count
   if current_user.reviewer?
     reviewer_dashboard

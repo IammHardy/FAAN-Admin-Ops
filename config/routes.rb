@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+ 
   devise_for :users
 
   root "dashboard#index"
@@ -87,6 +88,14 @@ Rails.application.routes.draw do
         get :export_pdf
       end
     end
+
+    resources :monthly_reports do
+  member do
+    patch :submit
+    patch :review
+    patch :archive
+  end
+end
 
     get "summaries/daily", to: "summaries#daily", as: :daily_summary
     get "summaries/monthly", to: "summaries#monthly", as: :monthly_summary

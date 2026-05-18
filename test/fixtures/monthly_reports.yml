@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  report_month: 2026-05-17
+  status: 1
+  department: one
+  unit: one
+  uploaded_by: one
+  reviewed_by: one
+  reviewed_at: 2026-05-17 19:18:56
+  remarks: MyText
+
+two:
+  title: MyString
+  report_month: 2026-05-17
+  status: 1
+  department: two
+  unit: two
+  uploaded_by: two
+  reviewed_by: two
+  reviewed_at: 2026-05-17 19:18:56
+  remarks: MyText

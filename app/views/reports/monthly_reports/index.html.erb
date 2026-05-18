@@ -1,0 +1,79 @@
+<% content_for :page_title, "Monthly Reports" %>
+<% content_for :page_subtitle, "Upload, review, and archive monthly reports from units." %>
+
+<div class="flex justify-end mb-4">
+  <%= link_to "Upload Monthly Report",
+      new_reports_monthly_report_path,
+      class: btn_primary %>
+</div>
+
+<div class="bg-white border border-slate-200 shadow-sm overflow-x-auto">
+  <% if @monthly_reports.any? %>
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Month</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Title</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Department</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Unit</th>
+          <th class="text-left px-4 py-3 font-semibold text-slate-700">Status</th>
+          <th class="text-right px-4 py-3 font-semibold text-slate-700">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @monthly_reports.each do |report| %>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="px-4 py-3 text-slate-700">
+              <%= report.report_month&.strftime("%B %Y") %>
+            </td>
+
+            <td class="px-4 py-3 font-medium">
+              <%= link_to report.title,
+                  reports_monthly_report_path(report),
+                  class: "text-green-700 hover:text-green-800" %>
+            </td>
+
+            <td class="px-4 py-3 text-slate-700">
+              <%= report.department.name %>
+            </td>
+
+            <td class="px-4 py-3 text-slate-700">
+              <%= report.unit.name %>
+            </td>
+
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium border
+                <%= case report.status
+                    when "draft"
+                      "bg-slate-50 border-slate-300 text-slate-700"
+                    when "submitted"
+                      "bg-amber-50 border-amber-200 text-amber-700"
+                    when "reviewed"
+                      "bg-green-50 border-green-200 text-green-700"
+                    when "archived"
+                      "bg-slate-100 border-slate-300 text-slate-800"
+                    end %>">
+                <%= report.status.humanize %>
+              </span>
+            </td>
+
+            <td class="px-4 py-3 text-right space-x-2">
+              <%= link_to "View",
+                  reports_monthly_report_path(report),
+                  class: "text-green-700 hover:text-green-800 font-medium" %>
+
+              <%= link_to "Edit",
+                  edit_reports_monthly_report_path(report),
+                  class: "text-slate-600 hover:text-slate-900 font-medium" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="p-6 text-sm text-slate-500">
+      No monthly reports uploaded yet.
+    </div>
+  <% end %>
+</div>

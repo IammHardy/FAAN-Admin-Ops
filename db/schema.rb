@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_17_105334) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_181856) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -208,6 +208,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_105334) do
     t.index ["status"], name: "index_minutes_on_status"
   end
 
+  create_table "monthly_reports", force: :cascade do |t|
+    t.string "title"
+    t.date "report_month"
+    t.integer "status"
+    t.bigint "department_id", null: false
+    t.bigint "unit_id", null: false
+    t.bigint "uploaded_by_id", null: false
+    t.bigint "reviewed_by_id"
+    t.datetime "reviewed_at"
+    t.text "remarks"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_monthly_reports_on_department_id"
+    t.index ["reviewed_by_id"], name: "index_monthly_reports_on_reviewed_by_id"
+    t.index ["unit_id"], name: "index_monthly_reports_on_unit_id"
+    t.index ["uploaded_by_id"], name: "index_monthly_reports_on_uploaded_by_id"
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", null: false
@@ -277,6 +295,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_105334) do
   add_foreign_key "log_reports", "users", column: "submitted_by_id"
   add_foreign_key "minute_audio_parts", "minutes"
   add_foreign_key "minutes", "users", column: "created_by_id"
+  add_foreign_key "monthly_reports", "departments"
+  add_foreign_key "monthly_reports", "units"
+  add_foreign_key "monthly_reports", "users", column: "reviewed_by_id"
+  add_foreign_key "monthly_reports", "users", column: "uploaded_by_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "units", "departments"
   add_foreign_key "users", "departments"

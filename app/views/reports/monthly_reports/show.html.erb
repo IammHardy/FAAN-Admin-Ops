@@ -1,0 +1,114 @@
+<% content_for :page_title, @monthly_report.title %>
+<% content_for :page_subtitle, "Monthly report for #{@monthly_report.report_month&.strftime('%B %Y')}" %>
+
+<div class="bg-white border border-slate-200 shadow-sm p-6 space-y-5">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+    <div>
+      <p class="text-slate-500">Department</p>
+      <p class="font-medium text-slate-900"><%= @monthly_report.department.name %></p>
+    </div>
+
+    <div>
+      <p class="text-slate-500">Unit</p>
+      <p class="font-medium text-slate-900"><%= @monthly_report.unit.name %></p>
+    </div>
+
+    <div>
+      <p class="text-slate-500">Report Month</p>
+      <p class="font-medium text-slate-900"><%= @monthly_report.report_month&.strftime("%B %Y") %></p>
+    </div>
+
+    <div>
+      <p class="text-slate-500">Uploaded By</p>
+      <p class="font-medium text-slate-900"><%= @monthly_report.uploaded_by.display_name %></p>
+    </div>
+
+    <div>
+      <p class="text-slate-500">Status</p>
+      <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium border
+        <%= case @monthly_report.status
+            when "draft"
+              "bg-slate-50 border-slate-300 text-slate-700"
+            when "submitted"
+              "bg-amber-50 border-amber-200 text-amber-700"
+            when "reviewed"
+              "bg-green-50 border-green-200 text-green-700"
+            when "archived"
+              "bg-slate-100 border-slate-300 text-slate-800"
+            end %>">
+        <%= @monthly_report.status.humanize %>
+      </span>
+    </div>
+
+    <% if @monthly_report.reviewed_by.present? %>
+      <div>
+        <p class="text-slate-500">Reviewed By</p>
+        <p class="font-medium text-slate-900">
+          <%= @monthly_report.reviewed_by.display_name %>
+          <% if @monthly_report.reviewed_at.present? %>
+            · <%= @monthly_report.reviewed_at.strftime("%d %b %Y, %I:%M %p") %>
+          <% end %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @monthly_report.remarks.present? %>
+    <div class="border-t border-slate-100 pt-4">
+      <h3 class="app-section-title mb-2">Remarks</h3>
+      <p class="text-sm text-slate-700 whitespace-pre-line"><%= @monthly_report.remarks %></p>
+    </div>
+  <% end %>
+
+  <div class="border-t border-slate-100 pt-4">
+    <h3 class="app-section-title mb-3">Uploaded File</h3>
+
+    <% if @monthly_report.report_file.attached? %>
+      <%= link_to "Download Report",
+          url_for(@monthly_report.report_file),
+          target: "_blank",
+          class: btn_primary %>
+    <% else %>
+      <p class="app-muted">No file attached.</p>
+    <% end %>
+  </div>
+
+  <div class="border-t border-slate-100 pt-4 flex flex-wrap gap-3">
+  <%= link_to "Back",
+      reports_monthly_reports_path,
+      class: btn_secondary %>
+
+  <%= link_to "Edit",
+      edit_reports_monthly_report_path(@monthly_report),
+      class: btn_secondary %>
+
+  <% if @monthly_report.draft? %>
+    <%= link_to "Submit Report",
+        submit_reports_monthly_report_path(@monthly_report),
+        data: { turbo_method: :patch, turbo_confirm: "Submit this monthly report?" },
+        class: btn_primary %>
+  <% end %>
+
+  <% if (current_user.reviewer? || current_user.admin_officer? || current_user.super_admin?) && @monthly_report.submitted? %>
+    <%= link_to "Mark as Reviewed",
+        review_reports_monthly_report_path(@monthly_report),
+        data: { turbo_method: :patch, turbo_confirm: "Mark this monthly report as reviewed?" },
+        class: btn_primary %>
+  <% end %>
+
+  <% if (current_user.admin_officer? || current_user.super_admin?) && @monthly_report.reviewed? %>
+    <%= link_to "Archive",
+        archive_reports_monthly_report_path(@monthly_report),
+        data: { turbo_method: :patch, turbo_confirm: "Archive this monthly report?" },
+        class: btn_secondary %>
+  <% end %>
+
+  <% if current_user.admin_officer? || current_user.super_admin? %>
+    <%= button_to "Delete",
+        reports_monthly_report_path(@monthly_report),
+        method: :delete,
+        data: { turbo_confirm: "Are you sure you want to delete this monthly report?" },
+        class: btn_danger %>
+  <% end %>
+</div>
+</div>
