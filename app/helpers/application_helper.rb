@@ -1,3 +1,4 @@
+
 module ApplicationHelper
 
   def flash_class(type)

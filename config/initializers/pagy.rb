@@ -1,0 +1,2 @@
+# config/initializers/pagy.rb
+

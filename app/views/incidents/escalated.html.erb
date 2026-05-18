@@ -1,2 +1,4 @@
-<h1>Incidents#escalated</h1>
-<p>Find me in app/views/incidents/escalated.html.erb</p>
+<% content_for :page_title, "Escalated Incidents" %>
+<% content_for :page_subtitle, "Incidents marked as escalated or critical." %>
+
+<%= render "incidents_table" %>

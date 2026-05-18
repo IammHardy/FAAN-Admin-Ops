@@ -25,35 +25,44 @@
   <% end %>
 </div>
 
-<div class="bg-white border border-gray-200 overflow-hidden">
+<div class="bg-white border border-gray-200">
   <% if @audit_logs.any? %>
-    <table class="min-w-full text-sm">
-      <thead class="bg-gray-50 border-b border-gray-200">
-        <tr>
-          <th class="text-left px-4 py-3 font-semibold">Date / Time</th>
-          <th class="text-left px-4 py-3 font-semibold">User</th>
-          <th class="text-left px-4 py-3 font-semibold">Action</th>
-          <th class="text-left px-4 py-3 font-semibold">Record Type</th>
-          <th class="text-left px-4 py-3 font-semibold">Record</th>
-          <th class="text-left px-4 py-3 font-semibold">Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @audit_logs.each do |log| %>
-          <tr class="border-b border-gray-100">
-            <td class="px-4 py-3"><%= log.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
-            <td class="px-4 py-3"><%= log.user.display_name %></td>
-            <td class="px-4 py-3"><%= log.action.humanize %></td>
-            <td class="px-4 py-3"><%= log.auditable_type %></td>
-            <td class="px-4 py-3"><%= log.auditable_label %></td>
-            <td class="px-4 py-3 text-gray-700"><%= log.description %></td>
+    <div class="overflow-x-auto w-full">
+      <table class="min-w-[1100px] w-full text-sm whitespace-nowrap">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold">Date / Time</th>
+            <th class="text-left px-4 py-3 font-semibold">User</th>
+            <th class="text-left px-4 py-3 font-semibold">Action</th>
+            <th class="text-left px-4 py-3 font-semibold">Record Type</th>
+            <th class="text-left px-4 py-3 font-semibold">Record</th>
+            <th class="text-left px-4 py-3 font-semibold">Description</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          <% @audit_logs.each do |log| %>
+            <tr class="border-b border-gray-100">
+              <td class="px-4 py-3"><%= log.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+              <td class="px-4 py-3"><%= log.user.display_name %></td>
+              <td class="px-4 py-3"><%= log.action.humanize %></td>
+              <td class="px-4 py-3"><%= log.auditable_type %></td>
+              <td class="px-4 py-3"><%= log.auditable_label %></td>
+              <td class="px-4 py-3 text-gray-700"><%= log.description %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% else %>
     <div class="p-6 text-sm text-gray-500">
       No audit logs found.
     </div>
   <% end %>
 </div>
+
+<% if @audit_logs.respond_to?(:total_pages) %>
+  <div class="mt-6">
+    <%= paginate @audit_logs %>
+  </div>
+<% end %>

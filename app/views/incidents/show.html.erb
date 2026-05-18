@@ -76,10 +76,18 @@
     </dl>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">
-      <%= link_to "Edit", edit_incident_path(@incident), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Print", print_incident_path(@incident), class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-      <%= link_to "Back", incidents_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-    </div>
+  <%= link_to "Edit",
+      edit_incident_path(@incident),
+      class: "inline-flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
+
+  <%= link_to "Print",
+      print_incident_path(@incident),
+      class: "inline-flex items-center justify-center bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
+
+  <%= link_to "Back",
+      incidents_path,
+      class: "inline-flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 text-sm font-medium rounded-md transition" %>
+</div>
   </div>
 
   <div class="space-y-6">
@@ -93,7 +101,8 @@
               <label class="block text-sm font-medium mb-1">Review Remark</label>
               <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
             </div>
-            <%= submit_tag "Mark as Under Review", class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
+           <%= submit_tag "Mark as Under Review",
+    class: "w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
           <% end %>
         <% end %>
 
@@ -110,7 +119,8 @@
                 <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
               </div>
 
-              <%= submit_tag "Escalate Incident", class: "w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-medium" %>
+              <%= submit_tag "Escalate Incident",
+    class: "w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
             <% end %>
           </div>
         <% end %>
@@ -122,7 +132,8 @@
               <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
             </div>
 
-            <%= submit_tag "Mark as Resolved", class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
+            <%= submit_tag "Mark as Resolved",
+    class: "w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
           <% end %>
         <% end %>
 

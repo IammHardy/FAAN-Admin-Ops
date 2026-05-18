@@ -1,49 +1,68 @@
-<div class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-  <div class="w-full max-w-md bg-white border border-gray-200 p-6">
-    <div class="mb-6 text-center">
-      <h1 class="text-2xl font-bold text-slate-900">Change your password</h1>
-      <p class="text-sm text-gray-500 mt-2">
-        Enter and confirm your new password.
-      </p>
-    </div>
-
-    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "space-y-5" }) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
-      <%= f.hidden_field :reset_password_token %>
-
-      <div>
-        <%= f.label :password, "New password", class: "block text-sm font-medium text-gray-700 mb-1" %>
-
-        <% if @minimum_password_length %>
-          <p class="text-xs text-gray-500 mb-2">
-            Minimum <%= @minimum_password_length %> characters.
-          </p>
-        <% end %>
-
-        <%= f.password_field :password,
-            autofocus: true,
-            autocomplete: "new-password",
-            class: "w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" %>
+<div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 [font-family:'Manrope',sans-serif]">
+  <div class="w-full max-w-md">
+    <div class="bg-white border border-slate-200 shadow-lg rounded-xl px-6 md:px-8 py-8">
+      <div class="flex justify-center mb-6">
+        <%= image_tag "faan-logo.png",
+            class: "object-contain",
+            style: "width: 150px; max-width: 100%; height: auto;" %>
       </div>
 
-      <div>
-        <%= f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+          Change your password
+        </h1>
 
-        <%= f.password_field :password_confirmation,
-            autocomplete: "new-password",
-            class: "w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" %>
+        <p class="text-sm text-slate-600 mt-2 leading-6">
+          Enter and confirm your new password.
+        </p>
       </div>
 
-      <div>
-        <%= f.submit "Change password",
-            class: "w-full bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium cursor-pointer" %>
-      </div>
-    <% end %>
+      <%= form_for(resource,
+          as: resource_name,
+          url: password_path(resource_name),
+          html: { method: :put, class: "space-y-5" }) do |f| %>
 
-    <div class="mt-5 text-center">
-      <%= link_to "Back to sign in",
-          new_user_session_path,
-          class: "text-sm text-slate-700 hover:underline" %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <%= f.hidden_field :reset_password_token %>
+
+        <div>
+          <%= f.label :password,
+              "New password",
+              class: "block text-sm font-medium text-slate-700 mb-1" %>
+
+          <% if @minimum_password_length %>
+            <p class="text-xs text-slate-500 mb-2">
+              Minimum <%= @minimum_password_length %> characters.
+            </p>
+          <% end %>
+
+          <%= f.password_field :password,
+              autofocus: true,
+              autocomplete: "new-password",
+              class: "w-full border border-slate-300 bg-white rounded-md px-3 py-2 text-sm text-slate-900 outline-none focus:border-green-700 focus:ring-1 focus:ring-green-700" %>
+        </div>
+
+        <div>
+          <%= f.label :password_confirmation,
+              "Confirm new password",
+              class: "block text-sm font-medium text-slate-700 mb-1" %>
+
+          <%= f.password_field :password_confirmation,
+              autocomplete: "new-password",
+              class: "w-full border border-slate-300 bg-white rounded-md px-3 py-2 text-sm text-slate-900 outline-none focus:border-green-700 focus:ring-1 focus:ring-green-700" %>
+        </div>
+
+        <div>
+          <%= f.submit "Change password",
+              class: "w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium rounded-md px-4 py-2 transition duration-200 cursor-pointer" %>
+        </div>
+      <% end %>
+
+      <div class="mt-6 text-center">
+        <%= link_to "Back to sign in",
+            new_user_session_path,
+            class: "text-sm text-green-700 hover:text-green-800 hover:underline font-medium" %>
+      </div>
     </div>
   </div>
 </div>

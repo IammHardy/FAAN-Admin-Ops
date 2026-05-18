@@ -148,10 +148,12 @@ class IncidentsController < ApplicationController
     redirect_to @incident, error: e.message
   end
 
-  def open_items
-    @incidents = Incident.open_items.recent_first
-    render :index
-  end
+ def open_items
+  @incidents = Incident.open
+                       .order(created_at: :desc)
+                       .page(params[:page])
+                       .per(10)
+end
 
   def escalated
     @incidents = Incident.where(status: :escalated).recent_first

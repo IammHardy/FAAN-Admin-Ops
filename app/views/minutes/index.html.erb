@@ -3,27 +3,29 @@
 
 <div class="mb-4">
   <%= link_to "Upload Audio", new_minute_path,
-      class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+      class: btn_primary %>
 </div>
 
 <div class="bg-white border border-gray-200">
   <% if @minutes.any? %>
     <div class="divide-y divide-gray-200">
       <% @minutes.each do |minute| %>
-        <div class="p-4 flex items-center justify-between gap-4">
+        <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h3 class="font-semibold text-gray-900"><%= minute.title %></h3>
+
             <p class="text-sm text-gray-500">
               Uploaded by <%= minute.created_by.display_name %> ·
               <%= minute.created_at.strftime("%d %b %Y, %I:%M %p") %>
             </p>
+
             <p class="text-xs mt-1 capitalize text-slate-600">
               Status: <%= minute.status %>
             </p>
           </div>
 
           <%= link_to "View", minute_path(minute),
-              class: "border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50" %>
+    class: "inline-flex items-center justify-center border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 self-start md:self-auto" %>
         </div>
       <% end %>
     </div>
@@ -33,3 +35,9 @@
     </div>
   <% end %>
 </div>
+
+<% if @minutes.respond_to?(:total_pages) %>
+  <div class="mt-6">
+    <%= paginate @minutes %>
+  </div>
+<% end %>

@@ -1,69 +1,91 @@
-<div class="max-w-5xl mx-auto">
-  <div class="text-center mb-8">
-    <h1 class="text-2xl font-bold">FAAN Admin Operations System</h1>
-    <p class="text-sm mt-2">Incident Report</p>
+<div style="font-family: Arial, sans-serif; color:#0f172a; font-size:12px;">
+
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+    <%= image_tag wicked_pdf_asset_base64("faan-logo.png"), style: "width:180px; height:auto;" %>
+
+    <div style="text-align:right; font-size:11px; color:#475569;">
+      <strong>Generated On</strong><br>
+      <%= Time.current.strftime("%d %B %Y, %I:%M %p") %>
+    </div>
   </div>
 
-  <div class="border border-gray-300">
-    <table class="w-full text-sm border-collapse">
-      <tbody>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 w-1/3 bg-gray-100">Incident Number</th>
-          <td class="p-3"><%= @incident.incident_number %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Title</th>
-          <td class="p-3"><%= @incident.title %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Description</th>
-          <td class="p-3"><%= @incident.description %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Incident Type</th>
-          <td class="p-3"><%= @incident.incident_type.humanize %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Severity</th>
-          <td class="p-3"><%= @incident.severity.humanize %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Status</th>
-          <td class="p-3"><%= @incident.status.humanize %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Action Taken</th>
-          <td class="p-3"><%= @incident.action_taken.presence || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Escalation Required</th>
-          <td class="p-3"><%= @incident.escalation_required? ? "Yes" : "No" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Escalated To</th>
-          <td class="p-3"><%= @incident.escalated_to.presence || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Escalated At</th>
-          <td class="p-3"><%= @incident.escalated_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Created By</th>
-          <td class="p-3"><%= @incident.created_by.display_name %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Reviewed By</th>
-          <td class="p-3"><%= @incident.reviewed_by&.display_name || "-" %></td>
-        </tr>
-        <tr>
-          <th class="text-left p-3 bg-gray-100">Reviewer Remark</th>
-          <td class="p-3"><%= @incident.reviewer_remark.presence || "-" %></td>
-        </tr>
-      </tbody>
-    </table>
+  <div style="text-align:center; margin-bottom:20px;">
+    <h2 style="margin:0; font-size:17px; text-transform:uppercase;">
+      Incident Report
+    </h2>
+    <p style="margin-top:6px; font-size:12px; color:#475569;">
+      Operations Department - Admin Unit
+    </p>
   </div>
 
-  <div class="mt-8 text-sm">
-    <p><strong>Printed On:</strong> <%= Time.current.strftime("%d %b %Y, %I:%M %p") %></p>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+    <tbody>
+      <tr>
+        <th style="text-align:left; width:25%; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Incident Number</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.incident_number %></td>
+        <th style="text-align:left; width:20%; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Status</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.status.humanize %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Title</th>
+        <td colspan="3" style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.title %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Incident Type</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.incident_type.humanize %></td>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Severity</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.severity.humanize %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Created By</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.created_by.display_name %></td>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Reviewed By</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.reviewed_by&.display_name || "-" %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-bottom:18px;">
+    <h3 style="font-size:13px; margin-bottom:6px; color:#166534;">Description</h3>
+    <div style="border:1px solid #cbd5e1; padding:10px; line-height:1.6;">
+      <%= simple_format(@incident.description.presence || "-") %>
+    </div>
+  </div>
+
+  <div style="margin-bottom:18px;">
+    <h3 style="font-size:13px; margin-bottom:6px; color:#166534;">Action Taken</h3>
+    <div style="border:1px solid #cbd5e1; padding:10px; line-height:1.6;">
+      <%= simple_format(@incident.action_taken.presence || "-") %>
+    </div>
+  </div>
+
+  <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+    <tbody>
+      <tr>
+        <th style="text-align:left; width:25%; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Escalation Required</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.escalation_required? ? "Yes" : "No" %></td>
+        <th style="text-align:left; width:20%; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Escalated At</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.escalated_at&.strftime("%d %b %Y, %I:%M %p") || "-" %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Escalated To</th>
+        <td colspan="3" style="padding:8px; border:1px solid #cbd5e1;"><%= @incident.escalated_to.presence || "-" %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-bottom:20px;">
+    <h3 style="font-size:13px; margin-bottom:6px; color:#166534;">Reviewer Remark</h3>
+    <div style="border:1px solid #cbd5e1; padding:10px; min-height:40px; line-height:1.6;">
+      <%= simple_format(@incident.reviewer_remark.presence || "-") %>
+    </div>
+  </div>
+
+  <div style="margin-top:30px; border-top:1px solid #cbd5e1; padding-top:10px; font-size:10px; color:#64748b; text-align:center;">
+    Generated by FAAN Operations Admin System
   </div>
 </div>

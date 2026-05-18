@@ -140,7 +140,7 @@
   <%= link_to "Edit", edit_dispatch_path(@dispatch), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
 <% end %>
       <% if can_manage_dispatches? %>
-  <%= link_to "Print", print_dispatch_path(@dispatch), class: "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
+  <%= link_to "Print", print_dispatch_path(@dispatch), class: btn_primary %>
 <% end %>
       <%= link_to "Back", dashboard_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
   </div>

@@ -1,78 +1,108 @@
-<div class="max-w-5xl mx-auto">
-  <div class="text-center mb-8">
-    <h1 class="text-2xl font-bold">FAAN Admin Operations System</h1>
-    <p class="text-sm mt-2">Daily Log Report</p>
+<div style="font-family: Arial, sans-serif; color:#0f172a; font-size:12px;">
+
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+    <div>
+      <%= image_tag wicked_pdf_asset_base64("faan-logo.png"),
+          style: "width:180px; height:auto;" %>
+    </div>
+
+    <div style="text-align:right; font-size:11px; color:#475569;">
+      <strong>Generated On</strong><br>
+      <%= Time.current.strftime("%d %B %Y, %I:%M %p") %>
+    </div>
   </div>
 
-  <div class="border border-gray-300 mb-6">
-    <table class="w-full text-sm border-collapse">
-      <tbody>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 w-1/3 bg-gray-100">Report Date</th>
-          <td class="p-3"><%= @log_report.report_date.strftime("%d %b %Y") %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Shift</th>
-          <td class="p-3"><%= @log_report.shift.humanize %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Department</th>
-          <td class="p-3"><%= @log_report.department.name %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Unit</th>
-          <td class="p-3"><%= @log_report.unit.name %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Entered By</th>
-          <td class="p-3"><%= @log_report.entered_by.display_name %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Status</th>
-          <td class="p-3"><%= @log_report.status.humanize %></td>
-        </tr>
-        <tr class="border-b border-gray-300">
-          <th class="text-left p-3 bg-gray-100">Summary</th>
-          <td class="p-3"><%= @log_report.summary.presence || "-" %></td>
-        </tr>
-        <tr>
-          <th class="text-left p-3 bg-gray-100">General Remarks</th>
-          <td class="p-3"><%= @log_report.general_remarks.presence || "-" %></td>
-        </tr>
-      </tbody>
-    </table>
+  <div style="text-align:center; margin-bottom:20px;">
+    <h2 style="margin:0; font-size:17px; text-transform:uppercase;">
+      Daily Log Report
+    </h2>
+    <p style="margin-top:6px; font-size:12px; color:#475569;">
+      Operations Department - Admin Unit
+    </p>
   </div>
 
-  <h2 class="text-lg font-semibold mb-3">Log Entries</h2>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+    <tbody>
+      <tr>
+        <th style="text-align:left; width:25%; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Report Date</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @log_report.report_date.strftime("%d %B %Y") %></td>
+        <th style="text-align:left; width:20%; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Shift</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @log_report.shift.humanize %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Department</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @log_report.department.name %></td>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Unit</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @log_report.unit.name %></td>
+      </tr>
+
+      <tr>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Entered By</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @log_report.entered_by.display_name %></td>
+        <th style="text-align:left; padding:8px; border:1px solid #cbd5e1; background:#f8fafc;">Status</th>
+        <td style="padding:8px; border:1px solid #cbd5e1;"><%= @log_report.status.humanize %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-bottom:18px;">
+    <h3 style="font-size:13px; margin-bottom:6px; color:#166534;">Summary</h3>
+    <div style="border:1px solid #cbd5e1; padding:10px; min-height:40px; line-height:1.6;">
+      <%= simple_format(@log_report.summary.presence || "-") %>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <h3 style="font-size:13px; margin-bottom:6px; color:#166534;">General Remarks</h3>
+    <div style="border:1px solid #cbd5e1; padding:10px; min-height:40px; line-height:1.6;">
+      <%= simple_format(@log_report.general_remarks.presence || "-") %>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px; margin-bottom:8px; color:#0f172a;">
+    Log Entries
+  </h3>
 
   <% if @log_entries.any? %>
-    <table class="w-full text-sm border border-gray-300 border-collapse">
+    <table style="width:100%; border-collapse:collapse;">
       <thead>
-        <tr class="bg-gray-100 border-b border-gray-300">
-          <th class="text-left p-3 border-r border-gray-300">Time</th>
-          <th class="text-left p-3 border-r border-gray-300">Description</th>
-          <th class="text-left p-3 border-r border-gray-300">Incident</th>
-          <th class="text-left p-3 border-r border-gray-300">Follow-up</th>
-          <th class="text-left p-3">Action Taken</th>
+        <tr style="background:#f8fafc;">
+          <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Time</th>
+          <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Description</th>
+          <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Incident</th>
+          <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Follow-up</th>
+          <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Action Taken</th>
         </tr>
       </thead>
+
       <tbody>
         <% @log_entries.each do |entry| %>
-          <tr class="border-b border-gray-300">
-            <td class="p-3 border-r border-gray-300"><%= entry.entry_time&.strftime("%I:%M %p") || "-" %></td>
-            <td class="p-3 border-r border-gray-300"><%= entry.description %></td>
-            <td class="p-3 border-r border-gray-300"><%= entry.incident_flag? ? "Yes" : "No" %></td>
-            <td class="p-3 border-r border-gray-300"><%= entry.follow_up_needed? ? "Yes" : "No" %></td>
-            <td class="p-3"><%= entry.action_taken.presence || "-" %></td>
+          <tr>
+            <td style="padding:8px; border:1px solid #cbd5e1; width:12%;">
+              <%= entry.entry_time&.strftime("%I:%M %p") || "-" %>
+            </td>
+            <td style="padding:8px; border:1px solid #cbd5e1;">
+              <%= entry.description %>
+            </td>
+            <td style="padding:8px; border:1px solid #cbd5e1; width:10%;">
+              <%= entry.incident_flag? ? "Yes" : "No" %>
+            </td>
+            <td style="padding:8px; border:1px solid #cbd5e1; width:10%;">
+              <%= entry.follow_up_needed? ? "Yes" : "No" %>
+            </td>
+            <td style="padding:8px; border:1px solid #cbd5e1;">
+              <%= entry.action_taken.presence || "-" %>
+            </td>
           </tr>
         <% end %>
       </tbody>
     </table>
   <% else %>
-    <p class="text-sm">No entries found.</p>
+    <p style="font-size:12px; color:#64748b;">No log entries found.</p>
   <% end %>
 
-  <div class="mt-8 text-sm">
-    <p><strong>Printed On:</strong> <%= Time.current.strftime("%d %b %Y, %I:%M %p") %></p>
+  <div style="margin-top:30px; border-top:1px solid #cbd5e1; padding-top:10px; font-size:10px; color:#64748b; text-align:center;">
+    Generated by FAAN Operations Admin System
   </div>
 </div>
