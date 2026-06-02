@@ -92,79 +92,94 @@
               Close Menu
             </button>
           </div>
+<nav class="flex-1 px-4 py-3 space-y-1 text-sm overflow-y-auto">
+  <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
 
-          <nav class="flex-1 px-4 py-3 space-y-1 text-sm overflow-y-auto">
-            <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
+  <% if current_user.super_admin? %>
+    <div class="border-t border-slate-200 my-2"></div>
 
-            <% if current_user.super_admin? || current_user.admin_officer? %>
-              <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
-              <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
-              <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
-              <%= link_to "Audit Logs", audit_logs_path, class: nav_link_class(audit_logs_path) %>
-            <% end %>
+    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+      System Administration
+    </p>
 
-            <% if current_user.unit_officer? %>
-              <%= link_to "Incoming Memos", incoming_dispatches_path, class: nav_link_class(incoming_dispatches_path) %>
-            <% end %>
+    <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
+    <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
+    <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
+    <%= link_to "Duty Roster", duty_rosters_path, class: nav_link_class(duty_rosters_path) %>
+    <%= link_to "Audit Logs", audit_logs_path, class: nav_link_class(audit_logs_path) %>
+  <% end %>
 
-            <% if current_user.super_admin? || current_user.admin_officer? || current_user.unit_officer? || current_user.reviewer? %>
-              <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
-            <% end %>
+  <% if current_user.unit_officer? %>
+    <div class="border-t border-slate-200 my-2"></div>
 
-           <% if current_user.dispatch_officer? || current_user.admin_officer? || current_user.super_admin? %>
-  <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
-  <%= link_to "New Dispatch", new_dispatch_path, class: nav_link_class(new_dispatch_path) %>
-  <%= link_to "Pending Acknowledgements", pending_acknowledgement_dispatches_path, class: nav_link_class(pending_acknowledgement_dispatches_path) %>
-  <%= link_to "Ready to File", ready_to_file_dispatches_path, class: nav_link_class(ready_to_file_dispatches_path) %>
-  <%= link_to "Filed Dispatches", filed_dispatches_path, class: nav_link_class(filed_dispatches_path) %>
-<%= link_to "Duty Roster",
-    duty_rosters_path,
-    class: nav_link_class(duty_rosters_path) %>
-  <!-- Records Archive -->
-  <div class="border-t border-slate-200 my-2"></div>
+    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+      Unit Office
+    </p>
 
-  <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
-    Records Archive
-  </p>
-<%= link_to "Operations Staff",
-    operation_staffs_path,
-    class: nav_link_class(operation_staffs_path) %>
+    <%= link_to "Incoming Memos", incoming_dispatches_path, class: nav_link_class(incoming_dispatches_path) %>
+  <% end %>
 
-  <%= link_to "Records Archive", records_path,
-      class: nav_link_class(records_path) %>
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.unit_officer? || current_user.reviewer? %>
+    <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
+  <% end %>
 
-  <%= link_to "Add Record", new_record_path,
-      class: nav_link_class(new_record_path) %>
+  <% if current_user.dispatch_officer? || current_user.admin_officer? || current_user.super_admin? %>
+    <div class="border-t border-slate-200 my-2"></div>
 
-  <%= link_to "Daily Filing Log", daily_filing_log_path,
-      class: nav_link_class(daily_filing_log_path) %>
-<% end %>
+    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+      Dispatch
+    </p>
 
-            <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
-              <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
-              <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
-            <% end %>
+    <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
+    <%= link_to "New Dispatch", new_dispatch_path, class: nav_link_class(new_dispatch_path) %>
+    <%= link_to "Pending Acknowledgements", pending_acknowledgement_dispatches_path, class: nav_link_class(pending_acknowledgement_dispatches_path) %>
+    <%= link_to "Ready to File", ready_to_file_dispatches_path, class: nav_link_class(ready_to_file_dispatches_path) %>
+    <%= link_to "Filed Dispatches", filed_dispatches_path, class: nav_link_class(filed_dispatches_path) %>
 
-            <% if current_user.super_admin? || current_user.admin_officer? %>
-              <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
-            <% end %>
+    <div class="border-t border-slate-200 my-2"></div>
 
-           <%= link_to "Monthly Reports",
-    reports_monthly_reports_path,
-    class: nav_link_class(reports_monthly_reports_path) %>
+    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+      Records Archive
+    </p>
 
-            <% unread_count = current_user.notifications.unread.count %>
+    <%= link_to "Operations Staff", operation_staffs_path, class: nav_link_class(operation_staffs_path) %>
+    <%= link_to "Records Archive", records_path, class: nav_link_class(records_path) %>
+    <%= link_to "Add Record", new_record_path, class: nav_link_class(new_record_path) %>
+    <%= link_to "Daily Filing Log", daily_filing_log_path, class: nav_link_class(daily_filing_log_path) %>
+  <% end %>
 
-            <%= link_to notifications_path, class: "relative flex items-center px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-800" do %>
-              🔔 Notifications
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
+    <div class="border-t border-slate-200 my-2"></div>
 
-              <% if unread_count.positive? %>
-                <span class="absolute top-2 right-3 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
-                  <%= unread_count %>
-                </span>
-              <% end %>
-            <% end %>
-          </nav>
+    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+      Reviews & Reports
+    </p>
+
+    <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
+    <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
+  <% end %>
+
+  <% if current_user.super_admin? || current_user.admin_officer? %>
+    <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
+  <% end %>
+
+  <%= link_to "Monthly Reports",
+      reports_monthly_reports_path,
+      class: nav_link_class(reports_monthly_reports_path) %>
+
+  <% unread_count = current_user.notifications.unread.count %>
+
+  <%= link_to notifications_path,
+      class: "relative flex items-center px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-800" do %>
+    🔔 Notifications
+
+    <% if unread_count.positive? %>
+      <span class="absolute top-2 right-3 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
+        <%= unread_count %>
+      </span>
+    <% end %>
+  <% end %>
+</nav>
 
           <div class="px-4 py-3 border-t border-slate-200">
             <%= link_to "My Account",

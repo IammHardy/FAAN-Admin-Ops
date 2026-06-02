@@ -1,9 +1,9 @@
 class DutyRostersController < ApplicationController
   before_action :authenticate_user!
-  before_action :require_admin_access!
+  before_action :require_super_admin!
   before_action :set_duty_roster, only: [:edit, :update, :destroy]
 
-  def index
+ def index
   @filter = params[:filter].presence || "this_week"
 
   @duty_rosters = DutyRoster.includes(:operation_staff)
@@ -23,10 +23,13 @@ class DutyRostersController < ApplicationController
     @duty_rosters = @duty_rosters.where(duty_date: start_date..end_date)
   end
 
-  @duty_rosters = @duty_rosters
-                    .order(duty_date: :asc, duty_area: :asc, created_at: :asc)
-                    .page(params[:page])
-                    .per(10)
+  @duty_rosters = @duty_rosters.order(
+    duty_date: :asc,
+    duty_area: :asc,
+    created_at: :asc
+  )
+
+  @grouped_duty_rosters = @duty_rosters.group_by(&:duty_date)
 end
 
   def new

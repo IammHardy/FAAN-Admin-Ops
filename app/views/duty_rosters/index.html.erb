@@ -48,73 +48,64 @@
       duty_rosters_path(filter: "all"),
       class: "px-4 py-2 rounded-lg text-sm #{params[:filter] == 'all' ? 'bg-green-700 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'}" %>
 </div>
-<div class="bg-white border border-slate-200 shadow-sm overflow-x-auto">
-  <table class="min-w-full text-sm">
-    <thead class="bg-slate-100 text-slate-700">
-      <tr>
-        <th class="text-left p-3">Date</th>
-        <th class="text-left p-3">Staff</th>
-        <th class="text-left p-3">Duty Area</th>
-        <th class="text-left p-3">Shift</th>
-        <th class="text-left p-3">Status</th>
-        <th class="text-left p-3">Actions</th>
-      </tr>
-    </thead>
 
-    <tbody>
-      <% @duty_rosters.each do |roster| %>
-        <tr class="border-t hover:bg-slate-50">
-          <td class="p-3">
-            <%= roster.duty_date&.strftime("%d %b %Y") || "—" %>
-          </td>
+<div class="space-y-6">
+  <% @grouped_duty_rosters.each do |date, rosters| %>
+    <div class="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden">
+      <div class="bg-slate-100 px-5 py-4 border-b border-slate-200">
+        <h2 class="font-bold text-slate-900">
+          <%= date.strftime("%A, %d %B %Y") %>
+        </h2>
 
-          <td class="p-3 font-medium">
-            <%= roster.operation_staff&.display_name || "—" %>
-          </td>
+        <p class="text-sm text-slate-500 mt-1">
+          <%= pluralize(rosters.count, "staff") %> on duty
+        </p>
+      </div>
 
-          <td class="p-3">
-            <%= roster.duty_area %>
-          </td>
+      <div class="divide-y divide-slate-100">
+        <% rosters.each do |roster| %>
+          <div class="px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <p class="font-semibold text-slate-900">
+                <%= roster.operation_staff.display_name %>
+              </p>
 
-          <td class="p-3">
-            <%= roster.shift_name.presence || "—" %>
-          </td>
+              <p class="text-sm text-slate-500">
+                <%= roster.duty_area %>
+                <% if roster.shift_name.present? %>
+                  • <%= roster.shift_name %>
+                <% end %>
+              </p>
+            </div>
 
-          <td class="p-3">
-            <% if roster.active? %>
-              <span class="text-green-700 font-medium">Active</span>
-            <% else %>
-              <span class="text-red-600">Inactive</span>
-            <% end %>
-          </td>
+            <div class="flex items-center gap-4">
+              <% if roster.active? %>
+                <span class="text-sm text-green-700 font-medium">Active</span>
+              <% else %>
+                <span class="text-sm text-red-600">Inactive</span>
+              <% end %>
 
-          <td class="p-3">
-            <div class="flex gap-3">
               <%= link_to "Edit",
                   edit_duty_roster_path(roster),
-                  class: "text-blue-700 font-medium" %>
+                  class: "text-blue-700 font-medium text-sm" %>
 
               <%= button_to "Delete",
                   duty_roster_path(roster),
                   method: :delete,
                   form: { data: { turbo_confirm: "Delete this duty roster?" } },
-                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer text-sm" %>
             </div>
-          </td>
-        </tr>
-      <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 
-      <% if @duty_rosters.empty? %>
-        <tr>
-          <td colspan="6" class="p-8 text-center text-slate-500">
-            No duty roster has been created yet.
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <% if @grouped_duty_rosters.empty? %>
+    <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500">
+      No duty roster found for this filter.
+    </div>
+  <% end %>
 </div>
 
-<div class="mt-6">
-  <%= paginate @duty_rosters if respond_to?(:paginate) %>
-</div>
+
