@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_02_192324) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -327,7 +327,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_192324) do
     t.bigint "department_id"
     t.bigint "unit_id"
     t.boolean "active", default: true, null: false
-    t.boolean "requires_duty_session"
+    t.boolean "requires_duty_session", default: false
     t.index ["active"], name: "index_users_on_active"
     t.index ["department_id"], name: "index_users_on_department_id"
     t.index ["email"], name: "index_users_on_email", unique: true

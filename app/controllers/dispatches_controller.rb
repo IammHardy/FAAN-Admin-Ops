@@ -117,20 +117,21 @@ class DispatchesController < ApplicationController
       .recent_first
 
     if params[:reference_number].present?
-      @dispatches = @dispatches.where("reference_number ILIKE ?", "%#{params[:reference_number]}%")
+      @dispatches = @dispatches.where(
+        "reference_number ILIKE ?",
+        "%#{params[:reference_number]}%"
+      )
     end
 
     if params[:subject].present?
-      @dispatches = @dispatches.where("subject ILIKE ?", "%#{params[:subject]}%")
+      @dispatches = @dispatches.where(
+        "subject ILIKE ?",
+        "%#{params[:subject]}%"
+      )
     end
 
-    if params[:status].present?
-      @dispatches = @dispatches.where(status: params[:status])
-    end
-
-    if params[:memo_date].present?
-      @dispatches = @dispatches.where(memo_date: params[:memo_date])
-    end
+    @dispatches = @dispatches.where(status: params[:status]) if params[:status].present?
+    @dispatches = @dispatches.where(memo_date: params[:memo_date]) if params[:memo_date].present?
 
     @dispatches = @dispatches.page(params[:page]).per(15)
 
@@ -259,6 +260,11 @@ class DispatchesController < ApplicationController
   def mark_filed
     @dispatch.mark_as_filed!
 
+    notify_dispatch_managers(
+      title: "Dispatch Filed",
+      message: "Dispatch #{@dispatch.reference_number} has been filed."
+    )
+
     AuditLogger.call(
       user: current_user,
       action: "mark_filed",
@@ -303,10 +309,14 @@ class DispatchesController < ApplicationController
   def sync_dispatch_recipients
     unit_ids = params.dig(:dispatch, :receiving_unit_ids)&.reject(&:blank?) || []
 
-    @dispatch.dispatch_recipients.where.not(receiving_unit_id: unit_ids).destroy_all
+    @dispatch.dispatch_recipients
+      .where.not(receiving_unit_id: unit_ids)
+      .destroy_all
 
     unit_ids.each do |unit_id|
-      @dispatch.dispatch_recipients.find_or_create_by!(receiving_unit_id: unit_id) do |recipient|
+      @dispatch.dispatch_recipients.find_or_create_by!(
+        receiving_unit_id: unit_id
+      ) do |recipient|
         recipient.status = :dispatched
       end
     end
@@ -327,7 +337,6 @@ class DispatchesController < ApplicationController
   def dispatch_managers
     User.active.where(role: [:super_admin, :admin_officer, :dispatch_officer])
   end
-
 
   def notify_dispatch_managers(title:, message:)
     dispatch_managers.find_each do |user|
@@ -371,7 +380,9 @@ class DispatchesController < ApplicationController
     return if current_user.super_admin? || current_user.admin_officer? || current_user.dispatch_officer?
 
     if current_user.unit_officer?
-      return if @dispatch.dispatch_recipients.exists?(receiving_unit_id: current_user.unit_id)
+      return if @dispatch.dispatch_recipients.exists?(
+        receiving_unit_id: current_user.unit_id
+      )
     end
 
     redirect_to dashboard_path, error: "You are not authorized to access this dispatch."
