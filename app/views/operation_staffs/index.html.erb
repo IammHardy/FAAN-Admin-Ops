@@ -13,6 +13,35 @@
       new_operation_staff_path,
       class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
 </div>
+<div class="bg-white border border-slate-200 shadow-sm p-4 mb-6">
+  <%= form_with url: operation_staffs_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-5 gap-3" do %>
+    <%= text_field_tag :query,
+        params[:query],
+        placeholder: "Search name or staff no...",
+        class: "rounded-lg border-slate-300" %>
+
+    <%= select_tag :unit,
+        options_for_select([["All Units", ""]] + OperationStaff.distinct.order(:unit).pluck(:unit).compact_blank.map { |u| [u, u] }, params[:unit]),
+        class: "rounded-lg border-slate-300" %>
+
+    <%= select_tag :designation,
+        options_for_select([["All Designations", ""]] + OperationStaff.distinct.order(:designation).pluck(:designation).compact_blank.map { |d| [d, d] }, params[:designation]),
+        class: "rounded-lg border-slate-300" %>
+
+    <%= select_tag :employment_status,
+        options_for_select([["All Status", ""], ["Permanent Staff", "Permanent Staff"], ["Contract Staff", "Contract Staff"], ["NYSC", "NYSC"], ["IT Student", "IT Student"]], params[:employment_status]),
+        class: "rounded-lg border-slate-300" %>
+
+    <div class="flex gap-2">
+      <%= submit_tag "Filter",
+          class: "bg-slate-900 text-white px-4 py-2 rounded-lg" %>
+
+      <%= link_to "Reset",
+          operation_staffs_path,
+          class: "border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50" %>
+    </div>
+  <% end %>
+</div>
 
 <div class="bg-white shadow overflow-x-auto">
   <table class="min-w-full text-sm">

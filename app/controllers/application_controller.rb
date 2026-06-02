@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 
   add_flash_types :success, :error, :warning, :info
   layout :layout_by_resource
-  
+  helper_method :current_duty_session, :current_duty_officer
 
   private
 
@@ -88,12 +88,14 @@ end
   end
 end
 
-helper_method :current_duty_session, :current_duty_officer
-
 def current_duty_session
   return nil unless user_signed_in?
 
-  @current_duty_session ||= current_user.active_duty_session
+  @current_duty_session ||= current_user
+    .duty_sessions
+    .active
+    .order(started_at: :desc)
+    .first
 end
 
 def current_duty_officer

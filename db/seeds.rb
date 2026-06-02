@@ -13,6 +13,13 @@ if Rails.env.development? || Rails.env.test?
   LogReport.destroy_all
   DispatchRecipient.destroy_all
   Dispatch.destroy_all
+
+  DutySession.destroy_all
+  DutyRoster.destroy_all
+  Record.destroy_all
+  OperationStaff.destroy_all
+  MonthlyReport.destroy_all
+
   User.destroy_all
   Unit.destroy_all
   Department.destroy_all

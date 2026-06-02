@@ -22,4 +22,24 @@ class OperationStaff < ApplicationRecord
   def display_name
     designation.present? ? "#{full_name} (#{designation})" : full_name
   end
+
+  def self.search(params)
+  staff = all
+
+  if params[:query].present?
+    q = "%#{params[:query]}%"
+
+    staff = staff.where(
+      "full_name ILIKE :q OR staff_number ILIKE :q OR designation ILIKE :q OR unit ILIKE :q",
+      q: q
+    )
+  end
+
+  staff = staff.where(unit: params[:unit]) if params[:unit].present?
+  staff = staff.where(designation: params[:designation]) if params[:designation].present?
+  staff = staff.where(employment_status: params[:employment_status]) if params[:employment_status].present?
+  staff = staff.where(duty_area: params[:duty_area]) if params[:duty_area].present?
+
+  staff
+end
 end

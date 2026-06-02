@@ -50,12 +50,13 @@ class RecordsController < ApplicationController
   end
 
   def daily_log
-    @selected_date = params[:filed_date].presence || Date.current.to_s
+  @selected_date = params[:filed_date].presence || Date.current.to_s
 
-    @records = Record.where(filed_date: @selected_date)
-                     .includes(:filed_by)
-                     .order(:category, :title)
-  end
+  @records = Record
+    .where(filed_date: @selected_date)
+    .includes(:filed_by, :operation_staff, duty_session: :operation_staff)
+    .order(:category, :title)
+end
 
   private
 

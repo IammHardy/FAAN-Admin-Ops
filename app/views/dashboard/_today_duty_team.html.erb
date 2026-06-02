@@ -1,5 +1,5 @@
-<div class="bg-white border border-slate-200 shadow-sm rounded-xl p-6 mb-6">
-  <div class="flex items-center justify-between mb-4">
+<div class="w-full bg-white border border-slate-200 shadow-sm rounded-xl p-6 mb-6">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-5">
     <div>
       <h2 class="text-lg font-semibold text-slate-900">
         Today's Admin Office Duty Team
@@ -10,31 +10,28 @@
       </p>
     </div>
 
-    <div class="text-sm text-slate-500">
+    <p class="text-sm text-slate-500">
       <%= Date.current.strftime("%A, %d %B %Y") %>
-    </div>
+    </p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <div class="rounded-xl border border-slate-200 p-4 bg-slate-50">
-      <h3 class="font-semibold text-slate-800 mb-3">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 min-h-[120px]">
+      <h3 class="text-sm font-semibold text-slate-800 mb-3">
         Always Present
       </h3>
 
       <% if @always_present_staff.any? %>
         <div class="space-y-2">
           <% @always_present_staff.each do |staff| %>
-            <div class="flex justify-between items-center text-sm">
-              <span class="font-medium text-slate-800">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 rounded-lg bg-white border border-slate-100 px-3 py-2">
+              <span class="text-sm font-medium text-slate-800">
                 <%= staff.full_name %>
               </span>
 
-              <% if staff.designation.present? %>
-                <span class="text-slate-500">
-                  <%= staff.designation %>
-                </span>
-              <% end %>
+              <span class="text-xs text-slate-500">
+                <%= staff.designation.presence || "Staff" %>
+              </span>
             </div>
           <% end %>
         </div>
@@ -45,24 +42,22 @@
       <% end %>
     </div>
 
-    <div class="rounded-xl border border-green-200 p-4 bg-green-50">
-      <h3 class="font-semibold text-slate-800 mb-3">
+    <div class="rounded-xl border border-green-200 bg-green-50 p-4 min-h-[120px]">
+      <h3 class="text-sm font-semibold text-slate-800 mb-3">
         On Duty Today
       </h3>
 
       <% if @today_admin_rosters.any? %>
         <div class="space-y-2">
           <% @today_admin_rosters.each do |roster| %>
-            <div class="flex justify-between items-center text-sm">
-              <span class="font-medium text-slate-800">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 rounded-lg bg-white border border-green-100 px-3 py-2">
+              <span class="text-sm font-medium text-slate-800">
                 <%= roster.operation_staff.full_name %>
               </span>
 
-              <% if roster.operation_staff.designation.present? %>
-                <span class="text-slate-500">
-                  <%= roster.operation_staff.designation %>
-                </span>
-              <% end %>
+              <span class="text-xs text-slate-500">
+                <%= roster.operation_staff.designation.presence || "Staff" %>
+              </span>
             </div>
           <% end %>
         </div>
@@ -72,6 +67,5 @@
         </p>
       <% end %>
     </div>
-
   </div>
 </div>

@@ -1,45 +1,104 @@
 <div class="flex justify-between items-center mb-6">
   <div>
-    <h1 class="text-2xl font-bold text-gray-900">Daily Filing Log</h1>
-    <p class="text-gray-600">View everything filed on a specific day.</p>
+    <h1 class="text-2xl font-bold text-slate-900">Daily Filing Log</h1>
+    <p class="text-slate-600">View all records filed on a selected date.</p>
   </div>
 </div>
 
-<div class="bg-white p-4 rounded-xl shadow mb-6">
-  <%= form_with url: daily_filing_log_path, method: :get, local: true, class: "flex gap-3" do %>
-    <%= date_field_tag :filed_date, @selected_date, class: "rounded-lg border-gray-300" %>
-    <%= submit_tag "View Log", class: "bg-gray-900 text-white px-4 py-2 rounded-lg" %>
+<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
+  <%= form_with url: daily_filing_log_path, method: :get, local: true, class: "flex flex-col md:flex-row gap-3" do %>
+    <%= date_field_tag :filed_date, @selected_date, class: "rounded-lg border-slate-300" %>
+    <%= submit_tag "View Log", class: "bg-slate-900 text-white px-4 py-2 rounded-lg" %>
   <% end %>
 </div>
 
-<div class="bg-white rounded-xl shadow overflow-x-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+    <p class="text-sm text-slate-500">Total Filed</p>
+    <p class="text-2xl font-bold text-slate-900"><%= @records.count %></p>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+    <p class="text-sm text-slate-500">Staff Documents</p>
+    <p class="text-2xl font-bold text-slate-900">
+      <%= @records.select(&:staff_document?).count %>
+    </p>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+    <p class="text-sm text-slate-500">General Records</p>
+    <p class="text-2xl font-bold text-slate-900">
+      <%= @records.select(&:general_record?).count %>
+    </p>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
   <table class="min-w-full text-sm">
-    <thead class="bg-gray-100 text-gray-700">
+    <thead class="bg-slate-100 text-slate-700">
       <tr>
+        <th class="text-left p-3">Ref No</th>
         <th class="text-left p-3">Title</th>
         <th class="text-left p-3">Category</th>
+        <th class="text-left p-3">Staff Folder</th>
         <th class="text-left p-3">Filed By</th>
+        <th class="text-left p-3">Officer on Duty</th>
         <th class="text-left p-3">Physical Location</th>
         <th class="text-left p-3">Scan</th>
-        <th class="text-left p-3"></th>
+        <th class="text-left p-3">Actions</th>
       </tr>
     </thead>
 
     <tbody>
       <% @records.each do |record| %>
-        <tr class="border-t">
-          <td class="p-3 font-medium"><%= record.title %></td>
-          <td class="p-3"><%= record.category %></td>
-          <td class="p-3"><%= record.filed_by&.email %></td>
-          <td class="p-3"><%= record.physical_location %></td>
-          <td class="p-3"><%= record.attachment.attached? ? "Yes" : "No" %></td>
-          <td class="p-3"><%= link_to "View", record_path(record), class: "text-green-700 font-medium" %></td>
+        <tr class="border-t hover:bg-slate-50">
+          <td class="p-3">
+            <%= record.reference_number.presence || "—" %>
+          </td>
+
+          <td class="p-3 font-medium text-slate-900">
+            <%= record.title %>
+          </td>
+
+          <td class="p-3">
+            <%= record.category %>
+          </td>
+
+          <td class="p-3">
+            <%= record.operation_staff&.full_name || "General Record" %>
+          </td>
+
+          <td class="p-3">
+            <%= record.filed_by&.display_name || "—" %>
+          </td>
+
+          <td class="p-3">
+            <%= record.duty_session&.operation_staff&.full_name || "Not captured" %>
+          </td>
+
+          <td class="p-3">
+            <%= record.physical_location %>
+          </td>
+
+          <td class="p-3">
+            <% if record.attachment.attached? %>
+              <span class="text-green-700 font-medium">Yes</span>
+            <% else %>
+              <span class="text-slate-400">No</span>
+            <% end %>
+          </td>
+
+          <td class="p-3">
+            <%= link_to "View", record_path(record), class: "text-green-700 font-medium" %>
+          </td>
         </tr>
       <% end %>
 
       <% if @records.empty? %>
         <tr>
-          <td colspan="6" class="p-6 text-center text-gray-500">No records filed on this date.</td>
+          <td colspan="9" class="p-8 text-center text-slate-500">
+            No records filed on this date.
+          </td>
         </tr>
       <% end %>
     </tbody>

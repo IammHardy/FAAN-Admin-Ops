@@ -4,25 +4,64 @@ class DutyRostersController < ApplicationController
   before_action :set_duty_roster, only: [:edit, :update, :destroy]
 
   def index
-    @duty_rosters = DutyRoster.includes(:operation_staff)
-                               .order(duty_date: :desc, created_at: :desc)
-                               .page(params[:page])
-                               .per(20)
+  @filter = params[:filter].presence || "this_week"
+
+  @duty_rosters = DutyRoster.includes(:operation_staff)
+
+  case @filter
+  when "today"
+    @duty_rosters = @duty_rosters.where(duty_date: Date.current)
+  when "next_week"
+    start_date = Date.current.next_week(:monday)
+    end_date = start_date.end_of_week(:sunday)
+    @duty_rosters = @duty_rosters.where(duty_date: start_date..end_date)
+  when "all"
+    @duty_rosters = @duty_rosters
+  else
+    start_date = Date.current.beginning_of_week(:monday)
+    end_date = Date.current.end_of_week(:sunday)
+    @duty_rosters = @duty_rosters.where(duty_date: start_date..end_date)
   end
+
+  @duty_rosters = @duty_rosters
+                    .order(duty_date: :asc, duty_area: :asc, created_at: :asc)
+                    .page(params[:page])
+                    .per(10)
+end
 
   def new
     @duty_roster = DutyRoster.new(duty_date: Date.current, active: true)
   end
 
   def create
-    @duty_roster = DutyRoster.new(duty_roster_params)
+  staff_ids = params.dig(:duty_roster, :operation_staff_ids)&.reject(&:blank?) || []
 
-    if @duty_roster.save
-      redirect_to duty_rosters_path, notice: "Duty roster created successfully."
-    else
-      render :new, status: :unprocessable_entity
+  if staff_ids.empty?
+    @duty_roster = DutyRoster.new(duty_roster_params)
+    @duty_roster.errors.add(:operation_staff, "must select at least one staff")
+    return render :new, status: :unprocessable_entity
+  end
+
+  created_count = 0
+
+  staff_ids.each do |staff_id|
+    duty_roster = DutyRoster.find_or_initialize_by(
+      operation_staff_id: staff_id,
+      duty_date: duty_roster_params[:duty_date],
+      duty_area: duty_roster_params[:duty_area]
+    )
+
+    duty_roster.shift_name = duty_roster_params[:shift_name]
+    duty_roster.active = duty_roster_params[:active]
+
+    if duty_roster.save
+      created_count += 1
     end
   end
+
+  redirect_to duty_rosters_path,
+              notice: "#{created_count} duty roster record(s) created successfully."
+end
 
   def edit
   end
@@ -106,12 +145,12 @@ class DutyRostersController < ApplicationController
 end
 
   def duty_roster_params
-    params.require(:duty_roster).permit(
-      :operation_staff_id,
-      :duty_date,
-      :duty_area,
-      :shift_name,
-      :active
-    )
-  end
+  params.require(:duty_roster).permit(
+    :operation_staff_id,
+    :duty_date,
+    :duty_area,
+    :shift_name,
+    :active
+  )
+end
 end

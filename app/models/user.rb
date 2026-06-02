@@ -3,24 +3,41 @@ class User < ApplicationRecord
 
   belongs_to :department, optional: true
   belongs_to :unit, optional: true
+
   has_many :notifications, dependent: :destroy
+  has_many :duty_sessions, dependent: :destroy
 
-  has_many :staff_records,
-         class_name: "Record",
-         foreign_key: :staff_id,
-         dependent: :nullify
+  has_many :created_dispatches,
+           class_name: "Dispatch",
+           foreign_key: :created_by_id,
+           dependent: :nullify
 
-  has_many :created_dispatches, class_name: "Dispatch", foreign_key: :created_by_id, dependent: :nullify
-  has_many :dispatched_dispatches, class_name: "Dispatch", foreign_key: :dispatched_by_id, dependent: :nullify
+  has_many :dispatched_dispatches,
+           class_name: "Dispatch",
+           foreign_key: :dispatched_by_id,
+           dependent: :nullify
 
-  has_many :submitted_log_reports, class_name: "LogReport", foreign_key: :submitted_by_id, dependent: :nullify
-  has_many :entered_log_reports, class_name: "LogReport", foreign_key: :entered_by_id, dependent: :restrict_with_exception
+  has_many :submitted_log_reports,
+           class_name: "LogReport",
+           foreign_key: :submitted_by_id,
+           dependent: :nullify
 
-  has_many :created_incidents, class_name: "Incident", foreign_key: :created_by_id, dependent: :restrict_with_exception
-  has_many :reviewed_incidents, class_name: "Incident", foreign_key: :reviewed_by_id, dependent: :nullify
+  has_many :entered_log_reports,
+           class_name: "LogReport",
+           foreign_key: :entered_by_id,
+           dependent: :restrict_with_exception
+
+  has_many :created_incidents,
+           class_name: "Incident",
+           foreign_key: :created_by_id,
+           dependent: :restrict_with_exception
+
+  has_many :reviewed_incidents,
+           class_name: "Incident",
+           foreign_key: :reviewed_by_id,
+           dependent: :nullify
 
   has_many :audit_logs, dependent: :destroy
-  validates :full_name, presence: true
 
   enum :role, {
     super_admin: 0,
@@ -33,46 +50,45 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :role, presence: true
 
-  has_many :duty_sessions, dependent: :destroy
-
-def active_duty_session
-  duty_sessions.active.order(started_at: :desc).first
-end
-
-def duty_session_required?
-  requires_duty_session?
-end
-
   scope :active, -> { where(active: true) }
 
   def display_name
     full_name.presence || email
   end
 
-  def admin_level?
-  super_admin? || admin_officer?
-end
-
-def can_manage_dispatches?
-  super_admin? || admin_officer? || dispatch_officer?
-end
-
-def can_access_logs?
-  super_admin? || admin_officer? || unit_officer? || reviewer?
-end
-
-def can_access_incidents?
-  super_admin? || admin_officer? || reviewer?
-end
-
-def can_access_reports?
-  super_admin? || admin_officer? || reviewer?
-end
-def send_devise_notification(notification, *args)
-  if notification == :reset_password_instructions
-    BrevoEmailService.send_reset_password_email(self, args.first)
-  else
-    super
+  def active_duty_session
+    duty_sessions.active.order(started_at: :desc).first
   end
-end
+
+  def duty_session_required?
+    requires_duty_session?
+  end
+
+  def admin_level?
+    super_admin? || admin_officer?
+  end
+
+  def can_manage_dispatches?
+    super_admin? || admin_officer? || dispatch_officer?
+  end
+
+  def can_access_logs?
+    super_admin? || admin_officer? || unit_officer? || reviewer?
+  end
+
+  def can_access_incidents?
+    super_admin? || admin_officer? || reviewer?
+  end
+
+  def can_access_reports?
+    super_admin? || admin_officer? || reviewer?
+  end
+
+  def send_devise_notification(notification, *args)
+    if notification == :reset_password_instructions
+      BrevoEmailService.send_reset_password_email(self, args.first)
+    else
+      super
+    end
+  end
 end

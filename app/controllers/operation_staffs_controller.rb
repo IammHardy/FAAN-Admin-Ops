@@ -4,11 +4,12 @@ class OperationStaffsController < ApplicationController
                 only: [:show, :edit, :update, :destroy]
 
   def index
-    @operation_staffs = OperationStaff
-                          .alphabetical
-                          .page(params[:page])
-                          .per(15)
-  end
+  @operation_staffs = OperationStaff
+                        .search(params)
+                        .alphabetical
+                        .page(params[:page])
+                        .per(15)
+end
 
  def show
   @records = Record.search(
@@ -75,7 +76,7 @@ end
       :employment_status,
       :physical_folder_location,
       :notes,
-      :can_be_on_duty
+      :can_be_on_duty,
       :duty_area,
       :always_present
     )

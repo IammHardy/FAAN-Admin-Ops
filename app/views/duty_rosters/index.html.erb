@@ -31,6 +31,23 @@
         class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
   <% end %>
 </div>
+<div class="flex flex-wrap gap-2 mb-6">
+  <%= link_to "Today",
+      duty_rosters_path(filter: "today"),
+      class: "px-4 py-2 rounded-lg text-sm #{params[:filter] == 'today' ? 'bg-green-700 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'}" %>
+
+  <%= link_to "This Week",
+      duty_rosters_path(filter: "this_week"),
+      class: "px-4 py-2 rounded-lg text-sm #{params[:filter].blank? || params[:filter] == 'this_week' ? 'bg-green-700 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'}" %>
+
+  <%= link_to "Next Week",
+      duty_rosters_path(filter: "next_week"),
+      class: "px-4 py-2 rounded-lg text-sm #{params[:filter] == 'next_week' ? 'bg-green-700 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'}" %>
+
+  <%= link_to "All",
+      duty_rosters_path(filter: "all"),
+      class: "px-4 py-2 rounded-lg text-sm #{params[:filter] == 'all' ? 'bg-green-700 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'}" %>
+</div>
 <div class="bg-white border border-slate-200 shadow-sm overflow-x-auto">
   <table class="min-w-full text-sm">
     <thead class="bg-slate-100 text-slate-700">
