@@ -3,33 +3,39 @@ class DutyRostersController < ApplicationController
   before_action :require_super_admin!
   before_action :set_duty_roster, only: [:edit, :update, :destroy]
 
- def index
+def index
   @filter = params[:filter].presence || "this_week"
 
-  @duty_rosters = DutyRoster.includes(:operation_staff)
+  scope = DutyRoster.includes(:operation_staff)
 
   case @filter
   when "today"
-    @duty_rosters = @duty_rosters.where(duty_date: Date.current)
+    scope = scope.where(duty_date: Date.current)
   when "next_week"
     start_date = Date.current.next_week(:monday)
     end_date = start_date.end_of_week(:sunday)
-    @duty_rosters = @duty_rosters.where(duty_date: start_date..end_date)
+    scope = scope.where(duty_date: start_date..end_date)
   when "all"
-    @duty_rosters = @duty_rosters
+    scope = scope
   else
     start_date = Date.current.beginning_of_week(:monday)
     end_date = Date.current.end_of_week(:sunday)
-    @duty_rosters = @duty_rosters.where(duty_date: start_date..end_date)
+    scope = scope.where(duty_date: start_date..end_date)
   end
 
-  @duty_rosters = @duty_rosters.order(
+  scope = scope.order(
     duty_date: :asc,
     duty_area: :asc,
     created_at: :asc
   )
 
-  @grouped_duty_rosters = @duty_rosters.group_by(&:duty_date)
+  if @filter == "all"
+    @duty_rosters = scope.page(params[:page]).per(30)
+    @grouped_duty_rosters = @duty_rosters.group_by(&:duty_date)
+  else
+    @duty_rosters = scope
+    @grouped_duty_rosters = @duty_rosters.group_by(&:duty_date)
+  end
 end
 
   def new
@@ -126,27 +132,42 @@ end
     ]
   }
 
+  created_count = 0
+  skipped_count = 0
+
   schedule.each do |day_offset, names|
     duty_date = week_start + day_offset.days
 
     names.each do |name|
       staff = OperationStaff.find_by(full_name: name)
-      next unless staff
 
-      DutyRoster.find_or_create_by!(
+      unless staff
+        skipped_count += 1
+        next
+      end
+
+      roster = DutyRoster.find_or_initialize_by(
         operation_staff: staff,
         duty_date: duty_date,
         duty_area: "Admin Office"
-      ) do |roster|
+      )
+
+      if roster.new_record?
         roster.active = true
+        roster.save!
+        created_count += 1
+      else
+        skipped_count += 1
       end
     end
   end
 
+  redirect_to duty_rosters_path(filter: "next_week"),
+              notice: "#{created_count} roster record(s) generated. #{skipped_count} skipped."
+rescue ArgumentError
   redirect_to duty_rosters_path,
-              notice: "Admin Office weekly roster generated successfully."
+              alert: "Please select a valid week start date."
 end
-
   def duty_roster_params
   params.require(:duty_roster).permit(
     :operation_staff_id,
