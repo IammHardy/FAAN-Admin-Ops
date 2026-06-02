@@ -1,0 +1,27 @@
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-gray-900"><%= @record.title %></h1>
+
+  <div class="space-x-2">
+    <%= link_to "Edit", edit_record_path(@record), class: "bg-gray-900 text-white px-4 py-2 rounded-lg" %>
+    <%= link_to "Back", records_path, class: "bg-gray-200 text-gray-800 px-4 py-2 rounded-lg" %>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl shadow p-6 space-y-4">
+  <p><strong>Category:</strong> <%= @record.category %></p>
+  <p><strong>Document Date:</strong> <%= @record.document_date || "Not provided" %></p>
+  <p><strong>Date Filed:</strong> <%= @record.filed_date %></p>
+  <p><strong>Filed By:</strong> <%= @record.filed_by&.email %></p>
+  <p><strong>Signed By:</strong> <%= @record.signed_by.presence || "Not provided" %></p>
+  <p><strong>Recipient / Source:</strong> <%= @record.recipient_or_source.presence || "Not provided" %></p>
+  <p><strong>Reference Number:</strong> <%= @record.reference_number.presence || "Not provided" %></p>
+  <p><strong>Physical Location:</strong> <%= @record.physical_location %></p>
+  <p><strong>Notes:</strong> <%= simple_format(@record.notes.presence || "No notes") %></p>
+
+  <% if @record.attachment.attached? %>
+    <div>
+      <strong>Scanned Copy:</strong><br>
+      <%= link_to "View / Download Attachment", url_for(@record.attachment), target: "_blank", class: "text-green-700 font-medium" %>
+    </div>
+  <% end %>
+</div>

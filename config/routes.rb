@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
- 
+  get "operation_staffs/index"
+  get "operation_staffs/show"
+  get "operation_staffs/new"
+  get "operation_staffs/create"
+  get "operation_staffs/edit"
+  get "operation_staffs/update"
+  get "operation_staffs/destroy"
   devise_for :users
 
   root "dashboard#index"
@@ -17,6 +23,9 @@ Rails.application.routes.draw do
       patch :mark_as_read
     end
   end
+resources :operation_staffs
+  resources :records
+  get "daily_filing_log", to: "records#daily_log"
 
   resources :dispatches do
     member do
@@ -90,12 +99,12 @@ Rails.application.routes.draw do
     end
 
     resources :monthly_reports do
-  member do
-    patch :submit
-    patch :review
-    patch :archive
-  end
-end
+      member do
+        patch :submit
+        patch :review
+        patch :archive
+      end
+    end
 
     get "summaries/daily", to: "summaries#daily", as: :daily_summary
     get "summaries/monthly", to: "summaries#monthly", as: :monthly_summary

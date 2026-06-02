@@ -1,0 +1,145 @@
+<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">
+      <%= @operation_staff.full_name %>
+    </h1>
+
+    <p class="text-slate-500 mt-1">
+      Staff Folder • <%= @records.count %> document(s)
+    </p>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "Edit Staff",
+        edit_operation_staff_path(@operation_staff),
+        class: "border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-100" %>
+
+    <%= link_to "Add Document",
+        new_record_path(operation_staff_id: @operation_staff.id),
+        class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white border border-slate-200 p-5 shadow-sm">
+    <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Designation</p>
+    <p class="font-semibold text-slate-900">
+      <%= @operation_staff.designation.presence || "—" %>
+    </p>
+  </div>
+
+  <div class="bg-white border border-slate-200 p-5 shadow-sm">
+    <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Unit</p>
+    <p class="font-semibold text-slate-900">
+      <%= @operation_staff.unit.presence || "—" %>
+    </p>
+  </div>
+
+  <div class="bg-white border border-slate-200 p-5 shadow-sm">
+    <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Folder Location</p>
+    <p class="font-semibold text-slate-900">
+      <%= @operation_staff.physical_folder_location.presence || "—" %>
+    </p>
+  </div>
+</div>
+
+<div class="bg-white p-4 border border-slate-200 shadow-sm mb-6">
+  <%= form_with url: operation_staff_path(@operation_staff), method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do %>
+    <%= text_field_tag :query,
+        params[:query],
+        placeholder: "Search documents...",
+        class: "rounded-lg border-slate-300" %>
+
+    <%= select_tag :category,
+        options_for_select(
+          [["All Categories", ""]] + Record::STAFF_DOCUMENT_TYPES.map { |c| [c, c] },
+          params[:category]
+        ),
+        class: "rounded-lg border-slate-300" %>
+
+    <%= date_field_tag :filed_date,
+        params[:filed_date],
+        class: "rounded-lg border-slate-300" %>
+
+    <%= submit_tag "Search",
+        class: "bg-slate-900 text-white rounded-lg px-4 py-2" %>
+  <% end %>
+</div>
+
+<div class="bg-white shadow-sm border border-slate-200 overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-100 text-slate-700">
+      <tr>
+        <th class="text-left p-3">Document</th>
+        <th class="text-left p-3">Category</th>
+        <th class="text-left p-3">Filed Date</th>
+        <th class="text-left p-3">Scan</th>
+        <th class="text-left p-3">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @records.each do |record| %>
+        <tr class="border-t hover:bg-slate-50">
+          <td class="p-3 font-medium">
+            <%= link_to record.title,
+                record_path(record),
+                class: "text-green-700 font-semibold" %>
+          </td>
+
+          <td class="p-3">
+            <%= record.category %>
+          </td>
+
+          <td class="p-3">
+            <%= record.filed_date || "—" %>
+          </td>
+
+          <td class="p-3">
+            <% if record.attachment.attached? %>
+              <span class="text-green-700 font-medium">Yes</span>
+            <% else %>
+              <span class="text-slate-400">No</span>
+            <% end %>
+          </td>
+
+          <td class="p-3">
+            <div class="flex gap-3">
+              <%= link_to "View",
+                  record_path(record),
+                  class: "text-green-700 font-medium" %>
+
+              <%= link_to "Edit",
+                  edit_record_path(record),
+                  class: "text-blue-700 font-medium" %>
+
+              <%= button_to "Delete",
+                  record_path(record),
+                  method: :delete,
+                  form: { data: { turbo_confirm: "Delete this document?" } },
+                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if @records.empty? %>
+        <tr>
+          <td colspan="5" class="p-8 text-center">
+            <p class="text-slate-500 mb-4">
+              No documents found in this staff folder.
+            </p>
+
+            <%= link_to "Add First Document",
+                new_record_path(operation_staff_id: @operation_staff.id),
+                class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <%= paginate @records if respond_to?(:paginate) %>
+</div>

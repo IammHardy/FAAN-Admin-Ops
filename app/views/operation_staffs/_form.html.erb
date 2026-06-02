@@ -1,0 +1,140 @@
+<%= form_with(model: operation_staff, class: "space-y-6") do |form| %>
+
+  <% if operation_staff.errors.any? %>
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4">
+      <h2 class="font-semibold text-red-700 mb-2">
+        Please fix the following:
+      </h2>
+
+      <ul class="list-disc ml-5 text-sm text-red-700">
+        <% operation_staff.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="bg-white border border-slate-200 shadow-sm">
+    <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+      <h2 class="text-lg font-semibold text-slate-800">
+        Staff Information
+      </h2>
+
+      <p class="text-sm text-slate-500 mt-1">
+        Create a folder for Operations staff documents.
+      </p>
+    </div>
+
+    <div class="p-6 space-y-6">
+
+      <div>
+        <%= form.label :full_name,
+            class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+        <%= form.text_field :full_name,
+            placeholder: "e.g. Musa Ibrahim",
+            class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <div>
+          <%= form.label :staff_number,
+              class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+          <%= form.text_field :staff_number,
+              placeholder: "e.g. OPS034",
+              class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+        </div>
+
+        <div>
+          <%= form.label :designation,
+              class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+          <%= form.text_field :designation,
+              placeholder: "e.g. Admin Officer",
+              class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+        </div>
+
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <div>
+          <%= form.label :unit,
+              class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+          <%= form.text_field :unit,
+              placeholder: "e.g. Operations",
+              class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+        </div>
+
+        <div>
+          <%= form.label :employment_status,
+              class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+          <%= form.select :employment_status,
+              ["Permanent Staff", "Contract Staff", "NYSC", "IT Student"],
+              { prompt: "Select status" },
+              class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+        </div>
+
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <div>
+          <%= form.label :phone_number,
+              class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+          <%= form.text_field :phone_number,
+              placeholder: "Optional",
+              class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+        </div>
+
+        <div>
+          <%= form.label :email,
+              class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+          <%= form.email_field :email,
+              placeholder: "Optional",
+              class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+        </div>
+
+      </div>
+
+      <div>
+        <%= form.label :physical_folder_location,
+            "Physical Folder Location",
+            class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+        <%= form.text_field :physical_folder_location,
+            placeholder: "e.g. Cabinet A → Staff Folder",
+            class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+      </div>
+
+      <div>
+        <%= form.label :notes,
+            class: "block text-sm font-semibold text-slate-700 mb-2" %>
+
+        <%= form.text_area :notes,
+            rows: 4,
+            placeholder: "Additional notes...",
+            class: "w-full rounded-xl border border-slate-300 px-4 py-3 shadow-sm resize-none focus:border-green-600 focus:ring-2 focus:ring-green-100" %>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-3">
+    <%= link_to "Cancel",
+        operation_staffs_path,
+        class: "rounded-xl border border-slate-300 px-5 py-3 text-sm hover:bg-slate-100" %>
+
+    <%= form.submit(
+      operation_staff.persisted? ? "Update Staff" : "Create Staff Folder",
+      class: "rounded-xl bg-green-700 px-6 py-3 text-white font-semibold hover:bg-green-800"
+    ) %>
+  </div>
+
+<% end %>

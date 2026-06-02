@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  category: MyString
+  document_date: 2026-06-02
+  filed_date: 2026-06-02
+  signed_by: MyString
+  recipient_or_source: MyString
+  reference_number: MyString
+  physical_location: MyString
+  notes: MyText
+  filed_by: one
+
+two:
+  title: MyString
+  category: MyString
+  document_date: 2026-06-02
+  filed_date: 2026-06-02
+  signed_by: MyString
+  recipient_or_source: MyString
+  reference_number: MyString
+  physical_location: MyString
+  notes: MyText
+  filed_by: two

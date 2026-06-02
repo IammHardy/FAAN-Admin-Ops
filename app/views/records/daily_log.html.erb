@@ -1,0 +1,47 @@
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Daily Filing Log</h1>
+    <p class="text-gray-600">View everything filed on a specific day.</p>
+  </div>
+</div>
+
+<div class="bg-white p-4 rounded-xl shadow mb-6">
+  <%= form_with url: daily_filing_log_path, method: :get, local: true, class: "flex gap-3" do %>
+    <%= date_field_tag :filed_date, @selected_date, class: "rounded-lg border-gray-300" %>
+    <%= submit_tag "View Log", class: "bg-gray-900 text-white px-4 py-2 rounded-lg" %>
+  <% end %>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100 text-gray-700">
+      <tr>
+        <th class="text-left p-3">Title</th>
+        <th class="text-left p-3">Category</th>
+        <th class="text-left p-3">Filed By</th>
+        <th class="text-left p-3">Physical Location</th>
+        <th class="text-left p-3">Scan</th>
+        <th class="text-left p-3"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @records.each do |record| %>
+        <tr class="border-t">
+          <td class="p-3 font-medium"><%= record.title %></td>
+          <td class="p-3"><%= record.category %></td>
+          <td class="p-3"><%= record.filed_by&.email %></td>
+          <td class="p-3"><%= record.physical_location %></td>
+          <td class="p-3"><%= record.attachment.attached? ? "Yes" : "No" %></td>
+          <td class="p-3"><%= link_to "View", record_path(record), class: "text-green-700 font-medium" %></td>
+        </tr>
+      <% end %>
+
+      <% if @records.empty? %>
+        <tr>
+          <td colspan="6" class="p-6 text-center text-gray-500">No records filed on this date.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

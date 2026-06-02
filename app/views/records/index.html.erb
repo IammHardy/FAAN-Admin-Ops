@@ -1,0 +1,62 @@
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Records Archive</h1>
+    <p class="text-gray-600">Search dispatch copies, memos, reports, nominal roll and other filed documents.</p>
+  </div>
+
+  <%= link_to "Add New Record", new_record_path, class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+</div>
+
+<div class="bg-white p-4 rounded-xl shadow mb-6">
+  <%= form_with url: records_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-5 gap-4" do %>
+    <%= text_field_tag :query, params[:query], placeholder: "Search title, ref no, recipient...", class: "rounded-lg border-gray-300" %>
+
+    <%= select_tag :category,
+      options_for_select([["All Categories", ""]] + Record::CATEGORIES.map { |c| [c, c] }, params[:category]),
+      class: "rounded-lg border-gray-300" %>
+
+    <%= date_field_tag :filed_date, params[:filed_date], class: "rounded-lg border-gray-300" %>
+
+    <%= date_field_tag :document_date, params[:document_date], class: "rounded-lg border-gray-300" %>
+
+    <%= submit_tag "Search", class: "bg-gray-900 text-white rounded-lg px-4 py-2" %>
+  <% end %>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100 text-gray-700">
+      <tr>
+        <th class="text-left p-3">Title</th>
+        <th class="text-left p-3">Category</th>
+        <th class="text-left p-3">Filed Date</th>
+        <th class="text-left p-3">Filed By</th>
+        <th class="text-left p-3">Location</th>
+        <th class="text-left p-3">Scan</th>
+        <th class="text-left p-3"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @records.each do |record| %>
+        <tr class="border-t">
+          <td class="p-3 font-medium"><%= record.title %></td>
+          <td class="p-3"><%= record.category %></td>
+          <td class="p-3"><%= record.filed_date %></td>
+          <td class="p-3"><%= record.filed_by&.email %></td>
+          <td class="p-3"><%= record.physical_location %></td>
+          <td class="p-3">
+            <%= record.attachment.attached? ? "Yes" : "No" %>
+          </td>
+          <td class="p-3">
+            <%= link_to "View", record_path(record), class: "text-green-700 font-medium" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <%= paginate @records if respond_to?(:paginate) %>
+</div>
