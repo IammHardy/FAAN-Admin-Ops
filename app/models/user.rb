@@ -33,6 +33,16 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :role, presence: true
 
+  has_many :duty_sessions, dependent: :destroy
+
+def active_duty_session
+  duty_sessions.active.order(started_at: :desc).first
+end
+
+def duty_session_required?
+  requires_duty_session?
+end
+
   scope :active, -> { where(active: true) }
 
   def display_name

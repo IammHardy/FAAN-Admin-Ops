@@ -1,21 +1,36 @@
 class DashboardController < ApplicationController
-
   def index
     @monthly_reports_count = MonthlyReport.count
-@pending_monthly_reviews_count = MonthlyReport.submitted.count
-     @unread_notifications_count = current_user.notifications.unread.count
-  if current_user.reviewer?
-    reviewer_dashboard
-  elsif current_user.unit_officer?
-    unit_officer_dashboard
-  elsif current_user.dispatch_officer?
-    dispatch_officer_dashboard
-  else
-    general_dashboard
+    @pending_monthly_reviews_count = MonthlyReport.submitted.count
+    @unread_notifications_count = current_user.notifications.unread.count
+
+    load_today_duty_team
+
+    if current_user.reviewer?
+      reviewer_dashboard
+    elsif current_user.unit_officer?
+      unit_officer_dashboard
+    elsif current_user.dispatch_officer?
+      dispatch_officer_dashboard
+    else
+      general_dashboard
+    end
   end
-end
 
   private
+
+  def load_today_duty_team
+    @today_admin_rosters = DutyRoster
+      .active
+      .today
+      .where(duty_area: "Admin Office")
+      .includes(:operation_staff)
+      .order(:created_at)
+
+    @always_present_staff = OperationStaff
+      .always_present
+      .order(:full_name)
+  end
 
   def reviewer_dashboard
     @pending_review_count = LogReport.submitted.count
@@ -36,57 +51,57 @@ end
   end
 
   def unit_officer_dashboard
-  @today_log = LogReport.find_by(
-    report_date: Date.current,
-    unit_id: current_user.unit_id
-  )
+    @today_log = LogReport.find_by(
+      report_date: Date.current,
+      unit_id: current_user.unit_id
+    )
 
-  @draft_logs = LogReport
-    .where(unit_id: current_user.unit_id, status: :draft)
-    .recent_first
-    .limit(5)
+    @draft_logs = LogReport
+      .where(unit_id: current_user.unit_id, status: :draft)
+      .recent_first
+      .limit(5)
 
-  @submitted_logs = LogReport
-    .where(unit_id: current_user.unit_id, status: :submitted)
-    .recent_first
-    .limit(5)
+    @submitted_logs = LogReport
+      .where(unit_id: current_user.unit_id, status: :submitted)
+      .recent_first
+      .limit(5)
 
-  @reviewed_logs = LogReport
-    .where(unit_id: current_user.unit_id, status: :reviewed)
-    .recent_first
-    .limit(5)
+    @reviewed_logs = LogReport
+      .where(unit_id: current_user.unit_id, status: :reviewed)
+      .recent_first
+      .limit(5)
 
     @incoming_dispatches = DispatchRecipient
-  .includes(dispatch: [:sender_department, :sender_unit, :created_by])
-  .where(receiving_unit_id: current_user.unit_id)
-  .where(status: [:dispatched, :received])
-  .recent_first
-  .limit(5)
-end
+      .includes(dispatch: [:sender_department, :sender_unit, :created_by])
+      .where(receiving_unit_id: current_user.unit_id)
+      .where(status: [:dispatched, :received])
+      .recent_first
+      .limit(5)
+  end
 
-def dispatch_officer_dashboard
-  @draft_dispatches = Dispatch.draft.recent_first.limit(5)
-  @dispatched_dispatches = Dispatch.dispatched.recent_first.limit(5)
+  def dispatch_officer_dashboard
+    @draft_dispatches = Dispatch.draft.recent_first.limit(5)
+    @dispatched_dispatches = Dispatch.dispatched.recent_first.limit(5)
 
-  @pending_acknowledgement_count = Dispatch
-    .joins(:dispatch_recipients)
-    .where(dispatch_recipients: { status: [:dispatched, :received] })
-    .distinct
-    .count
+    @pending_acknowledgement_count = Dispatch
+      .joins(:dispatch_recipients)
+      .where(dispatch_recipients: { status: [:dispatched, :received] })
+      .distinct
+      .count
 
-  @ready_to_file_dispatches = Dispatch
-  .includes(:dispatch_recipients)
-  .recent_first
-  .select(&:ready_to_file?)
-  .first(5)
+    @ready_to_file_dispatches = Dispatch
+      .includes(:dispatch_recipients)
+      .recent_first
+      .select(&:ready_to_file?)
+      .first(5)
 
-  @ready_to_file_count = Dispatch
-  .includes(:dispatch_recipients)
-  .select(&:ready_to_file?)
-  .count
+    @ready_to_file_count = Dispatch
+      .includes(:dispatch_recipients)
+      .select(&:ready_to_file?)
+      .count
 
-  @dispatches_today = Dispatch.where(created_at: Time.zone.today.all_day).count
-end
+    @dispatches_today = Dispatch.where(created_at: Time.zone.today.all_day).count
+  end
 
   def general_dashboard
     @dispatches_today = Dispatch.where(created_at: Time.zone.today.all_day).count

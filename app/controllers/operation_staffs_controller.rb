@@ -74,7 +74,10 @@ end
       :email,
       :employment_status,
       :physical_folder_location,
-      :notes
+      :notes,
+      :can_be_on_duty
+      :duty_area,
+      :always_present
     )
   end
 end

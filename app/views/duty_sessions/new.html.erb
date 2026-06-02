@@ -1,0 +1,34 @@
+<h1 class="text-2xl font-bold text-slate-900 mb-2">Start Duty Session</h1>
+
+<p class="text-slate-500 mb-6">
+  Select the officer currently on duty today.
+</p>
+
+<div class="bg-white border border-slate-200 shadow-sm">
+  <% if @today_rosters.any? %>
+    <div class="divide-y divide-slate-200">
+      <% @today_rosters.each do |roster| %>
+        <div class="p-5 flex justify-between items-center">
+          <div>
+            <p class="font-semibold text-slate-900">
+              <%= roster.operation_staff.full_name %>
+            </p>
+
+            <p class="text-sm text-slate-500">
+              <%= roster.duty_area %> • <%= roster.shift_name.presence || "Default Shift" %>
+            </p>
+          </div>
+
+          <%= button_to "Start Duty",
+              duty_sessions_path(duty_roster_id: roster.id),
+              method: :post,
+              class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="p-6 text-center text-slate-500">
+      No duty roster has been created for today.
+    </div>
+  <% end %>
+</div>

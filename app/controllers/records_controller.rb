@@ -1,8 +1,10 @@
 # app/controllers/records_controller.rb
 
 class RecordsController < ApplicationController
+  before_action :require_active_duty_session!, only: [:new, :create, :edit, :update, :destroy]
   before_action :authenticate_user!
   before_action :set_record, only: [:show, :edit, :update, :destroy]
+  
 
   def index
     @records = Record.search(params)
@@ -22,6 +24,7 @@ class RecordsController < ApplicationController
   def create
     @record = Record.new(record_params)
     @record.filed_by = current_user
+    @record.duty_session = current_duty_session
 
     if @record.save
       redirect_to @record, notice: "Record was successfully added."

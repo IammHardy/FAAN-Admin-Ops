@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_02_192324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,6 +109,30 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
     t.index ["sender_department_id"], name: "index_dispatches_on_sender_department_id"
     t.index ["sender_unit_id"], name: "index_dispatches_on_sender_unit_id"
     t.index ["status"], name: "index_dispatches_on_status"
+  end
+
+  create_table "duty_rosters", force: :cascade do |t|
+    t.bigint "operation_staff_id", null: false
+    t.date "duty_date"
+    t.string "duty_area"
+    t.string "shift_name"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["operation_staff_id"], name: "index_duty_rosters_on_operation_staff_id"
+  end
+
+  create_table "duty_sessions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "operation_staff_id", null: false
+    t.bigint "duty_roster_id", null: false
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["duty_roster_id"], name: "index_duty_sessions_on_duty_roster_id"
+    t.index ["operation_staff_id"], name: "index_duty_sessions_on_operation_staff_id"
+    t.index ["user_id"], name: "index_duty_sessions_on_user_id"
   end
 
   create_table "incidents", force: :cascade do |t|
@@ -250,6 +274,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "duty_area"
+    t.boolean "can_be_on_duty", default: false, null: false
+    t.boolean "always_present", default: false, null: false
   end
 
   create_table "records", force: :cascade do |t|
@@ -267,6 +294,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
     t.datetime "updated_at", null: false
     t.bigint "staff_id"
     t.bigint "operation_staff_id"
+    t.bigint "duty_session_id"
+    t.index ["duty_session_id"], name: "index_records_on_duty_session_id"
     t.index ["filed_by_id"], name: "index_records_on_filed_by_id"
     t.index ["operation_staff_id"], name: "index_records_on_operation_staff_id"
     t.index ["staff_id"], name: "index_records_on_staff_id"
@@ -298,6 +327,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
     t.bigint "department_id"
     t.bigint "unit_id"
     t.boolean "active", default: true, null: false
+    t.boolean "requires_duty_session"
     t.index ["active"], name: "index_users_on_active"
     t.index ["department_id"], name: "index_users_on_department_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -318,6 +348,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
   add_foreign_key "dispatches", "units", column: "sender_unit_id"
   add_foreign_key "dispatches", "users", column: "created_by_id"
   add_foreign_key "dispatches", "users", column: "dispatched_by_id"
+  add_foreign_key "duty_rosters", "operation_staffs"
+  add_foreign_key "duty_sessions", "duty_rosters"
+  add_foreign_key "duty_sessions", "operation_staffs"
+  add_foreign_key "duty_sessions", "users"
   add_foreign_key "incidents", "log_entries"
   add_foreign_key "incidents", "log_reports"
   add_foreign_key "incidents", "users", column: "created_by_id"
@@ -334,6 +368,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_152243) do
   add_foreign_key "monthly_reports", "users", column: "reviewed_by_id"
   add_foreign_key "monthly_reports", "users", column: "uploaded_by_id"
   add_foreign_key "notifications", "users"
+  add_foreign_key "records", "duty_sessions"
   add_foreign_key "records", "operation_staffs"
   add_foreign_key "records", "users", column: "filed_by_id"
   add_foreign_key "records", "users", column: "staff_id"

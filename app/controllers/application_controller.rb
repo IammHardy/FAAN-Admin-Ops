@@ -87,4 +87,24 @@ end
     "application"
   end
 end
+
+helper_method :current_duty_session, :current_duty_officer
+
+def current_duty_session
+  return nil unless user_signed_in?
+
+  @current_duty_session ||= current_user.active_duty_session
+end
+
+def current_duty_officer
+  current_duty_session&.operation_staff
+end
+
+def require_active_duty_session!
+  return unless current_user.duty_session_required?
+  return if current_duty_session.present?
+
+  redirect_to new_duty_session_path,
+              alert: "Please start your duty session before continuing."
+end
 end

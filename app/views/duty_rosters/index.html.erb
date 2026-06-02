@@ -1,0 +1,103 @@
+<% content_for :page_title, "Duty Roster" %>
+
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">Duty Roster</h1>
+    <p class="text-slate-500 mt-1">
+      Manage who is scheduled to operate the Admin Office or Unit Office account.
+    </p>
+  </div>
+
+  <%= link_to "Create Duty",
+      new_duty_roster_path,
+      class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+</div>
+
+<div class="bg-white border border-slate-200 shadow-sm p-5 mb-6">
+  <h2 class="font-semibold text-slate-900 mb-2">
+    Generate Admin Office Weekly Roster
+  </h2>
+
+  <p class="text-sm text-slate-500 mb-4">
+    Select Monday of the week. The system will generate the default Admin Office roster.
+  </p>
+
+  <%= form_with url: generate_admin_week_duty_rosters_path, method: :post, local: true, class: "flex flex-col md:flex-row gap-3" do %>
+    <%= date_field_tag :week_start,
+        Date.current.beginning_of_week(:monday),
+        class: "rounded-lg border-slate-300" %>
+
+    <%= submit_tag "Generate Weekly Roster",
+        class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+  <% end %>
+</div>
+<div class="bg-white border border-slate-200 shadow-sm overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-100 text-slate-700">
+      <tr>
+        <th class="text-left p-3">Date</th>
+        <th class="text-left p-3">Staff</th>
+        <th class="text-left p-3">Duty Area</th>
+        <th class="text-left p-3">Shift</th>
+        <th class="text-left p-3">Status</th>
+        <th class="text-left p-3">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @duty_rosters.each do |roster| %>
+        <tr class="border-t hover:bg-slate-50">
+          <td class="p-3">
+            <%= roster.duty_date&.strftime("%d %b %Y") || "—" %>
+          </td>
+
+          <td class="p-3 font-medium">
+            <%= roster.operation_staff&.display_name || "—" %>
+          </td>
+
+          <td class="p-3">
+            <%= roster.duty_area %>
+          </td>
+
+          <td class="p-3">
+            <%= roster.shift_name.presence || "—" %>
+          </td>
+
+          <td class="p-3">
+            <% if roster.active? %>
+              <span class="text-green-700 font-medium">Active</span>
+            <% else %>
+              <span class="text-red-600">Inactive</span>
+            <% end %>
+          </td>
+
+          <td class="p-3">
+            <div class="flex gap-3">
+              <%= link_to "Edit",
+                  edit_duty_roster_path(roster),
+                  class: "text-blue-700 font-medium" %>
+
+              <%= button_to "Delete",
+                  duty_roster_path(roster),
+                  method: :delete,
+                  form: { data: { turbo_confirm: "Delete this duty roster?" } },
+                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if @duty_rosters.empty? %>
+        <tr>
+          <td colspan="6" class="p-8 text-center text-slate-500">
+            No duty roster has been created yet.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <%= paginate @duty_rosters if respond_to?(:paginate) %>
+</div>

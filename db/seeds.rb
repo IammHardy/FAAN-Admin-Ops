@@ -172,6 +172,40 @@ reviewer.save!
 
 puts "Users created."
 
+admin_staff = [
+  ["Mr Nuhu P. Nanloh", "HOD Operations", "Permanent Staff", true, false],
+  ["Mr Anietie John Udoh", "HOU Operations", "Permanent Staff", true, false],
+  ["Mr Abdulsalam", "Compliance Officer", "Permanent Staff", true, false],
+  ["Mr Luqman", "Compliance Officer", "Permanent Staff", true, false],
+
+  ["Miss Bilkisu Ashara", "Secretary", "Permanent Staff", false, true],
+  ["Mrs Rabia Maikudi", "Secretary", "Permanent Staff", false, true],
+  ["Mrs Rukaya Zakari", "Secretary", "Permanent Staff", false, true],
+  ["Mrs Sudai Gambo", "Secretary", "Permanent Staff", false, true],
+  ["Madam Precious", "Admin Officer", "Permanent Staff", false, true],
+  ["Mrs Hadiza", "Admin Officer", "Permanent Staff", false, true],
+  ["Yusuf Abdulhadi Adavize", "NYSC", "NYSC", false, true],
+  ["Chinecherem Evelyn", "NYSC", "NYSC", false, true]
+]
+
+admin_staff.each do |full_name, designation, status, always_present, can_be_on_duty|
+  staff = OperationStaff.find_or_initialize_by(full_name: full_name)
+
+  staff.assign_attributes(
+    designation: designation,
+    unit: "Airport Admin",
+    employment_status: status,
+    physical_folder_location: "Airport Admin Staff Folder",
+    always_present: always_present,
+    can_be_on_duty: can_be_on_duty,
+    duty_area: "Admin Office"
+  )
+
+  staff.save!
+end
+
+puts "Admin staff created."
+
 # Sample Dispatches
 dispatch_1 = Dispatch.find_or_initialize_by(reference_number: "DPT-#{Date.current.year}-0001")
 dispatch_1.assign_attributes(

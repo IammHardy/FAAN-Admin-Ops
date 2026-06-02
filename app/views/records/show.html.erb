@@ -8,6 +8,15 @@
 </div>
 
 <div class="bg-white rounded-xl shadow p-6 space-y-4">
+<p>
+  <strong>Officer on Duty:</strong>
+  <%= @record.duty_session&.operation_staff&.full_name || "Not captured" %>
+</p>
+
+<p>
+  <strong>Login Account:</strong>
+  <%= @record.filed_by&.email %>
+</p>
   <p><strong>Category:</strong> <%= @record.category %></p>
   <p><strong>Document Date:</strong> <%= @record.document_date || "Not provided" %></p>
   <p><strong>Date Filed:</strong> <%= @record.filed_date %></p>

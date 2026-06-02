@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get "duty_sessions/new"
+  get "duty_sessions/create"
+  get "duty_sessions/end_current"
+  get "duty_rosters/index"
+  get "duty_rosters/new"
+  get "duty_rosters/create"
+  get "duty_rosters/edit"
+  get "duty_rosters/update"
+  get "duty_rosters/destroy"
   get "operation_staffs/index"
   get "operation_staffs/show"
   get "operation_staffs/new"
@@ -26,6 +35,17 @@ Rails.application.routes.draw do
 resources :operation_staffs
   resources :records
   get "daily_filing_log", to: "records#daily_log"
+
+resources :duty_sessions, only: [:new, :create] do
+  collection do
+    patch :end_current
+  end
+end
+resources :duty_rosters do
+  collection do
+    post :generate_admin_week
+  end
+end
 
   resources :dispatches do
     member do

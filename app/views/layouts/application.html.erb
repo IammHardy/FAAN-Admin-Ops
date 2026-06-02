@@ -117,7 +117,9 @@
   <%= link_to "Pending Acknowledgements", pending_acknowledgement_dispatches_path, class: nav_link_class(pending_acknowledgement_dispatches_path) %>
   <%= link_to "Ready to File", ready_to_file_dispatches_path, class: nav_link_class(ready_to_file_dispatches_path) %>
   <%= link_to "Filed Dispatches", filed_dispatches_path, class: nav_link_class(filed_dispatches_path) %>
-
+<%= link_to "Duty Roster",
+    duty_rosters_path,
+    class: nav_link_class(duty_rosters_path) %>
   <!-- Records Archive -->
   <div class="border-t border-slate-200 my-2"></div>
 
@@ -127,7 +129,7 @@
 <%= link_to "Operations Staff",
     operation_staffs_path,
     class: nav_link_class(operation_staffs_path) %>
-      
+
   <%= link_to "Records Archive", records_path,
       class: nav_link_class(records_path) %>
 
@@ -197,25 +199,54 @@
               <% end %>
             </div>
 
-            <div class="flex items-center gap-2">
-              <% unread_notifications_count = current_user.notifications.unread.count %>
+           
+<div class="flex items-center gap-2 flex-wrap">
+  <% unread_notifications_count = current_user.notifications.unread.count %>
 
-              <%= link_to notifications_path, class: "relative text-sm border border-slate-300 px-3 py-2 bg-white hover:bg-slate-50" do %>
-                🔔
-                <% if unread_notifications_count.positive? %>
-                  <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
-                    <%= unread_notifications_count %>
-                  </span>
-                <% end %>
-              <% end %>
+  <% if current_user&.duty_session_required? %>
+    <% if current_duty_session.present? %>
 
-              <button
-                type="button"
-                id="sidebar-open"
-                class="md:hidden inline-flex items-center justify-center border border-slate-300 px-3 py-2 text-sm bg-white hover:bg-slate-100">
-                ☰
-              </button>
-            </div>
+      <div class="flex items-center gap-2 border border-green-200 bg-green-50 px-3 py-2 rounded-lg">
+        <span class="text-sm text-green-700 font-medium">
+          🟢 On Duty:
+          <%= current_duty_officer.full_name %>
+        </span>
+      </div>
+
+      <%= button_to "End Duty",
+          end_current_duty_sessions_path,
+          method: :patch,
+          class: "text-sm border border-red-300 bg-white text-red-700 px-3 py-2 rounded-lg hover:bg-red-50" %>
+
+    <% else %>
+
+      <%= link_to "Start Duty",
+          new_duty_session_path,
+          class: "text-sm bg-green-700 text-white px-3 py-2 rounded-lg hover:bg-green-800" %>
+
+    <% end %>
+  <% end %>
+
+  <%= link_to notifications_path,
+      class: "relative text-sm border border-slate-300 px-3 py-2 rounded-lg bg-white hover:bg-slate-50" do %>
+    🔔
+
+    <% if unread_notifications_count.positive? %>
+      <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+        <%= unread_notifications_count %>
+      </span>
+    <% end %>
+  <% end %>
+
+  <button
+    type="button"
+    id="sidebar-open"
+    class="md:hidden inline-flex items-center justify-center border border-slate-300 px-3 py-2 text-sm bg-white hover:bg-slate-100 rounded-lg">
+    ☰
+  </button>
+</div>
+
+
           </header>
         <% end %>
 

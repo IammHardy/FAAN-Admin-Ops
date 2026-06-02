@@ -1,6 +1,7 @@
 class Record < ApplicationRecord
   belongs_to :filed_by, class_name: "User"
   belongs_to :operation_staff, optional: true
+  belongs_to :duty_session, optional: true
 
   has_one_attached :attachment
 
