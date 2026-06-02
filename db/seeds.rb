@@ -14,11 +14,12 @@ if Rails.env.development? || Rails.env.test?
   DispatchRecipient.destroy_all
   Dispatch.destroy_all
 
+  Record.destroy_all
+  MonthlyReport.destroy_all
+
   DutySession.destroy_all
   DutyRoster.destroy_all
-  Record.destroy_all
   OperationStaff.destroy_all
-  MonthlyReport.destroy_all
 
   User.destroy_all
   Unit.destroy_all
@@ -108,6 +109,7 @@ super_admin.assign_attributes(
   phone_number: "08010000001",
   department: operations,
   unit: airport_admin,
+  requires_duty_session: false,
   active: true
 )
 super_admin.save!
@@ -121,6 +123,7 @@ real_admin.assign_attributes(
   phone_number: "08000000000",
   department: operations,
   unit: airport_admin,
+  requires_duty_session: false,
   active: true
 )
 real_admin.save!
@@ -134,6 +137,7 @@ admin_officer.assign_attributes(
   phone_number: "08010000002",
   department: operations,
   unit: airport_admin,
+  requires_duty_session: true,
   active: true
 )
 admin_officer.save!
@@ -147,6 +151,7 @@ dispatch_officer.assign_attributes(
   phone_number: "08010000003",
   department: operations,
   unit: airport_admin,
+  requires_duty_session: true,
   active: true
 )
 dispatch_officer.save!
@@ -160,6 +165,7 @@ unit_officer.assign_attributes(
   phone_number: "08010000004",
   department: engineering,
   unit: electrical_unit,
+  requires_duty_session: true,
   active: true
 )
 unit_officer.save!
@@ -173,6 +179,7 @@ reviewer.assign_attributes(
   phone_number: "08010000005",
   department: operations,
   unit: terminal_operations,
+  requires_duty_session: false,
   active: true
 )
 reviewer.save!
