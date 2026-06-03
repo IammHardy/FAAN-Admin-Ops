@@ -47,6 +47,7 @@ class Record < ApplicationRecord
   validates :category, inclusion: { in: CATEGORIES }
 
   validate :staff_document_must_have_operation_staff
+  validate :acceptable_attachment
 
   scope :recent, -> { order(filed_date: :desc, created_at: :desc) }
 
@@ -84,5 +85,31 @@ class Record < ApplicationRecord
     return if operation_staff_id.present?
 
     errors.add(:operation_staff, "must be selected for staff folder documents")
+  end
+
+  def acceptable_attachment
+    return unless attachment.attached?
+
+    allowed_types = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
+
+    unless allowed_types.include?(attachment.content_type)
+      errors.add(
+        :attachment,
+        "must be PDF, Word document, PNG, or JPG"
+      )
+    end
+
+    if attachment.blob.byte_size > 15.megabytes
+      errors.add(
+        :attachment,
+        "must be smaller than 15MB"
+      )
+    end
   end
 end

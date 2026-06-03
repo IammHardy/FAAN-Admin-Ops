@@ -1,5 +1,5 @@
 class DepartmentsController < ApplicationController
-  before_action :require_admin_access!
+  before_action :require_super_admin!
   before_action :set_department, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -17,6 +17,13 @@ class DepartmentsController < ApplicationController
     @department = Department.new(department_params)
 
     if @department.save
+      AuditLogger.call(
+        user: current_user,
+        action: "create",
+        auditable: @department,
+        description: "Created department #{@department.name}"
+      )
+
       redirect_to @department, success: "Department created successfully."
     else
       flash.now[:error] = "Unable to create department."
@@ -29,6 +36,13 @@ class DepartmentsController < ApplicationController
 
   def update
     if @department.update(department_params)
+      AuditLogger.call(
+        user: current_user,
+        action: "update",
+        auditable: @department,
+        description: "Updated department #{@department.name}"
+      )
+
       redirect_to @department, success: "Department updated successfully."
     else
       flash.now[:error] = "Unable to update department."
@@ -37,7 +51,17 @@ class DepartmentsController < ApplicationController
   end
 
   def destroy
+    department_name = @department.name
+
     @department.destroy
+
+    AuditLogger.call(
+      user: current_user,
+      action: "delete",
+      auditable: nil,
+      description: "Deleted department #{department_name}"
+    )
+
     redirect_to departments_path, success: "Department deleted successfully."
   rescue ActiveRecord::DeleteRestrictionError, ActiveRecord::InvalidForeignKey
     redirect_to departments_path, error: "Department cannot be deleted because it is being used."

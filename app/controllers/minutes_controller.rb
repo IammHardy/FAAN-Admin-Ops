@@ -31,6 +31,13 @@ class MinutesController < ApplicationController
     @minute.status = :pending
 
     if @minute.save
+      AuditLogger.call(
+        user: current_user,
+        action: "create",
+        auditable: @minute,
+        description: "Uploaded meeting audio for minutes: #{@minute.title}"
+      )
+
       redirect_to @minute, success: "Audio uploaded successfully. You can now start extraction."
     else
       render :new, status: :unprocessable_entity
@@ -55,6 +62,13 @@ class MinutesController < ApplicationController
 
     @minute.update!(status: :processing)
 
+    AuditLogger.call(
+      user: current_user,
+      action: "process",
+      auditable: @minute,
+      description: "Started minutes extraction for #{@minute.title}"
+    )
+
     ProcessMinuteJob.perform_later(@minute.id)
 
     redirect_to @minute, success: "Minutes extraction started. This page will refresh automatically."
@@ -66,14 +80,14 @@ class MinutesController < ApplicationController
     @minute = Minute.find(params[:id])
   end
 
- def minute_params
-  params.require(:minute).permit(
-    :title,
-    :meeting_date,
-    :venue,
-    :audio_file
-  )
-end
+  def minute_params
+    params.require(:minute).permit(
+      :title,
+      :meeting_date,
+      :venue,
+      :audio_file
+    )
+  end
 
   def rate_limited?
     key = "minutes_extraction:user:#{current_user.id}"

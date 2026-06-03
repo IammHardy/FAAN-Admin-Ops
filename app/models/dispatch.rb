@@ -7,7 +7,7 @@ class Dispatch < ApplicationRecord
   belongs_to :acknowledged_by, class_name: "User", optional: true
   belongs_to :created_by, class_name: "User"
   belongs_to :dispatched_by, class_name: "User", optional: true
-
+  belongs_to :duty_session, optional: true
   has_one_attached :memo_file
 
   has_many :dispatch_recipients, dependent: :destroy
@@ -26,6 +26,8 @@ class Dispatch < ApplicationRecord
   validates :memo_date, presence: true
   validates :sender_department, presence: true
   validates :receiving_department, presence: true
+
+  validate :acceptable_memo_file
 
   before_validation :assign_reference_number, on: :create
 
@@ -78,11 +80,11 @@ class Dispatch < ApplicationRecord
   end
 
   def acknowledgement_progress
-  total = dispatch_recipients.count
-  acknowledged = dispatch_recipients.select(&:acknowledged?).count
+    total = dispatch_recipients.count
+    acknowledged = dispatch_recipients.select(&:acknowledged?).count
 
-  "#{acknowledged} / #{total} Units Acknowledged"
-end
+    "#{acknowledged} / #{total} Units Acknowledged"
+  end
 
   def display_status
     if filed?
@@ -94,23 +96,24 @@ end
     end
   end
 
- def ready_to_file?
-  !filed? && all_recipients_acknowledged?
-end
-
-def self.visible_to(user)
-  return none unless user
-
-  if user.super_admin? || user.admin_officer? || user.dispatch_officer?
-    all
-  elsif user.unit_officer?
-    joins(:dispatch_recipients)
-      .where(dispatch_recipients: { receiving_unit_id: user.unit_id })
-      .distinct
-  else
-    none
+  def ready_to_file?
+    !filed? && all_recipients_acknowledged?
   end
-end
+
+  def self.visible_to(user)
+    return none unless user
+
+    if user.super_admin? || user.admin_officer? || user.dispatch_officer?
+      all
+    elsif user.unit_officer?
+      joins(:dispatch_recipients)
+        .where(dispatch_recipients: { receiving_unit_id: user.unit_id })
+        .distinct
+    else
+      none
+    end
+  end
+
   private
 
   def assign_reference_number
@@ -118,9 +121,9 @@ end
 
     year = Date.current.year
     last_dispatch = Dispatch
-                    .where("reference_number LIKE ?", "DPT-#{year}-%")
-                    .order(:created_at)
-                    .last
+      .where("reference_number LIKE ?", "DPT-#{year}-%")
+      .order(:created_at)
+      .last
 
     next_number =
       if last_dispatch&.reference_number.present?
@@ -134,5 +137,31 @@ end
       year: year,
       number: next_number
     )
+  end
+
+  def acceptable_memo_file
+    return unless memo_file.attached?
+
+    allowed_types = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
+
+    unless allowed_types.include?(memo_file.content_type)
+      errors.add(
+        :memo_file,
+        "must be PDF, Word document, PNG, or JPG"
+      )
+    end
+
+    if memo_file.blob.byte_size > 10.megabytes
+      errors.add(
+        :memo_file,
+        "must be smaller than 10MB"
+      )
+    end
   end
 end

@@ -3,6 +3,7 @@ class LogReport < ApplicationRecord
   belongs_to :unit
   belongs_to :submitted_by, class_name: "User", optional: true
   belongs_to :entered_by, class_name: "User"
+  belongs_to :duty_session, optional: true
 
   has_many :log_entries, dependent: :destroy
   has_many :incidents, dependent: :destroy

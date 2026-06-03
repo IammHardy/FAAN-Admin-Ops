@@ -1,14 +1,11 @@
-# app/controllers/records_controller.rb
-
 class RecordsController < ApplicationController
-  before_action :require_active_duty_session!, only: [:new, :create, :edit, :update, :destroy]
   before_action :authenticate_user!
+  before_action :require_active_duty_session!, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_record, only: [:show, :edit, :update, :destroy]
-  
 
   def index
     @records = Record.search(params)
-                     .includes(:filed_by)
+                     .includes(:filed_by, :operation_staff, duty_session: :operation_staff)
                      .recent
                      .page(params[:page])
                      .per(15)
@@ -27,6 +24,13 @@ class RecordsController < ApplicationController
     @record.duty_session = current_duty_session
 
     if @record.save
+      AuditLogger.call(
+        user: current_user,
+        action: "create",
+        auditable: @record,
+        description: "Created record #{@record.title}"
+      )
+
       redirect_to @record, notice: "Record was successfully added."
     else
       render :new, status: :unprocessable_entity
@@ -38,6 +42,13 @@ class RecordsController < ApplicationController
 
   def update
     if @record.update(record_params)
+      AuditLogger.call(
+        user: current_user,
+        action: "update",
+        auditable: @record,
+        description: "Updated record #{@record.title}"
+      )
+
       redirect_to @record, notice: "Record was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -45,18 +56,30 @@ class RecordsController < ApplicationController
   end
 
   def destroy
-    @record.destroy
-    redirect_to records_path, notice: "Record was successfully deleted."
+    record_title = @record.title
+
+    if @record.destroy
+      AuditLogger.call(
+        user: current_user,
+        action: "delete",
+        auditable: nil,
+        description: "Deleted record #{record_title}"
+      )
+
+      redirect_to records_path, notice: "Record was successfully deleted."
+    else
+      redirect_to @record, alert: "Record could not be deleted."
+    end
   end
 
   def daily_log
-  @selected_date = params[:filed_date].presence || Date.current.to_s
+    @selected_date = params[:filed_date].presence || Date.current.to_s
 
-  @records = Record
-    .where(filed_date: @selected_date)
-    .includes(:filed_by, :operation_staff, duty_session: :operation_staff)
-    .order(:category, :title)
-end
+    @records = Record
+      .where(filed_date: @selected_date)
+      .includes(:filed_by, :operation_staff, duty_session: :operation_staff)
+      .order(:category, :title)
+  end
 
   private
 
@@ -76,7 +99,7 @@ end
       :physical_location,
       :notes,
       :attachment,
-      :operation_staff_id,
+      :operation_staff_id
     )
   end
 end

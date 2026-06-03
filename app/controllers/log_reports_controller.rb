@@ -5,7 +5,7 @@ before_action :require_reviewer_or_admin!, only: [:review, :print]
 before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
 before_action :load_log_report_form_collections, only: [:new, :create, :edit, :update]
 before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
-
+before_action :require_active_duty_session!, only: [:new, :create, :edit, :update, :destroy, :submit]
   def index
     @log_reports = LogReport
   .includes(:department, :unit, :entered_by)
@@ -41,6 +41,7 @@ def create
     unit_id: current_user.unit_id,
     shift: log_report_params[:shift]
   )
+  @log_report.duty_session = current_duty_session
 
   if existing_log.present?
     redirect_to existing_log, warning: "Log report already exists. Continue editing instead."

@@ -1,8 +1,8 @@
 class UnitsController < ApplicationController
-  before_action :require_admin_access!
+  before_action :require_super_admin!
   before_action :set_unit, only: [:show, :edit, :update, :destroy]
   before_action :load_departments, only: [:new, :create, :edit, :update]
-  
+
   def index
     @units = Unit.includes(:department).order(:name)
   end
@@ -18,6 +18,13 @@ class UnitsController < ApplicationController
     @unit = Unit.new(unit_params)
 
     if @unit.save
+      AuditLogger.call(
+        user: current_user,
+        action: "create",
+        auditable: @unit,
+        description: "Created unit #{@unit.name}"
+      )
+
       redirect_to @unit, success: "Unit created successfully."
     else
       flash.now[:error] = "Unable to create unit."
@@ -30,6 +37,13 @@ class UnitsController < ApplicationController
 
   def update
     if @unit.update(unit_params)
+      AuditLogger.call(
+        user: current_user,
+        action: "update",
+        auditable: @unit,
+        description: "Updated unit #{@unit.name}"
+      )
+
       redirect_to @unit, success: "Unit updated successfully."
     else
       flash.now[:error] = "Unable to update unit."
@@ -38,7 +52,17 @@ class UnitsController < ApplicationController
   end
 
   def destroy
+    unit_name = @unit.name
+
     @unit.destroy
+
+    AuditLogger.call(
+      user: current_user,
+      action: "delete",
+      auditable: nil,
+      description: "Deleted unit #{unit_name}"
+    )
+
     redirect_to units_path, success: "Unit deleted successfully."
   rescue ActiveRecord::DeleteRestrictionError, ActiveRecord::InvalidForeignKey
     redirect_to units_path, error: "Unit cannot be deleted because it is being used."

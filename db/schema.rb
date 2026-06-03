@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_03_083930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -101,8 +101,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
     t.text "remarks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "duty_session_id"
     t.index ["created_by_id"], name: "index_dispatches_on_created_by_id"
     t.index ["dispatched_by_id"], name: "index_dispatches_on_dispatched_by_id"
+    t.index ["duty_session_id"], name: "index_dispatches_on_duty_session_id"
     t.index ["memo_date"], name: "index_dispatches_on_memo_date"
     t.index ["receiving_department_id"], name: "index_dispatches_on_receiving_department_id"
     t.index ["reference_number"], name: "index_dispatches_on_reference_number", unique: true
@@ -193,7 +195,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "submitted_at"
+    t.bigint "duty_session_id"
     t.index ["department_id"], name: "index_log_reports_on_department_id"
+    t.index ["duty_session_id"], name: "index_log_reports_on_duty_session_id"
     t.index ["entered_by_id"], name: "index_log_reports_on_entered_by_id"
     t.index ["report_date", "unit_id", "shift"], name: "index_log_reports_on_date_unit_shift_unique", unique: true
     t.index ["report_date"], name: "index_log_reports_on_report_date"
@@ -244,7 +248,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
     t.text "remarks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "duty_session_id"
     t.index ["department_id"], name: "index_monthly_reports_on_department_id"
+    t.index ["duty_session_id"], name: "index_monthly_reports_on_duty_session_id"
     t.index ["reviewed_by_id"], name: "index_monthly_reports_on_reviewed_by_id"
     t.index ["unit_id"], name: "index_monthly_reports_on_unit_id"
     t.index ["uploaded_by_id"], name: "index_monthly_reports_on_uploaded_by_id"
@@ -328,6 +334,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
     t.bigint "unit_id"
     t.boolean "active", default: true, null: false
     t.boolean "requires_duty_session", default: false
+    t.boolean "email_notifications_enabled", default: true, null: false
+    t.boolean "sms_notifications_enabled", default: false, null: false
     t.index ["active"], name: "index_users_on_active"
     t.index ["department_id"], name: "index_users_on_department_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -345,6 +353,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
   add_foreign_key "dispatch_recipients", "users", column: "received_by_id"
   add_foreign_key "dispatches", "departments", column: "receiving_department_id"
   add_foreign_key "dispatches", "departments", column: "sender_department_id"
+  add_foreign_key "dispatches", "duty_sessions"
   add_foreign_key "dispatches", "units", column: "sender_unit_id"
   add_foreign_key "dispatches", "users", column: "created_by_id"
   add_foreign_key "dispatches", "users", column: "dispatched_by_id"
@@ -358,12 +367,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_220833) do
   add_foreign_key "incidents", "users", column: "reviewed_by_id"
   add_foreign_key "log_entries", "log_reports"
   add_foreign_key "log_reports", "departments"
+  add_foreign_key "log_reports", "duty_sessions"
   add_foreign_key "log_reports", "units"
   add_foreign_key "log_reports", "users", column: "entered_by_id"
   add_foreign_key "log_reports", "users", column: "submitted_by_id"
   add_foreign_key "minute_audio_parts", "minutes"
   add_foreign_key "minutes", "users", column: "created_by_id"
   add_foreign_key "monthly_reports", "departments"
+  add_foreign_key "monthly_reports", "duty_sessions"
   add_foreign_key "monthly_reports", "units"
   add_foreign_key "monthly_reports", "users", column: "reviewed_by_id"
   add_foreign_key "monthly_reports", "users", column: "uploaded_by_id"

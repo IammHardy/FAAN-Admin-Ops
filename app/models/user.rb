@@ -52,6 +52,14 @@ class User < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  def email_notifications?
+  email_notifications_enabled?
+end
+
+def sms_notifications?
+  sms_notifications_enabled?
+end
+
   def display_name
     full_name.presence || email
   end

@@ -4,7 +4,7 @@ class MonthlyReport < ApplicationRecord
   belongs_to :unit
   belongs_to :uploaded_by, class_name: "User"
   belongs_to :reviewed_by, class_name: "User", optional: true
-
+  belongs_to :duty_session, optional: true
   has_one_attached :report_file
 
   enum :status, {

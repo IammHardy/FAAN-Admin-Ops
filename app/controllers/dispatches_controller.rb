@@ -1,3 +1,4 @@
+require "ostruct"
 class DispatchesController < ApplicationController
   before_action :require_dispatch_access!, only: [
     :index, :new, :create, :edit, :update, :destroy,
@@ -8,6 +9,11 @@ class DispatchesController < ApplicationController
   before_action :require_dispatch_receiver_access!, only: [
     :show, :mark_received, :mark_acknowledged, :incoming
   ]
+
+  before_action :require_active_duty_session!, only: [
+  :new, :create, :edit, :update, :destroy,
+  :mark_dispatched, :mark_filed
+]
 
   before_action :require_admin_access!, only: [:destroy]
 
@@ -44,6 +50,7 @@ class DispatchesController < ApplicationController
   def create
     @dispatch = Dispatch.new(dispatch_params)
     @dispatch.created_by = current_user
+    @dispatch.duty_session = current_duty_session
 
     if @dispatch.save
       sync_dispatch_recipients
@@ -322,8 +329,36 @@ class DispatchesController < ApplicationController
     end
   end
 
+  def notify_admin_staff_on_duty(dispatch)
+  staff_to_notify = DutyRoster
+    .active
+    .today
+    .where(duty_area: "Admin Office")
+    .includes(:operation_staff)
+    .map(&:operation_staff)
+    .select { |staff| staff.can_be_on_duty? && staff.email.present? }
+    .uniq
+
+  staff_to_notify.each do |staff|
+    NotificationMailer
+      .with(
+        user: OpenStruct.new(
+          email: staff.email,
+          display_name: staff.full_name
+        ),
+        title: "New Dispatch Received",
+        message: "Dispatch #{dispatch.reference_number} has been sent to Admin Office."
+      )
+      .notification_email
+      .deliver_later
+  end
+end
+
   def notify_receiving_units(dispatch)
-    dispatch.dispatch_recipients.includes(receiving_unit: :users).find_each do |recipient|
+  dispatch.dispatch_recipients.includes(:receiving_unit).find_each do |recipient|
+    if recipient.receiving_unit.name == "Airport Admin"
+      notify_admin_staff_on_duty(dispatch)
+    else
       recipient.receiving_unit.users.active.find_each do |user|
         create_notification(
           user: user,
@@ -333,6 +368,7 @@ class DispatchesController < ApplicationController
       end
     end
   end
+end
 
   def dispatch_managers
     User.active.where(role: [:super_admin, :admin_officer, :dispatch_officer])
@@ -349,18 +385,19 @@ class DispatchesController < ApplicationController
   end
 
   def create_notification(user:, title:, message:)
-    Notification.create!(
-      user: user,
-      title: title,
-      message: message
-    )
+  Notification.create!(
+    user: user,
+    title: title,
+    message: message
+  )
 
+  if user.email_notifications?
     NotificationMailer
       .with(user: user, title: title, message: message)
       .notification_email
       .deliver_later
   end
-
+end
   def dispatch_params
     params.require(:dispatch).permit(
       :reference_number,

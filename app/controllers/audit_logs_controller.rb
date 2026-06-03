@@ -1,5 +1,5 @@
 class AuditLogsController < ApplicationController
-  before_action :require_admin_access!
+  before_action :require_super_admin!
 
   def index
     @audit_logs = AuditLog.includes(:user).order(created_at: :desc)
