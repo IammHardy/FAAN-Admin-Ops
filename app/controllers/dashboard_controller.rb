@@ -3,6 +3,11 @@ class DashboardController < ApplicationController
     @monthly_reports_count = MonthlyReport.count
     @pending_monthly_reviews_count = MonthlyReport.submitted.count
     @unread_notifications_count = current_user.notifications.unread.count
+    @records_filed_today = Record.active.where(filed_date: Date.current).count
+@active_staff_count = OperationStaff.active_folders.count
+@admin_duty_count = DutyRoster.active.today.where(duty_area: "Admin Office").count
+@minutes_completed_count = Minute.completed.count
+@records_without_scan_count = Record.active.left_joins(:attachment_attachment).where(active_storage_attachments: { id: nil }).count
 
     load_today_duty_team
 
@@ -36,7 +41,8 @@ class DashboardController < ApplicationController
     @pending_review_count = LogReport.submitted.count
     @reviewed_reports_count = LogReport.reviewed.count
     @log_reports_today = LogReport.where(report_date: Date.current).count
-
+    @open_incidents = Incident.open_items.count
+@escalated_incidents = Incident.where(status: :escalated).count
     @pending_reviews = LogReport
       .includes(:department, :unit, :entered_by, :submitted_by)
       .where(status: :submitted)
@@ -106,7 +112,9 @@ class DashboardController < ApplicationController
   def general_dashboard
     @dispatches_today = Dispatch.where(created_at: Time.zone.today.all_day).count
     @pending_dispatches = Dispatch.pending.count
-
+    @monthly_reports_pending = MonthlyReport.submitted.count
+@records_this_month = Record.active.where(filed_date: Date.current.beginning_of_month..Date.current).count
+@dispatches_this_month = Dispatch.where(memo_date: Date.current.beginning_of_month..Date.current).count
     @log_reports_today = LogReport.where(report_date: Date.current).count
 
     @incidents_today = Incident.where(created_at: Time.zone.today.all_day).count

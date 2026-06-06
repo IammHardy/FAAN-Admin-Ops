@@ -3,7 +3,7 @@
 
 <%= render "today_duty_team" %>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="grid md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
   <div class="app-stat-card">
     <div class="flex items-center justify-between">
       <div>
@@ -23,7 +23,25 @@
       <%= lucide_icon "circle-check", class: "w-8 h-8 text-green-700" %>
     </div>
   </div>
+<div class="app-stat-card">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="app-stat-label">Open Incidents</p>
+      <h3 class="app-stat-value"><%= @open_incidents %></h3>
+    </div>
+    <%= lucide_icon "circle-dot", class: "w-8 h-8 text-blue-600" %>
+  </div>
+</div>
 
+<div class="app-stat-card">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="app-stat-label">Escalated Incidents</p>
+      <h3 class="app-stat-value"><%= @escalated_incidents %></h3>
+    </div>
+    <%= lucide_icon "arrow-up-circle", class: "w-8 h-8 text-orange-600" %>
+  </div>
+</div>
   <div class="app-stat-card">
     <div class="flex items-center justify-between">
       <div>

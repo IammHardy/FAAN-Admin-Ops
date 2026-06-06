@@ -3,7 +3,7 @@
 
 <%= render "today_duty_team" %>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
   <div class="app-stat-card">
     <div class="flex items-center justify-between">
       <div>
@@ -63,6 +63,26 @@
       <%= lucide_icon "arrow-up-circle", class: "w-8 h-8 text-orange-600" %>
     </div>
   </div>
+
+  <div class="app-stat-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Records Filed Today</p>
+        <h3 class="app-stat-value"><%= @records_filed_today %></h3>
+      </div>
+      <%= lucide_icon "archive", class: "w-8 h-8 text-green-700" %>
+    </div>
+  </div>
+
+  <div class="app-stat-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Active Staff Folders</p>
+        <h3 class="app-stat-value"><%= @active_staff_count %></h3>
+      </div>
+      <%= lucide_icon "folder-kanban", class: "w-8 h-8 text-slate-500" %>
+    </div>
+  </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -74,7 +94,8 @@
           Recent Dispatches
         </h3>
 
-        <%= link_to "View All", dispatches_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+        <%= link_to "View All", dispatches_path,
+            class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
       </div>
 
       <% if @recent_dispatches.any? %>
@@ -82,11 +103,18 @@
           <% @recent_dispatches.each do |dispatch| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
               <p class="font-medium">
-                <%= link_to dispatch.reference_number, dispatch_path(dispatch), class: "text-green-700 hover:text-green-800 font-medium" %>
+                <%= link_to dispatch.reference_number,
+                    dispatch_path(dispatch),
+                    class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
-              <p class="text-sm text-slate-600"><%= dispatch.subject %></p>
+
+              <p class="text-sm text-slate-600">
+                <%= dispatch.subject %>
+              </p>
+
               <p class="text-xs text-slate-500 mt-1">
-                <%= dispatch.memo_date&.strftime("%d %b %Y") %> • <%= dispatch.status.humanize %>
+                <%= dispatch.memo_date&.strftime("%d %b %Y") %>
+                • <%= dispatch.status.humanize %>
               </p>
             </div>
           <% end %>
@@ -105,7 +133,8 @@
           Recent Log Reports
         </h3>
 
-        <%= link_to "View All", log_reports_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+        <%= link_to "View All", log_reports_path,
+            class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
       </div>
 
       <% if @recent_log_reports.any? %>
@@ -113,11 +142,18 @@
           <% @recent_log_reports.each do |report| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
               <p class="font-medium">
-                <%= link_to "#{report.unit.name} Log", log_report_path(report), class: "text-green-700 hover:text-green-800 font-medium" %>
+                <%= link_to "#{report.unit.name} Log",
+                    log_report_path(report),
+                    class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
-              <p class="text-sm text-slate-600"><%= report.department.name %> • <%= report.unit.name %></p>
+
+              <p class="text-sm text-slate-600">
+                <%= report.department.name %> • <%= report.unit.name %>
+              </p>
+
               <p class="text-xs text-slate-500 mt-1">
-                <%= report.report_date&.strftime("%d %b %Y") %> • <%= report.shift.humanize %>
+                <%= report.report_date&.strftime("%d %b %Y") %>
+                • <%= report.shift.humanize %>
               </p>
             </div>
           <% end %>
@@ -137,7 +173,8 @@
         </h3>
 
         <% if current_user.super_admin? || current_user.admin_officer? %>
-          <%= link_to "View Audit Logs", audit_logs_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+          <%= link_to "View Audit Logs", audit_logs_path,
+              class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
         <% end %>
       </div>
 
@@ -145,15 +182,21 @@
         <div class="space-y-3">
           <% @recent_audit_logs.each do |log| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
-              <p class="text-sm font-medium text-slate-900"><%= log.description %></p>
+              <p class="text-sm font-medium text-slate-900">
+                <%= log.description %>
+              </p>
+
               <p class="text-xs text-slate-500 mt-1">
-                <%= log.user.display_name %> • <%= log.created_at.strftime("%d %b %Y, %I:%M %p") %>
+                <%= log.user.display_name %> •
+                <%= log.created_at.strftime("%d %b %Y, %I:%M %p") %>
               </p>
             </div>
           <% end %>
         </div>
       <% else %>
-        <p class="text-sm text-slate-500">No recent activity found.</p>
+        <p class="text-sm text-slate-500">
+          No recent activity found.
+        </p>
       <% end %>
     </div>
   </div>
@@ -166,7 +209,8 @@
           Recent Incidents
         </h3>
 
-        <%= link_to "View All", incidents_path, class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+        <%= link_to "View All", incidents_path,
+            class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
       </div>
 
       <% if @recent_incidents.any? %>
@@ -174,11 +218,18 @@
           <% @recent_incidents.each do |incident| %>
             <div class="border-b border-slate-100 pb-3 last:border-b-0">
               <p class="font-medium">
-                <%= link_to incident.incident_number, incident_path(incident), class: "text-green-700 hover:text-green-800 font-medium" %>
+                <%= link_to incident.incident_number,
+                    incident_path(incident),
+                    class: "text-green-700 hover:text-green-800 font-medium" %>
               </p>
-              <p class="text-sm text-slate-600"><%= incident.title %></p>
+
+              <p class="text-sm text-slate-600">
+                <%= incident.title %>
+              </p>
+
               <p class="text-xs text-slate-500 mt-1">
-                <%= incident.severity.humanize %> • <%= incident.status.humanize %>
+                <%= incident.severity.humanize %>
+                • <%= incident.status.humanize %>
               </p>
             </div>
           <% end %>

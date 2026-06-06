@@ -1,7 +1,7 @@
 <% content_for :page_title, "Dispatch Officer Dashboard" %>
 <% content_for :page_subtitle, "Create, send, and track official memos." %>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
   <div class="app-stat-card">
     <div class="flex items-center justify-between">
       <div>
@@ -21,7 +21,15 @@
       <%= lucide_icon "file-pen-line", class: "w-8 h-8 text-slate-500" %>
     </div>
   </div>
-
+<div class="app-stat-card">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="app-stat-label">Ready to File</p>
+      <h3 class="app-stat-value"><%= @ready_to_file_count %></h3>
+    </div>
+    <%= lucide_icon "archive", class: "w-8 h-8 text-green-700" %>
+  </div>
+</div>
   <div class="app-stat-card">
     <div class="flex items-center justify-between">
       <div>
