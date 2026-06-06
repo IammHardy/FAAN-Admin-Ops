@@ -1,15 +1,20 @@
 <div class="flex justify-between items-center mb-6">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900">Operations Staff</h1>
+    <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+      <%= lucide_icon "folder-kanban", class: "w-6 h-6 text-green-700" %>
+      Operations Staff
+    </h1>
 
     <p class="text-slate-500 mt-1">
       Staff folders and personal records.
     </p>
   </div>
 
-  <%= link_to "Add Staff",
-      new_operation_staff_path,
-      class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+  <%= link_to new_operation_staff_path,
+      class: "inline-flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" do %>
+    <%= lucide_icon "plus", class: "w-4 h-4" %>
+    Add Staff
+  <% end %>
 </div>
 
 <div class="bg-white border border-slate-200 shadow-sm p-4 mb-6">
@@ -32,12 +37,17 @@
         class: "rounded-lg border-slate-300" %>
 
     <div class="flex gap-2">
-      <%= submit_tag "Filter",
-          class: "bg-slate-900 text-white px-4 py-2 rounded-lg" %>
+      <%= button_tag type: :submit,
+          class: "inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg" do %>
+        <%= lucide_icon "filter", class: "w-4 h-4" %>
+        Filter
+      <% end %>
 
-      <%= link_to "Reset",
-          operation_staffs_path,
-          class: "border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50" %>
+      <%= link_to operation_staffs_path,
+          class: "inline-flex items-center gap-2 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50" do %>
+        <%= lucide_icon "rotate-ccw", class: "w-4 h-4" %>
+        Reset
+      <% end %>
     </div>
   <% end %>
 </div>
@@ -70,24 +80,33 @@
           </td>
 
           <td class="p-3">
-            <%= staff.records.count %>
+            <span class="inline-flex items-center gap-1">
+              <%= lucide_icon "file-text", class: "w-4 h-4 text-slate-500" %>
+              <%= staff.records.count %>
+            </span>
           </td>
 
           <td class="p-3">
             <div class="flex flex-wrap gap-3 items-center">
-              <%= link_to "Open Folder",
-                  operation_staff_path(staff),
-                  class: "text-green-700 font-semibold" %>
+              <%= link_to operation_staff_path(staff),
+                  class: "inline-flex items-center gap-1 text-green-700 font-semibold" do %>
+                <%= lucide_icon "folder-open", class: "w-4 h-4" %>
+                Open Folder
+              <% end %>
 
-              <%= link_to "Edit",
-                  edit_operation_staff_path(staff),
-                  class: "text-blue-700 font-semibold" %>
+              <%= link_to edit_operation_staff_path(staff),
+                  class: "inline-flex items-center gap-1 text-blue-700 font-semibold" do %>
+                <%= lucide_icon "pencil", class: "w-4 h-4" %>
+                Edit
+              <% end %>
 
-              <%= button_to "Archive",
-                  operation_staff_path(staff),
+              <%= button_to operation_staff_path(staff),
                   method: :delete,
-                  form: { data: { turbo_confirm: "Archive this staff folder? This may fail if the staff has records." } },
-                  class: "text-red-600 font-semibold bg-transparent border-0 p-0 cursor-pointer" %>
+                  form: { data: { turbo_confirm: "Archive this staff folder?" } },
+                  class: "inline-flex items-center gap-1 text-red-600 font-semibold bg-transparent border-0 p-0 cursor-pointer" do %>
+                <%= lucide_icon "archive", class: "w-4 h-4" %>
+                Archive
+              <% end %>
             </div>
           </td>
         </tr>

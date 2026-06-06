@@ -78,22 +78,26 @@
               </p>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 flex-wrap">
               <% if roster.active? %>
                 <span class="text-sm text-green-700 font-medium">Active</span>
               <% else %>
                 <span class="text-sm text-red-600">Inactive</span>
               <% end %>
 
-              <%= link_to "Edit",
-                  edit_duty_roster_path(roster),
-                  class: "text-blue-700 font-medium text-sm" %>
+              <%= link_to edit_duty_roster_path(roster),
+    class: "inline-flex items-center gap-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 text-xs font-medium hover:bg-amber-100 transition" do %>
+  <%= lucide_icon "pencil", class: "w-4 h-4" %>
+  Edit
+<% end %>
 
-              <%= button_to "Delete",
-                  duty_roster_path(roster),
-                  method: :delete,
-                  form: { data: { turbo_confirm: "Delete this duty roster?" } },
-                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer text-sm" %>
+             <%= button_to duty_roster_path(roster),
+    method: :delete,
+    form: { data: { turbo_confirm: "Delete this duty roster?" } },
+    class: "inline-flex items-center gap-1 rounded-md bg-red-50 text-red-700 border border-red-200 px-3 py-1.5 text-xs font-medium hover:bg-red-100 transition cursor-pointer" do %>
+  <%= lucide_icon "trash-2", class: "w-4 h-4" %>
+  Delete
+<% end %>
             </div>
           </div>
         <% end %>

@@ -56,11 +56,25 @@
         </div>
       </dl>
 
-      <div class="mt-6 flex flex-wrap items-center gap-3">
-        <%= link_to "Edit", edit_log_report_path(@log_report), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-        <%= link_to "Print", print_log_report_path(@log_report), class: btn_primary %>
-        <%= link_to "Back", log_reports_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-      </div>
+     <div class="mt-6 flex flex-wrap items-center gap-3">
+  <%= link_to edit_log_report_path(@log_report),
+      class: "inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" do %>
+    <%= lucide_icon "pencil", class: "w-4 h-4" %>
+    Edit
+  <% end %>
+
+  <%= link_to print_log_report_path(@log_report),
+      class: "#{btn_primary} inline-flex items-center gap-2" do %>
+    <%= lucide_icon "printer", class: "w-4 h-4" %>
+    Print
+  <% end %>
+
+  <%= link_to log_reports_path,
+      class: "inline-flex items-center gap-2 border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+    <%= lucide_icon "arrow-left", class: "w-4 h-4" %>
+    Back
+  <% end %>
+</div>
     </div>
 
    <div class="bg-white border border-gray-200 p-6">
@@ -76,9 +90,11 @@
   <dt class="text-sm font-semibold text-gray-500">Attached Source Log Sheet</dt>
   <dd class="mt-1 text-sm text-gray-700">
     <% if @log_report.source_document.attached? %>
-      <%= link_to @log_report.source_document.filename.to_s,
-          rails_blob_path(@log_report.source_document, disposition: "attachment"),
-          class: "text-blue-600 hover:underline" %>
+      <%= link_to download_source_document_log_report_path(@log_report),
+    class: "inline-flex items-center gap-2 text-green-700 font-medium hover:text-green-800" do %>
+  <%= lucide_icon "download", class: "w-4 h-4" %>
+  Download Source Document
+  <% end %>
     <% else %>
       No source document attached.
     <% end %>
@@ -131,38 +147,29 @@
     </div>
   </div>
 
-  <div class="space-y-6">
-    <div class="bg-white border border-gray-200 p-6">
-      <h3 class="text-base font-semibold mb-4">Report Actions</h3>
+ <div class="space-y-3">
+  <% if @log_report.draft? %>
+    <%= button_to submit_log_report_path(@log_report),
+        method: :patch,
+        class: "#{btn_primary} w-full inline-flex items-center justify-center gap-2" do %>
+      <%= lucide_icon "send", class: "w-4 h-4" %>
+      Submit Report
+    <% end %>
+  <% end %>
 
-      <div class="space-y-3">
-        <% if @log_report.draft? %>
-         <%= button_to "Submit Report",
-    submit_log_report_path(@log_report),
-    method: :patch,
-    class: btn_primary %>
-        <% end %>
+  <% if @log_report.submitted? %>
+    <%= button_to review_log_report_path(@log_report),
+        method: :patch,
+        class: "#{btn_primary} w-full inline-flex items-center justify-center gap-2" do %>
+      <%= lucide_icon "circle-check", class: "w-4 h-4" %>
+      Mark as Reviewed
+    <% end %>
+  <% end %>
 
-        <% if @log_report.submitted? %>
-          <%= button_to "Mark as Reviewed",
-              review_log_report_path(@log_report),
-              method: :patch,
-              class: btn_primary %>
-        <% end %>
-
-        <%= link_to "Add Log Entry",
-    new_log_report_log_entry_path(@log_report),
-    class: btn_secondary %>
-      </div>
-    </div>
-<% if can_manage_logs? && @log_report.draft? %>
-  <div class="bg-white border border-gray-200 p-6">
-    <h3 class="text-base font-semibold mb-4">Quick Add Log Entry</h3>
-
-    <%= render "quick_log_entry_form",
-        log_report: @log_report,
-        log_entry: LogEntry.new %>
-  </div>
-<% end %>
-  </div>
+  <%= link_to new_log_report_log_entry_path(@log_report),
+      class: "#{btn_secondary} w-full inline-flex items-center justify-center gap-2" do %>
+    <%= lucide_icon "plus", class: "w-4 h-4" %>
+    Add Log Entry
+  <% end %>
+</div>
 </div>

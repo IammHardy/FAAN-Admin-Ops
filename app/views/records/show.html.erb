@@ -1,22 +1,35 @@
 <div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-bold text-gray-900"><%= @record.title %></h1>
+  <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+    <%= lucide_icon "file-text", class: "w-6 h-6 text-green-700" %>
+    <%= @record.title %>
+  </h1>
 
-  <div class="space-x-2">
-    <%= link_to "Edit", edit_record_path(@record), class: "bg-gray-900 text-white px-4 py-2 rounded-lg" %>
-    <%= link_to "Back", records_path, class: "bg-gray-200 text-gray-800 px-4 py-2 rounded-lg" %>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to edit_record_path(@record),
+        class: "inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg" do %>
+      <%= lucide_icon "pencil", class: "w-4 h-4" %>
+      Edit
+    <% end %>
+
+    <%= link_to records_path,
+        class: "inline-flex items-center gap-2 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg" do %>
+      <%= lucide_icon "arrow-left", class: "w-4 h-4" %>
+      Back
+    <% end %>
   </div>
 </div>
 
 <div class="bg-white rounded-xl shadow p-6 space-y-4">
-<p>
-  <strong>Officer on Duty:</strong>
-  <%= @record.duty_session&.operation_staff&.full_name || "Not captured" %>
-</p>
+  <p>
+    <strong>Officer on Duty:</strong>
+    <%= @record.duty_session&.operation_staff&.full_name || "Not captured" %>
+  </p>
 
-<p>
-  <strong>Login Account:</strong>
-  <%= @record.filed_by&.email %>
-</p>
+  <p>
+    <strong>Login Account:</strong>
+    <%= @record.filed_by&.email %>
+  </p>
+
   <p><strong>Category:</strong> <%= @record.category %></p>
   <p><strong>Document Date:</strong> <%= @record.document_date || "Not provided" %></p>
   <p><strong>Date Filed:</strong> <%= @record.filed_date %></p>
@@ -28,9 +41,17 @@
   <p><strong>Notes:</strong> <%= simple_format(@record.notes.presence || "No notes") %></p>
 
   <% if @record.attachment.attached? %>
-    <div>
-      <strong>Scanned Copy:</strong><br>
-      <%= link_to "View / Download Attachment", url_for(@record.attachment), target: "_blank", class: "text-green-700 font-medium" %>
+    <div class="pt-4 border-t border-slate-100">
+      <p class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+        <%= lucide_icon "paperclip", class: "w-4 h-4 text-green-700" %>
+        Scanned Copy
+      </p>
+
+      <%= link_to download_attachment_record_path(@record),
+          class: "inline-flex items-center gap-2 text-green-700 font-medium hover:text-green-800" do %>
+        <%= lucide_icon "download", class: "w-4 h-4" %>
+        Download Attachment
+      <% end %>
     </div>
   <% end %>
 </div>

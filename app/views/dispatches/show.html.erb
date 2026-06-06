@@ -65,10 +65,11 @@
   <dt class="text-sm font-semibold text-gray-500">Attached Memo Copy</dt>
   <dd class="mt-1 text-sm text-gray-700">
     <% if @dispatch.memo_file.attached? %>
-  <%= link_to "Download Memo File",
-      download_memo_file_dispatch_path(@dispatch),
-      class: "inline-flex items-center bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm font-medium" %>
-
+  <%= link_to download_memo_file_dispatch_path(@dispatch),
+    class: "inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm font-medium" do %>
+  <%= lucide_icon "download", class: "w-4 h-4" %>
+  Download Memo File
+<% end %>
   <p class="text-xs text-gray-500 mt-2">
     File: <%= @dispatch.memo_file.filename.to_s %>
   </p>
@@ -140,60 +141,89 @@
     </dl>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">
-      <% if can_manage_dispatches? %>
-  <%= link_to "Edit", edit_dispatch_path(@dispatch), class: "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-<% end %>
-      <% if can_manage_dispatches? %>
-  <%= link_to "Print", print_dispatch_path(@dispatch), class: btn_primary %>
-<% end %>
-      <%= link_to "Back", dashboard_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-  </div>
+  <% if can_manage_dispatches? %>
+    <%= link_to edit_dispatch_path(@dispatch),
+        class: "inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" do %>
+      <%= lucide_icon "pencil", class: "w-4 h-4" %>
+      Edit
+    <% end %>
+
+    <%= link_to print_dispatch_path(@dispatch),
+        class: "#{btn_primary} inline-flex items-center gap-2" do %>
+      <%= lucide_icon "printer", class: "w-4 h-4" %>
+      Print
+    <% end %>
+  <% end %>
+
+  <%= link_to dashboard_path,
+      class: "inline-flex items-center gap-2 border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+    <%= lucide_icon "arrow-left", class: "w-4 h-4" %>
+    Back
+  <% end %>
+</div>
 
   
-  <div class="bg-white border border-gray-200 p-6">
-    <h3 class="text-base font-semibold mb-4">Update Status</h3>
-    <% current_recipient = @dispatch.dispatch_recipients.find_by(receiving_unit_id: current_user.unit_id) if current_user.unit_officer? %>
+<div class="bg-white border border-gray-200 p-6">
+  <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
+    <%= lucide_icon "refresh-cw", class: "w-5 h-5 text-green-700" %>
+    Update Status
+  </h3>
 
-    <div class="space-y-4">
-      <% if can_manage_dispatches? && @dispatch.draft? %>
-  <%= button_to "Mark as Dispatched",
-      mark_dispatched_dispatch_path(@dispatch),
-      method: :patch,
-      class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" %>
-<% end %>
+  <% current_recipient = @dispatch.dispatch_recipients.find_by(receiving_unit_id: current_user.unit_id) if current_user.unit_officer? %>
 
-<% if current_user.unit_officer? && current_recipient&.dispatched? %>
-  <div class="border border-gray-200 p-4">
-    <%= form_with url: mark_received_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
-      <%= hidden_field_tag :receiver_name, current_user.display_name %>
-      <%= hidden_field_tag :receiver_designation, current_user.role.humanize %>
+  <div class="space-y-4">
+    <% if can_manage_dispatches? && @dispatch.draft? %>
+      <%= button_to mark_dispatched_dispatch_path(@dispatch),
+          method: :patch,
+          class: "w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" do %>
+        <%= lucide_icon "send", class: "w-4 h-4" %>
+        Mark as Dispatched
+      <% end %>
+    <% end %>
 
-      <p class="text-sm text-gray-600">
-        Receive as <strong><%= current_user.display_name %></strong>
-      </p>
+    <% if current_user.unit_officer? && current_recipient&.dispatched? %>
+      <div class="border border-gray-200 p-4">
+        <%= form_with url: mark_received_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
+          <%= hidden_field_tag :receiver_name, current_user.display_name %>
+          <%= hidden_field_tag :receiver_designation, current_user.role.humanize %>
 
-      <%= submit_tag "Receive Dispatch", class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium" %>
+          <p class="text-sm text-gray-600">
+            Receive as <strong><%= current_user.display_name %></strong>
+          </p>
+
+          <button type="submit"
+            class="w-full inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium">
+            <%= lucide_icon "inbox", class: "w-4 h-4" %>
+            Receive Dispatch
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if current_user.unit_officer? && current_recipient&.received? %>
+      <%= form_with url: mark_acknowledged_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
+        <div>
+          <label class="block text-sm font-medium mb-1">Acknowledgement Note</label>
+          <%= text_area_tag :acknowledgement_note, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+        </div>
+
+        <button type="submit"
+          class="w-full inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-medium">
+          <%= lucide_icon "check-check", class: "w-4 h-4" %>
+          Acknowledge Dispatch
+        </button>
+      <% end %>
+    <% end %>
+
+    <% if can_manage_dispatches? && @dispatch.all_recipients_acknowledged? %>
+      <%= button_to mark_filed_dispatch_path(@dispatch),
+          method: :patch,
+          class: "w-full inline-flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" do %>
+        <%= lucide_icon "archive", class: "w-4 h-4" %>
+        Mark as Filed
+      <% end %>
     <% end %>
   </div>
-<% end %>
-
-<% if current_user.unit_officer? && current_recipient&.received? %>
-  <%= form_with url: mark_acknowledged_dispatch_path(@dispatch), method: :patch, local: true, class: "space-y-3" do %>
-    <div>
-      <label class="block text-sm font-medium mb-1">Acknowledgement Note</label>
-      <%= text_area_tag :acknowledgement_note, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-    </div>
-
-    <%= submit_tag "Acknowledge Dispatch", class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-medium" %>
-  <% end %>
-<% end %>
-
-<% if can_manage_dispatches? && @dispatch.all_recipients_acknowledged? %>
-  <%= button_to "Mark as Filed",
-      mark_filed_dispatch_path(@dispatch),
-      method: :patch,
-      class: "w-full bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-sm font-medium" %>
-<% end %>
-    </div>
+</div>
   </div>
 </div>

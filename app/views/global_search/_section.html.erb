@@ -1,9 +1,13 @@
 <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
   <div class="bg-slate-100 px-5 py-3 border-b">
-    <h2 class="font-semibold text-slate-900">
-      <%= title %>
-      <span class="text-sm font-normal text-slate-500">
-        (<%= items.count %>)
+    <h2 class="font-semibold text-slate-900 flex items-center gap-2">
+      <%= lucide_icon icon, class: "w-5 h-5 text-green-700" %>
+
+      <span>
+        <%= title %>
+        <span class="text-sm font-normal text-slate-500">
+          (<%= items.count %>)
+        </span>
       </span>
     </h2>
   </div>
@@ -30,14 +34,17 @@
             </p>
           </div>
 
-          <%= link_to "View",
-              send(path_method, item),
-              class: "text-green-700 font-medium text-sm" %>
+          <%= link_to send(path_method, item),
+              class: "inline-flex items-center gap-1 text-green-700 font-medium text-sm" do %>
+            <%= lucide_icon "eye", class: "w-4 h-4" %>
+            View
+          <% end %>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="px-5 py-4 text-sm text-slate-500">
+    <div class="px-5 py-4 text-sm text-slate-500 flex items-center gap-2">
+      <%= lucide_icon "search-x", class: "w-5 h-5 text-slate-400" %>
       No results found.
     </div>
   <% end %>

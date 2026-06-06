@@ -1,10 +1,18 @@
 <div class="flex justify-between items-center mb-6">
   <div>
-    <h1 class="text-2xl font-bold text-gray-900">Records Archive</h1>
+    <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+      <%= lucide_icon "archive", class: "w-6 h-6 text-green-700" %>
+      Records Archive
+    </h1>
+
     <p class="text-gray-600">Search dispatch copies, memos, reports, nominal roll and other filed documents.</p>
   </div>
 
-  <%= link_to "Add New Record", new_record_path, class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+  <%= link_to new_record_path,
+      class: "inline-flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" do %>
+    <%= lucide_icon "plus", class: "w-4 h-4" %>
+    Add New Record
+  <% end %>
 </div>
 
 <div class="bg-white p-4 rounded-xl shadow mb-6">
@@ -19,7 +27,11 @@
 
     <%= date_field_tag :document_date, params[:document_date], class: "rounded-lg border-gray-300" %>
 
-    <%= submit_tag "Search", class: "bg-gray-900 text-white rounded-lg px-4 py-2" %>
+    <%= button_tag type: :submit,
+        class: "inline-flex items-center justify-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2" do %>
+      <%= lucide_icon "search", class: "w-4 h-4" %>
+      Search
+    <% end %>
   <% end %>
 </div>
 
@@ -45,29 +57,50 @@
           <td class="p-3"><%= record.filed_date %></td>
           <td class="p-3"><%= record.filed_by&.email %></td>
           <td class="p-3"><%= record.physical_location %></td>
-          <td class="p-3"><%= record.attachment.attached? ? "Yes" : "No" %></td>
+
+          <td class="p-3">
+            <% if record.attachment.attached? %>
+              <span class="inline-flex items-center gap-1 text-green-700 font-medium">
+                <%= lucide_icon "check-circle", class: "w-4 h-4" %>
+                Yes
+              </span>
+            <% else %>
+              <span class="inline-flex items-center gap-1 text-slate-500">
+                <%= lucide_icon "circle", class: "w-4 h-4" %>
+                No
+              </span>
+            <% end %>
+          </td>
 
           <td class="p-3">
             <div class="flex flex-wrap gap-3 items-center">
-              <%= link_to "View",
-                  record_path(record),
-                  class: "text-green-700 font-medium" %>
-
-              <%= link_to "Edit",
-                  edit_record_path(record),
-                  class: "text-blue-700 font-medium" %>
-
-              <% if record.attachment.attached? %>
-                <%= link_to "Download",
-                    download_attachment_record_path(record),
-                    class: "text-slate-700 font-medium" %>
+              <%= link_to record_path(record),
+                  class: "inline-flex items-center gap-1 text-green-700 font-medium" do %>
+                <%= lucide_icon "eye", class: "w-4 h-4" %>
+                View
               <% end %>
 
-              <%= button_to "Delete",
-                  record_path(record),
+              <%= link_to edit_record_path(record),
+                  class: "inline-flex items-center gap-1 text-blue-700 font-medium" do %>
+                <%= lucide_icon "pencil", class: "w-4 h-4" %>
+                Edit
+              <% end %>
+
+              <% if record.attachment.attached? %>
+                <%= link_to download_attachment_record_path(record),
+                    class: "inline-flex items-center gap-1 text-slate-700 font-medium" do %>
+                  <%= lucide_icon "download", class: "w-4 h-4" %>
+                  Download
+                <% end %>
+              <% end %>
+
+              <%= button_to record_path(record),
                   method: :delete,
                   form: { data: { turbo_confirm: "Move this record to deleted records?" } },
-                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+                  class: "inline-flex items-center gap-1 text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" do %>
+                <%= lucide_icon "trash-2", class: "w-4 h-4" %>
+                Delete
+              <% end %>
             </div>
           </td>
         </tr>

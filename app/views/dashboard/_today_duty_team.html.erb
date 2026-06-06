@@ -1,7 +1,8 @@
 <div class="w-full bg-white border border-slate-200 shadow-sm rounded-xl p-6 mb-6">
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-5">
     <div>
-      <h2 class="text-lg font-semibold text-slate-900">
+      <h2 class="text-lg font-semibold text-slate-900 flex items-center gap-2">
+        <%= lucide_icon "users", class: "w-5 h-5 text-green-700" %>
         Today's Admin Office Duty Team
       </h2>
 
@@ -10,24 +11,35 @@
       </p>
     </div>
 
-    <p class="text-sm text-slate-500">
+    <div class="inline-flex items-center gap-2 text-sm text-slate-500">
+      <%= lucide_icon "calendar-days", class: "w-4 h-4" %>
       <%= Date.current.strftime("%A, %d %B %Y") %>
-    </p>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 min-h-[120px]">
-      <h3 class="text-sm font-semibold text-slate-800 mb-3">
-        Always Present
-      </h3>
+      <div class="flex items-center gap-2 mb-3">
+        <%= lucide_icon "shield-check", class: "w-5 h-5 text-slate-600" %>
+
+        <h3 class="text-sm font-semibold text-slate-800">
+          Always Present
+        </h3>
+      </div>
 
       <% if @always_present_staff.any? %>
         <div class="space-y-2">
           <% @always_present_staff.each do |staff| %>
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 rounded-lg bg-white border border-slate-100 px-3 py-2">
-              <span class="text-sm font-medium text-slate-800">
-                <%= staff.full_name %>
-              </span>
+
+              <div class="flex items-center gap-2">
+                <%= lucide_icon "user", class: "w-4 h-4 text-slate-400" %>
+
+                <span class="text-sm font-medium text-slate-800">
+                  <%= staff.full_name %>
+                </span>
+              </div>
 
               <span class="text-xs text-slate-500">
                 <%= staff.designation.presence || "Staff" %>
@@ -36,24 +48,34 @@
           <% end %>
         </div>
       <% else %>
-        <p class="text-sm text-slate-500">
+        <div class="flex items-center gap-2 text-sm text-slate-500">
+          <%= lucide_icon "circle-alert", class: "w-4 h-4" %>
           No always-present staff configured.
-        </p>
+        </div>
       <% end %>
     </div>
 
     <div class="rounded-xl border border-green-200 bg-green-50 p-4 min-h-[120px]">
-      <h3 class="text-sm font-semibold text-slate-800 mb-3">
-        On Duty Today
-      </h3>
+      <div class="flex items-center gap-2 mb-3">
+        <%= lucide_icon "badge-check", class: "w-5 h-5 text-green-700" %>
+
+        <h3 class="text-sm font-semibold text-slate-800">
+          On Duty Today
+        </h3>
+      </div>
 
       <% if @today_admin_rosters.any? %>
         <div class="space-y-2">
           <% @today_admin_rosters.each do |roster| %>
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 rounded-lg bg-white border border-green-100 px-3 py-2">
-              <span class="text-sm font-medium text-slate-800">
-                <%= roster.operation_staff.full_name %>
-              </span>
+
+              <div class="flex items-center gap-2">
+                <%= lucide_icon "user-check", class: "w-4 h-4 text-green-700" %>
+
+                <span class="text-sm font-medium text-slate-800">
+                  <%= roster.operation_staff.full_name %>
+                </span>
+              </div>
 
               <span class="text-xs text-slate-500">
                 <%= roster.operation_staff.designation.presence || "Staff" %>
@@ -62,10 +84,12 @@
           <% end %>
         </div>
       <% else %>
-        <p class="text-sm text-slate-500">
+        <div class="flex items-center gap-2 text-sm text-slate-500">
+          <%= lucide_icon "calendar-x", class: "w-4 h-4" %>
           No Admin Office duty roster for today.
-        </p>
+        </div>
       <% end %>
     </div>
+
   </div>
 </div>

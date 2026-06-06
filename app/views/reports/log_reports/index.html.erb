@@ -32,9 +32,16 @@
     </div>
 
     <div class="flex items-end gap-2">
-      <%= submit_tag "Filter", class: btn_primary %>
-      <%= link_to "Reset", reports_log_reports_path, class: btn_secondary %>
-    </div>
+      <%= button_tag type: :submit,
+    class: "#{btn_primary} inline-flex items-center gap-2" do %>
+  <%= lucide_icon "filter", class: "w-4 h-4" %>
+  Filter
+<% end %>
+      <%= link_to reports_log_reports_path,
+    class: "#{btn_secondary} inline-flex items-center gap-2" do %>
+  <%= lucide_icon "rotate-ccw", class: "w-4 h-4" %>
+  Reset
+<% end %>
   <% end %>
 </div>
 

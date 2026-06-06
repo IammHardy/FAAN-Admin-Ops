@@ -1,6 +1,7 @@
 <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900">
+    <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+      <%= lucide_icon "user", class: "w-6 h-6 text-green-700" %>
       <%= @operation_staff.full_name %>
     </h1>
 
@@ -10,36 +11,34 @@
   </div>
 
   <div class="flex gap-2">
-    <%= link_to "Edit Staff",
-        edit_operation_staff_path(@operation_staff),
-        class: "border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-100" %>
+    <%= link_to edit_operation_staff_path(@operation_staff),
+        class: "inline-flex items-center gap-2 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-100" do %>
+      <%= lucide_icon "pencil", class: "w-4 h-4" %>
+      Edit Staff
+    <% end %>
 
-    <%= link_to "Add Document",
-        new_record_path(operation_staff_id: @operation_staff.id),
-        class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+    <%= link_to new_record_path(operation_staff_id: @operation_staff.id),
+        class: "inline-flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" do %>
+      <%= lucide_icon "plus", class: "w-4 h-4" %>
+      Add Document
+    <% end %>
   </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <div class="bg-white border border-slate-200 p-5 shadow-sm">
     <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Designation</p>
-    <p class="font-semibold text-slate-900">
-      <%= @operation_staff.designation.presence || "—" %>
-    </p>
+    <p class="font-semibold text-slate-900"><%= @operation_staff.designation.presence || "—" %></p>
   </div>
 
   <div class="bg-white border border-slate-200 p-5 shadow-sm">
     <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Unit</p>
-    <p class="font-semibold text-slate-900">
-      <%= @operation_staff.unit.presence || "—" %>
-    </p>
+    <p class="font-semibold text-slate-900"><%= @operation_staff.unit.presence || "—" %></p>
   </div>
 
   <div class="bg-white border border-slate-200 p-5 shadow-sm">
     <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Folder Location</p>
-    <p class="font-semibold text-slate-900">
-      <%= @operation_staff.physical_folder_location.presence || "—" %>
-    </p>
+    <p class="font-semibold text-slate-900"><%= @operation_staff.physical_folder_location.presence || "—" %></p>
   </div>
 </div>
 
@@ -61,8 +60,11 @@
         params[:filed_date],
         class: "rounded-lg border-slate-300" %>
 
-    <%= submit_tag "Search",
-        class: "bg-slate-900 text-white rounded-lg px-4 py-2" %>
+    <%= button_tag type: :submit,
+        class: "inline-flex items-center justify-center gap-2 bg-slate-900 text-white rounded-lg px-4 py-2" do %>
+      <%= lucide_icon "search", class: "w-4 h-4" %>
+      Search
+    <% end %>
   <% end %>
 </div>
 
@@ -82,42 +84,45 @@
       <% @records.each do |record| %>
         <tr class="border-t hover:bg-slate-50">
           <td class="p-3 font-medium">
-            <%= link_to record.title,
-                record_path(record),
-                class: "text-green-700 font-semibold" %>
+            <%= link_to record.title, record_path(record), class: "text-green-700 font-semibold" %>
           </td>
 
-          <td class="p-3">
-            <%= record.category %>
-          </td>
-
-          <td class="p-3">
-            <%= record.filed_date || "—" %>
-          </td>
+          <td class="p-3"><%= record.category %></td>
+          <td class="p-3"><%= record.filed_date || "—" %></td>
 
           <td class="p-3">
             <% if record.attachment.attached? %>
-              <span class="text-green-700 font-medium">Yes</span>
+              <span class="inline-flex items-center gap-1 text-green-700 font-medium">
+                <%= lucide_icon "check-circle", class: "w-4 h-4" %>
+                Yes
+              </span>
             <% else %>
-              <span class="text-slate-400">No</span>
+              <span class="inline-flex items-center gap-1 text-slate-400">
+                <%= lucide_icon "circle", class: "w-4 h-4" %>
+                No
+              </span>
             <% end %>
           </td>
 
           <td class="p-3">
             <div class="flex gap-3">
-              <%= link_to "View",
-                  record_path(record),
-                  class: "text-green-700 font-medium" %>
+              <%= link_to record_path(record), class: "inline-flex items-center gap-1 text-green-700 font-medium" do %>
+                <%= lucide_icon "eye", class: "w-4 h-4" %>
+                View
+              <% end %>
 
-              <%= link_to "Edit",
-                  edit_record_path(record),
-                  class: "text-blue-700 font-medium" %>
+              <%= link_to edit_record_path(record), class: "inline-flex items-center gap-1 text-blue-700 font-medium" do %>
+                <%= lucide_icon "pencil", class: "w-4 h-4" %>
+                Edit
+              <% end %>
 
-              <%= button_to "Delete",
-                  record_path(record),
+              <%= button_to record_path(record),
                   method: :delete,
                   form: { data: { turbo_confirm: "Delete this document?" } },
-                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+                  class: "inline-flex items-center gap-1 text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" do %>
+                <%= lucide_icon "trash-2", class: "w-4 h-4" %>
+                Delete
+              <% end %>
             </div>
           </td>
         </tr>
@@ -126,13 +131,13 @@
       <% if @records.empty? %>
         <tr>
           <td colspan="5" class="p-8 text-center">
-            <p class="text-slate-500 mb-4">
-              No documents found in this staff folder.
-            </p>
+            <p class="text-slate-500 mb-4">No documents found in this staff folder.</p>
 
-            <%= link_to "Add First Document",
-                new_record_path(operation_staff_id: @operation_staff.id),
-                class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+            <%= link_to new_record_path(operation_staff_id: @operation_staff.id),
+                class: "inline-flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" do %>
+              <%= lucide_icon "plus", class: "w-4 h-4" %>
+              Add First Document
+            <% end %>
           </td>
         </tr>
       <% end %>

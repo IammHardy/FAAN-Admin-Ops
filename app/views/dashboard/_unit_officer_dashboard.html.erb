@@ -2,19 +2,27 @@
 <% content_for :page_subtitle, "Manage daily log reports for your unit." %>
 
 <% if @today_log.present? && @today_log.draft? %>
-  <div class="mb-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">
-    ⚠️ You have not submitted today’s log report.
+  <div class="mb-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <%= lucide_icon "triangle-alert", class: "w-5 h-5 text-amber-700" %>
+      <span>You have not submitted today’s log report.</span>
+    </div>
 
-    <%= link_to "Submit Now",
-        submit_log_report_path(@today_log),
+    <%= link_to submit_log_report_path(@today_log),
         data: { turbo_method: :patch, turbo_confirm: "Submit this log?" },
-        class: "ml-3 text-amber-900 font-semibold hover:underline" %>
+        class: "text-amber-900 font-semibold hover:underline inline-flex items-center gap-1" do %>
+      Submit Now
+      <%= lucide_icon "arrow-right", class: "w-4 h-4" %>
+    <% end %>
   </div>
 <% end %>
 
 <div class="app-card mb-6">
   <div class="app-card-body">
-    <h3 class="app-section-title mb-4">Incoming Dispatches</h3>
+    <h3 class="app-section-title mb-4 flex items-center gap-2">
+      <%= lucide_icon "inbox", class: "w-5 h-5 text-green-700" %>
+      Incoming Dispatches
+    </h3>
 
     <% if @incoming_dispatches.any? %>
       <div class="space-y-3">
@@ -36,31 +44,37 @@
             </p>
 
             <div class="flex flex-wrap gap-3 mt-2">
-              <%= link_to "View Memo",
-                  dispatch_path(dispatch),
-                  class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+              <%= link_to dispatch_path(dispatch),
+                  class: "text-sm text-green-700 hover:text-green-800 font-medium inline-flex items-center gap-1" do %>
+                <%= lucide_icon "eye", class: "w-4 h-4" %>
+                View Memo
+              <% end %>
 
               <% if recipient.dispatched? %>
-                <%= button_to "Receive",
-                    mark_received_dispatch_path(dispatch),
+                <%= button_to mark_received_dispatch_path(dispatch),
                     method: :patch,
                     params: {
                       receiver_name: current_user.display_name,
                       receiver_designation: current_user.role.humanize
                     },
                     data: { turbo_confirm: "Confirm that you received this dispatch?" },
-                    class: "text-sm text-green-700 hover:text-green-800 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+                    class: "text-sm text-green-700 hover:text-green-800 font-medium bg-transparent border-0 p-0 cursor-pointer inline-flex items-center gap-1" do %>
+                  <%= lucide_icon "download", class: "w-4 h-4" %>
+                  Receive
+                <% end %>
               <% end %>
 
               <% if recipient.received? %>
-                <%= button_to "Acknowledge",
-                    mark_acknowledged_dispatch_path(dispatch),
+                <%= button_to mark_acknowledged_dispatch_path(dispatch),
                     method: :patch,
                     params: {
                       acknowledgement_note: "Acknowledged by #{current_user.display_name}"
                     },
                     data: { turbo_confirm: "Acknowledge this dispatch?" },
-                    class: "text-sm text-green-700 hover:text-green-800 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+                    class: "text-sm text-green-700 hover:text-green-800 font-medium bg-transparent border-0 p-0 cursor-pointer inline-flex items-center gap-1" do %>
+                  <%= lucide_icon "circle-check", class: "w-4 h-4" %>
+                  Acknowledge
+                <% end %>
               <% end %>
             </div>
           </div>
@@ -71,41 +85,74 @@
     <% end %>
   </div>
 </div>
-<div class="app-stat-card">
-  <p class="app-stat-label">Monthly Reports</p>
-  <h3 class="app-stat-value"><%= @monthly_reports_count %></h3>
-</div>
 
-<div class="app-stat-card">
-  <p class="app-stat-label">Pending Monthly Reviews</p>
-  <h3 class="app-stat-value"><%= @pending_monthly_reviews_count %></h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <div class="app-stat-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Monthly Reports</p>
+        <h3 class="app-stat-value"><%= @monthly_reports_count %></h3>
+      </div>
+      <%= lucide_icon "file-bar-chart", class: "w-8 h-8 text-slate-500" %>
+    </div>
+  </div>
+
+  <div class="app-stat-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Pending Monthly Reviews</p>
+        <h3 class="app-stat-value"><%= @pending_monthly_reviews_count %></h3>
+      </div>
+      <%= lucide_icon "hourglass", class: "w-8 h-8 text-amber-600" %>
+    </div>
+  </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <div class="app-stat-card">
-    <p class="app-stat-label">Draft Logs</p>
-    <h3 class="app-stat-value"><%= @draft_logs.count %></h3>
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Draft Logs</p>
+        <h3 class="app-stat-value"><%= @draft_logs.count %></h3>
+      </div>
+      <%= lucide_icon "file-pen-line", class: "w-8 h-8 text-slate-500" %>
+    </div>
   </div>
 
   <div class="app-stat-card">
-    <p class="app-stat-label">Submitted Logs</p>
-    <h3 class="app-stat-value"><%= @submitted_logs.count %></h3>
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Submitted Logs</p>
+        <h3 class="app-stat-value"><%= @submitted_logs.count %></h3>
+      </div>
+      <%= lucide_icon "send", class: "w-8 h-8 text-green-700" %>
+    </div>
   </div>
 
   <div class="app-stat-card">
-    <p class="app-stat-label">Reviewed Logs</p>
-    <h3 class="app-stat-value"><%= @reviewed_logs.count %></h3>
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Reviewed Logs</p>
+        <h3 class="app-stat-value"><%= @reviewed_logs.count %></h3>
+      </div>
+      <%= lucide_icon "circle-check", class: "w-8 h-8 text-blue-600" %>
+    </div>
   </div>
 </div>
 
 <div class="app-card mb-6">
   <div class="app-card-body">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="app-section-title">Today's Log</h3>
+      <h3 class="app-section-title flex items-center gap-2">
+        <%= lucide_icon "calendar-check", class: "w-5 h-5 text-green-700" %>
+        Today's Log
+      </h3>
 
-      <%= link_to "View All Logs",
-          log_reports_path,
-          class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+      <%= link_to log_reports_path,
+          class: "text-sm text-green-700 hover:text-green-800 font-medium inline-flex items-center gap-1" do %>
+        View All Logs
+        <%= lucide_icon "arrow-right", class: "w-4 h-4" %>
+      <% end %>
     </div>
 
     <% if @today_log.present? %>
@@ -114,22 +161,29 @@
       </p>
 
       <div class="flex flex-wrap gap-3">
-        <%= link_to "Continue Today's Log",
-            log_report_path(@today_log),
-            class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+        <%= link_to log_report_path(@today_log),
+            class: "text-sm text-green-700 hover:text-green-800 font-medium inline-flex items-center gap-1" do %>
+          <%= lucide_icon "book-open", class: "w-4 h-4" %>
+          Continue Today's Log
+        <% end %>
 
         <% if @today_log.draft? %>
-          <%= link_to "Edit Report Details",
-              edit_log_report_path(@today_log),
-              class: "text-sm text-slate-600 hover:text-slate-900 font-medium" %>
+          <%= link_to edit_log_report_path(@today_log),
+              class: "text-sm text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1" do %>
+            <%= lucide_icon "pencil", class: "w-4 h-4" %>
+            Edit Report Details
+          <% end %>
         <% end %>
       </div>
     <% else %>
       <p class="app-muted mb-3">No log report has been created for today.</p>
 
-      <%= link_to "Create Today's Log",
-          new_log_report_path,
-          class: btn_primary %>
+      <%= link_to new_log_report_path, class: btn_primary do %>
+        <span class="inline-flex items-center gap-2">
+          <%= lucide_icon "plus", class: "w-4 h-4" %>
+          Create Today's Log
+        </span>
+      <% end %>
     <% end %>
   </div>
 </div>
@@ -137,7 +191,10 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
   <div class="app-card">
     <div class="app-card-body">
-      <h3 class="app-section-title mb-4">Draft Logs</h3>
+      <h3 class="app-section-title mb-4 flex items-center gap-2">
+        <%= lucide_icon "file-pen-line", class: "w-5 h-5 text-slate-600" %>
+        Draft Logs
+      </h3>
 
       <% if @draft_logs.any? %>
         <div class="space-y-3">
@@ -153,9 +210,11 @@
                 <%= log.unit.name %> • Draft
               </p>
 
-              <%= link_to "Edit",
-                  edit_log_report_path(log),
-                  class: "text-sm text-slate-600 hover:text-slate-900 font-medium" %>
+              <%= link_to edit_log_report_path(log),
+                  class: "text-sm text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1 mt-1" do %>
+                <%= lucide_icon "pencil", class: "w-4 h-4" %>
+                Edit
+              <% end %>
             </div>
           <% end %>
         </div>
@@ -167,7 +226,10 @@
 
   <div class="app-card">
     <div class="app-card-body">
-      <h3 class="app-section-title mb-4">Submitted Logs</h3>
+      <h3 class="app-section-title mb-4 flex items-center gap-2">
+        <%= lucide_icon "send", class: "w-5 h-5 text-green-700" %>
+        Submitted Logs
+      </h3>
 
       <% if @submitted_logs.any? %>
         <div class="space-y-3">
@@ -194,7 +256,10 @@
 
 <div class="app-card mt-6">
   <div class="app-card-body">
-    <h3 class="app-section-title mb-4">Recently Reviewed Logs</h3>
+    <h3 class="app-section-title mb-4 flex items-center gap-2">
+      <%= lucide_icon "circle-check", class: "w-5 h-5 text-blue-600" %>
+      Recently Reviewed Logs
+    </h3>
 
     <% if @reviewed_logs.any? %>
       <div class="space-y-3">

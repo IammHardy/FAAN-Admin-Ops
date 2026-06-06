@@ -1,41 +1,75 @@
 <% content_for :page_title, "HOD Review Dashboard" %>
 <% content_for :page_subtitle, "Review submitted log reports and generate reports." %>
+
 <%= render "today_duty_team" %>
+
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <div class="app-stat-card">
-    <p class="app-stat-label">Pending Reviews</p>
-    <h3 class="app-stat-value"><%= @pending_review_count %></h3>
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Pending Reviews</p>
+        <h3 class="app-stat-value"><%= @pending_review_count %></h3>
+      </div>
+      <%= lucide_icon "clock", class: "w-8 h-8 text-amber-600" %>
+    </div>
   </div>
 
   <div class="app-stat-card">
-    <p class="app-stat-label">Reviewed Reports</p>
-    <h3 class="app-stat-value"><%= @reviewed_reports_count %></h3>
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Reviewed Reports</p>
+        <h3 class="app-stat-value"><%= @reviewed_reports_count %></h3>
+      </div>
+      <%= lucide_icon "circle-check", class: "w-8 h-8 text-green-700" %>
+    </div>
   </div>
 
   <div class="app-stat-card">
-    <p class="app-stat-label">Log Reports Today</p>
-    <h3 class="app-stat-value"><%= @log_reports_today %></h3>
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Log Reports Today</p>
+        <h3 class="app-stat-value"><%= @log_reports_today %></h3>
+      </div>
+      <%= lucide_icon "clipboard-list", class: "w-8 h-8 text-slate-500" %>
+    </div>
   </div>
 </div>
 
-<div class="app-stat-card">
-  <p class="app-stat-label">Monthly Reports</p>
-  <h3 class="app-stat-value"><%= @monthly_reports_count %></h3>
-</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <div class="app-stat-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Monthly Reports</p>
+        <h3 class="app-stat-value"><%= @monthly_reports_count %></h3>
+      </div>
+      <%= lucide_icon "file-bar-chart", class: "w-8 h-8 text-slate-500" %>
+    </div>
+  </div>
 
-<div class="app-stat-card">
-  <p class="app-stat-label">Pending Monthly Reviews</p>
-  <h3 class="app-stat-value"><%= @pending_monthly_reviews_count %></h3>
+  <div class="app-stat-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="app-stat-label">Pending Monthly Reviews</p>
+        <h3 class="app-stat-value"><%= @pending_monthly_reviews_count %></h3>
+      </div>
+      <%= lucide_icon "hourglass", class: "w-8 h-8 text-amber-600" %>
+    </div>
+  </div>
 </div>
 
 <div class="app-card mb-6">
   <div class="app-card-body">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="app-section-title">Pending Reports for Review</h3>
+      <h3 class="app-section-title flex items-center gap-2">
+        <%= lucide_icon "clipboard-check", class: "w-5 h-5 text-green-700" %>
+        Pending Reports for Review
+      </h3>
 
-      <%= link_to "View All Reports",
-          reports_log_reports_path,
-          class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+      <%= link_to reports_log_reports_path,
+          class: "text-sm text-green-700 hover:text-green-800 font-medium inline-flex items-center gap-1" do %>
+        View All Reports
+        <%= lucide_icon "arrow-right", class: "w-4 h-4" %>
+      <% end %>
     </div>
 
     <% if @pending_reviews.any? %>
@@ -57,22 +91,28 @@
             </p>
 
             <div class="flex flex-wrap gap-3 mt-2">
-              <%= link_to "View",
-                  log_report_path(report),
-                  class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+              <%= link_to log_report_path(report),
+                  class: "text-sm text-green-700 hover:text-green-800 font-medium inline-flex items-center gap-1" do %>
+                <%= lucide_icon "eye", class: "w-4 h-4" %>
+                View
+              <% end %>
 
-              <%= link_to "Review",
-                  review_log_report_path(report),
+              <%= link_to review_log_report_path(report),
                   data: {
                     turbo_method: :patch,
                     turbo_confirm: "Mark this report as reviewed?"
                   },
-                  class: "text-sm text-green-700 hover:text-green-800 font-medium" %>
+                  class: "text-sm text-green-700 hover:text-green-800 font-medium inline-flex items-center gap-1" do %>
+                <%= lucide_icon "circle-check", class: "w-4 h-4" %>
+                Review
+              <% end %>
 
-              <%= link_to "Print",
-                  print_log_report_path(report),
+              <%= link_to print_log_report_path(report),
                   target: "_blank",
-                  class: "text-sm text-slate-600 hover:text-slate-900 font-medium" %>
+                  class: "text-sm text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1" do %>
+                <%= lucide_icon "printer", class: "w-4 h-4" %>
+                Print
+              <% end %>
             </div>
           </div>
         <% end %>

@@ -75,80 +75,102 @@
       </div>
     </dl>
 
-    <div class="mt-6 flex flex-wrap items-center gap-3">
-  <%= link_to "Edit",
-      edit_incident_path(@incident),
-      class: "inline-flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
+   <div class="mt-6 flex flex-wrap items-center gap-3">
+  <%= link_to edit_incident_path(@incident),
+      class: "inline-flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" do %>
+    <%= lucide_icon "pencil", class: "w-4 h-4" %>
+    Edit
+  <% end %>
 
-  <%= link_to "Print",
-      print_incident_path(@incident),
-      class: "inline-flex items-center justify-center bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
+  <%= link_to print_incident_path(@incident),
+      class: "inline-flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" do %>
+    <%= lucide_icon "printer", class: "w-4 h-4" %>
+    Print
+  <% end %>
 
-  <%= link_to "Back",
-      incidents_path,
-      class: "inline-flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 text-sm font-medium rounded-md transition" %>
+  <%= link_to incidents_path,
+      class: "inline-flex items-center justify-center gap-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 text-sm font-medium rounded-md transition" do %>
+    <%= lucide_icon "arrow-left", class: "w-4 h-4" %>
+    Back
+  <% end %>
 </div>
   </div>
 
-  <div class="space-y-6">
-    <div class="bg-white border border-gray-200 p-6">
-      <h3 class="text-base font-semibold mb-4">Incident Actions</h3>
+  <div class="bg-white border border-gray-200 p-6">
+  <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
+    <%= lucide_icon "settings-2", class: "w-5 h-5 text-green-700" %>
+    Incident Actions
+  </h3>
 
-      <div class="space-y-4">
-        <% unless @incident.under_review? || @incident.escalated? || @incident.resolved? || @incident.closed? %>
-          <%= form_with url: review_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
-            <div>
-              <label class="block text-sm font-medium mb-1">Review Remark</label>
-              <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-            </div>
-           <%= submit_tag "Mark as Under Review",
-    class: "w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
-          <% end %>
-        <% end %>
+  <div class="space-y-4">
+    <% unless @incident.under_review? || @incident.escalated? || @incident.resolved? || @incident.closed? %>
+      <%= form_with url: review_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
+        <div>
+          <label class="block text-sm font-medium mb-1">Review Remark</label>
+          <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+        </div>
 
-        <% unless @incident.escalated? || @incident.resolved? || @incident.closed? %>
-          <div class="border border-gray-200 p-4">
-            <%= form_with url: escalate_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
-              <div>
-                <label class="block text-sm font-medium mb-1">Escalated To</label>
-                <%= text_field_tag :escalated_to, nil, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-              </div>
+        <button type="submit"
+          class="w-full inline-flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition">
+          <%= lucide_icon "eye", class: "w-4 h-4" %>
+          Mark as Under Review
+        </button>
+      <% end %>
+    <% end %>
 
-              <div>
-                <label class="block text-sm font-medium mb-1">Reviewer Remark</label>
-                <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-              </div>
-
-              <%= submit_tag "Escalate Incident",
-    class: "w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
-            <% end %>
+    <% unless @incident.escalated? || @incident.resolved? || @incident.closed? %>
+      <div class="border border-gray-200 p-4">
+        <%= form_with url: escalate_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
+          <div>
+            <label class="block text-sm font-medium mb-1">Escalated To</label>
+            <%= text_field_tag :escalated_to, nil, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
           </div>
-        <% end %>
 
-        <% unless @incident.resolved? || @incident.closed? %>
-          <%= form_with url: resolve_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
-            <div>
-              <label class="block text-sm font-medium mb-1">Resolution Remark</label>
-              <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-            </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Reviewer Remark</label>
+            <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+          </div>
 
-            <%= submit_tag "Mark as Resolved",
-    class: "w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition" %>
-          <% end %>
-        <% end %>
-
-        <% unless @incident.closed? %>
-          <%= form_with url: close_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
-            <div>
-              <label class="block text-sm font-medium mb-1">Closing Remark</label>
-              <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
-            </div>
-
-            <%= submit_tag "Close Incident", class: "w-full bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium" %>
-          <% end %>
+          <button type="submit"
+            class="w-full inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-medium rounded-md transition">
+            <%= lucide_icon "arrow-up-circle", class: "w-4 h-4" %>
+            Escalate Incident
+          </button>
         <% end %>
       </div>
-    </div>
+    <% end %>
+
+    <% unless @incident.resolved? || @incident.closed? %>
+      <%= form_with url: resolve_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
+        <div>
+          <label class="block text-sm font-medium mb-1">Resolution Remark</label>
+          <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+        </div>
+
+        <button type="submit"
+          class="w-full inline-flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-sm font-medium rounded-md transition">
+          <%= lucide_icon "circle-check", class: "w-4 h-4" %>
+          Mark as Resolved
+        </button>
+      <% end %>
+    <% end %>
+
+    <% unless @incident.closed? %>
+      <%= form_with url: close_incident_path(@incident), method: :patch, local: true, class: "space-y-3" do %>
+        <div>
+          <label class="block text-sm font-medium mb-1">Closing Remark</label>
+          <%= text_area_tag :reviewer_remark, nil, rows: 3, class: "w-full border border-gray-300 px-3 py-2 text-sm" %>
+        </div>
+
+        <button type="submit"
+          class="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium">
+          <%= lucide_icon "lock", class: "w-4 h-4" %>
+          Close Incident
+        </button>
+      <% end %>
+    <% end %>
+  </div>
+</div>
 
     <div class="mt-6 bg-white border border-gray-200 p-6">
   <h3 class="text-base font-semibold mb-4">Activity History</h3>

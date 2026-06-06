@@ -2,8 +2,11 @@
 <% content_for :page_subtitle, "Upload audio files and generate formal meeting minutes." %>
 
 <div class="mb-4">
-  <%= link_to "Upload Audio", new_minute_path,
-      class: btn_primary %>
+  <%= link_to new_minute_path,
+      class: "#{btn_primary} inline-flex items-center gap-2" do %>
+    <%= lucide_icon "upload", class: "w-4 h-4" %>
+    Upload Audio
+  <% end %>
 </div>
 
 <div class="bg-white border border-gray-200">
@@ -12,25 +15,33 @@
       <% @minutes.each do |minute| %>
         <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h3 class="font-semibold text-gray-900"><%= minute.title %></h3>
+            <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+              <%= lucide_icon "mic", class: "w-4 h-4 text-green-700" %>
+              <%= minute.title %>
+            </h3>
 
             <p class="text-sm text-gray-500">
               Uploaded by <%= minute.created_by.display_name %> ·
               <%= minute.created_at.strftime("%d %b %Y, %I:%M %p") %>
             </p>
 
-            <p class="text-xs mt-1 capitalize text-slate-600">
+            <p class="text-xs mt-1 capitalize text-slate-600 inline-flex items-center gap-1">
+              <%= lucide_icon "circle", class: "w-3 h-3" %>
               Status: <%= minute.status %>
             </p>
           </div>
 
-          <%= link_to "View", minute_path(minute),
-    class: "inline-flex items-center justify-center border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 self-start md:self-auto" %>
+          <%= link_to minute_path(minute),
+              class: "inline-flex items-center justify-center gap-2 border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 self-start md:self-auto" do %>
+            <%= lucide_icon "eye", class: "w-4 h-4" %>
+            View
+          <% end %>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="p-6 text-sm text-gray-500">
+    <div class="p-6 text-sm text-gray-500 flex items-center gap-2">
+      <%= lucide_icon "mic-off", class: "w-5 h-5 text-slate-400" %>
       No minutes uploaded yet.
     </div>
   <% end %>

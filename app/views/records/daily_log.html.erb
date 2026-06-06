@@ -89,8 +89,12 @@
           </td>
 
           <td class="p-3">
-            <%= link_to "View", record_path(record), class: "text-green-700 font-medium" %>
-          </td>
+  <%= link_to record_path(record),
+      class: "inline-flex items-center gap-1 rounded-md bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 text-xs font-medium hover:bg-green-100 transition" do %>
+    <%= lucide_icon "eye", class: "w-4 h-4" %>
+    View
+  <% end %>
+</td>
         </tr>
       <% end %>
 

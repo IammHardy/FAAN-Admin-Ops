@@ -17,36 +17,40 @@
     <%= date_field_tag :date_from, @date_from, class: "rounded-lg border-slate-300" %>
     <%= date_field_tag :date_to, @date_to, class: "rounded-lg border-slate-300" %>
 
-    <%= submit_tag "Search", class: "bg-green-700 text-white px-4 py-2 rounded-lg" %>
+    <%= button_tag type: :submit,
+        class: "inline-flex items-center justify-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" do %>
+      <%= lucide_icon "search", class: "w-4 h-4" %>
+      Search
+    <% end %>
   <% end %>
 </div>
 
 <div class="space-y-6">
   <% if @module_filter == "all" || @module_filter == "records" %>
-    <%= render "section", title: "Records", items: @records, path_method: :record_path %>
+    <%= render "section", title: "Records", icon: "archive", items: @records, path_method: :record_path %>
   <% end %>
 
   <% if @module_filter == "all" || @module_filter == "dispatches" %>
-    <%= render "section", title: "Dispatches", items: @dispatches, path_method: :dispatch_path %>
+    <%= render "section", title: "Dispatches", icon: "send", items: @dispatches, path_method: :dispatch_path %>
   <% end %>
 
   <% if @module_filter == "all" || @module_filter == "log_reports" %>
-    <%= render "section", title: "Daily Log Reports", items: @log_reports, path_method: :log_report_path %>
+    <%= render "section", title: "Daily Log Reports", icon: "clipboard-list", items: @log_reports, path_method: :log_report_path %>
   <% end %>
 
   <% if @module_filter == "all" || @module_filter == "monthly_reports" %>
-    <%= render "section", title: "Monthly Reports", items: @monthly_reports, path_method: :reports_monthly_report_path %>
+    <%= render "section", title: "Monthly Reports", icon: "file-bar-chart", items: @monthly_reports, path_method: :reports_monthly_report_path %>
   <% end %>
 
   <% if @module_filter == "all" || @module_filter == "staff_folders" %>
-    <%= render "section", title: "Staff Folders", items: @staff_folders, path_method: :operation_staff_path %>
+    <%= render "section", title: "Staff Folders", icon: "folder-kanban", items: @staff_folders, path_method: :operation_staff_path %>
   <% end %>
 
   <% if @module_filter == "all" || @module_filter == "minutes" %>
-    <%= render "section", title: "Minutes", items: @minutes, path_method: :minute_path %>
+    <%= render "section", title: "Minutes", icon: "mic", items: @minutes, path_method: :minute_path %>
   <% end %>
 
   <% if @module_filter == "all" || @module_filter == "incidents" %>
-    <%= render "section", title: "Incidents", items: @incidents, path_method: :incident_path %>
+    <%= render "section", title: "Incidents", icon: "triangle-alert", items: @incidents, path_method: :incident_path %>
   <% end %>
 </div>

@@ -296,10 +296,11 @@
     <% if current_duty_session.present? %>
 
       <div class="flex items-center gap-2 border border-green-200 bg-green-50 px-3 py-2 rounded-lg">
-        <span class="text-sm text-green-700 font-medium">
-          🟢 On Duty:
-          <%= current_duty_officer.full_name %>
-        </span>
+        <%= lucide_icon "circle-check", class: "w-4 h-4 text-green-700" %>
+<span class="text-sm text-green-700 font-medium">
+  On Duty:
+  <%= current_duty_officer.full_name %>
+</span>
       </div>
 
       <%= button_to "End Duty",
@@ -318,7 +319,7 @@
 
   <%= link_to notifications_path,
       class: "relative text-sm border border-slate-300 px-3 py-2 rounded-lg bg-white hover:bg-slate-50" do %>
-    🔔
+    <%= lucide_icon "bell", class: "w-4 h-4" %>
 
     <% if unread_notifications_count.positive? %>
       <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
@@ -331,7 +332,7 @@
     type="button"
     id="sidebar-open"
     class="md:hidden inline-flex items-center justify-center border border-slate-300 px-3 py-2 text-sm bg-white hover:bg-slate-100 rounded-lg">
-    ☰
+    <%= lucide_icon "menu", class: "w-5 h-5" %>
   </button>
 </div>
 

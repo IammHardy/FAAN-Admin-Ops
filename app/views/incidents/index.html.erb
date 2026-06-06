@@ -3,15 +3,31 @@
 
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
   <div class="flex flex-wrap items-center gap-2">
-    <%= link_to "All Incidents", incidents_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-    <%= link_to "Open Items", open_items_incidents_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-    <%= link_to "Escalated", escalated_incidents_path, class: "border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <%= link_to incidents_path,
+        class: "inline-flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+      <%= lucide_icon "list", class: "w-4 h-4" %>
+      All Incidents
+    <% end %>
+
+    <%= link_to open_items_incidents_path,
+        class: "inline-flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+      <%= lucide_icon "circle-dot", class: "w-4 h-4" %>
+      Open Items
+    <% end %>
+
+    <%= link_to escalated_incidents_path,
+        class: "inline-flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+      <%= lucide_icon "arrow-up-circle", class: "w-4 h-4" %>
+      Escalated
+    <% end %>
   </div>
 
   <% if can_create_incidents? %>
-    <%= link_to "New Incident",
-    new_incident_path,
-    class: "#{btn_primary} w-fit self-start md:self-auto" %>
+    <%= link_to new_incident_path,
+        class: "#{btn_primary} inline-flex items-center gap-2 w-fit self-start md:self-auto" do %>
+      <%= lucide_icon "plus", class: "w-4 h-4" %>
+      New Incident
+    <% end %>
   <% end %>
 </div>
 

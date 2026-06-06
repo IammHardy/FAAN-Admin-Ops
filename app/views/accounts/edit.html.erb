@@ -4,7 +4,10 @@
 <div class="max-w-2xl bg-white border border-gray-200 p-6">
   <% if @user.errors.any? %>
     <div class="border border-red-300 bg-red-50 p-4 text-sm text-red-800 mb-5">
-      <p class="font-semibold mb-2">Please fix the following errors:</p>
+      <p class="font-semibold mb-2 flex items-center gap-2">
+        <%= lucide_icon "triangle-alert", class: "w-4 h-4" %>
+        Please fix the following errors:
+      </p>
 
       <ul class="list-disc ml-5 space-y-1">
         <% @user.errors.full_messages.each do |message| %>
@@ -26,7 +29,11 @@
     </div>
 
     <div class="border-t border-gray-200 pt-5">
-      <h3 class="text-base font-semibold mb-1">Change Password</h3>
+      <h3 class="text-base font-semibold mb-1 flex items-center gap-2">
+        <%= lucide_icon "lock-keyhole", class: "w-5 h-5 text-green-700" %>
+        Change Password
+      </h3>
+
       <p class="text-sm text-gray-500 mb-4">
         Leave password fields blank if you do not want to change your password.
       </p>
@@ -50,8 +57,17 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <%= f.submit "Update Account", class: btn_primary %>
-      <%= link_to "Back to Dashboard", dashboard_path, class: "border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      <%= button_tag type: :submit,
+          class: "#{btn_primary} inline-flex items-center gap-2" do %>
+        <%= lucide_icon "save", class: "w-4 h-4" %>
+        Update Account
+      <% end %>
+
+      <%= link_to dashboard_path,
+          class: "inline-flex items-center gap-2 border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+        <%= lucide_icon "arrow-left", class: "w-4 h-4" %>
+        Back to Dashboard
+      <% end %>
     </div>
   <% end %>
 </div>
