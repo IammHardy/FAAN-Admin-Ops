@@ -5,6 +5,23 @@ class Record < ApplicationRecord
 
   has_one_attached :attachment
 
+  belongs_to :deleted_by, class_name: "User", optional: true
+
+scope :active, -> { where(deleted_at: nil) }
+scope :deleted, -> { where.not(deleted_at: nil) }
+
+def deleted?
+  deleted_at.present?
+end
+
+def soft_delete!(user)
+  update!(deleted_at: Time.current, deleted_by: user)
+end
+
+def restore!
+  update!(deleted_at: nil, deleted_by: nil, restore_note: nil)
+end
+
   GENERAL_CATEGORIES = [
     "Dispatch Copy",
     "Internal Memo",

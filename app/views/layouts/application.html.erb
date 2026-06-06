@@ -179,6 +179,19 @@
       </span>
     <% end %>
   <% end %>
+  <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
+    <div class="border-t border-slate-200 my-2"></div>
+
+    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+      Global Search
+      <%= link_to "Global Search", global_search_path, class: nav_link_class(global_search_path) %>
+    </p>
+    <% end %>
+
+  <% if current_user.super_admin? %>
+  <%= link_to "Archived Staff", archived_operation_staffs_path, class: nav_link_class(archived_operation_staffs_path) %>
+  <%= link_to "Deleted Records", deleted_records_path, class: nav_link_class(deleted_records_path) %>
+<% end %>
 </nav>
 
           <div class="px-4 py-3 border-t border-slate-200">

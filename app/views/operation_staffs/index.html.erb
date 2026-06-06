@@ -1,8 +1,6 @@
 <div class="flex justify-between items-center mb-6">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900">
-      Operations Staff
-    </h1>
+    <h1 class="text-2xl font-bold text-slate-900">Operations Staff</h1>
 
     <p class="text-slate-500 mt-1">
       Staff folders and personal records.
@@ -13,6 +11,7 @@
       new_operation_staff_path,
       class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
 </div>
+
 <div class="bg-white border border-slate-200 shadow-sm p-4 mb-6">
   <%= form_with url: operation_staffs_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-5 gap-3" do %>
     <%= text_field_tag :query,
@@ -51,7 +50,7 @@
         <th class="text-left p-3">Designation</th>
         <th class="text-left p-3">Unit</th>
         <th class="text-left p-3">Documents</th>
-        <th class="text-left p-3"></th>
+        <th class="text-left p-3">Actions</th>
       </tr>
     </thead>
 
@@ -75,9 +74,29 @@
           </td>
 
           <td class="p-3">
-            <%= link_to "Open Folder",
-                operation_staff_path(staff),
-                class: "text-green-700 font-semibold" %>
+            <div class="flex flex-wrap gap-3 items-center">
+              <%= link_to "Open Folder",
+                  operation_staff_path(staff),
+                  class: "text-green-700 font-semibold" %>
+
+              <%= link_to "Edit",
+                  edit_operation_staff_path(staff),
+                  class: "text-blue-700 font-semibold" %>
+
+              <%= button_to "Archive",
+                  operation_staff_path(staff),
+                  method: :delete,
+                  form: { data: { turbo_confirm: "Archive this staff folder? This may fail if the staff has records." } },
+                  class: "text-red-600 font-semibold bg-transparent border-0 p-0 cursor-pointer" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if @operation_staffs.empty? %>
+        <tr>
+          <td colspan="5" class="p-6 text-center text-slate-500">
+            No staff found.
           </td>
         </tr>
       <% end %>

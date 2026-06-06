@@ -2,7 +2,7 @@ class LogReportsController < ApplicationController
   before_action :require_log_access!
 before_action :require_log_manager!, only: [:new, :create, :edit, :update, :destroy, :submit]
 before_action :require_reviewer_or_admin!, only: [:review, :print]
-before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
+before_action :set_log_report, only: [:show, :edit, :update, :destroy, :submit, :review, :print, :download_source_document]
 before_action :load_log_report_form_collections, only: [:new, :create, :edit, :update]
 before_action :authorize_log_report_access!, only: [:show, :edit, :update, :destroy, :submit, :review, :print]
 before_action :require_active_duty_session!, only: [:new, :create, :edit, :update, :destroy, :submit]
@@ -11,7 +11,7 @@ before_action :require_active_duty_session!, only: [:new, :create, :edit, :updat
   .includes(:department, :unit, :entered_by)
   .recent_first
   .page(params[:page])
-  .per(2)
+  .per(15)
   end
   
 
@@ -140,6 +140,14 @@ end
     render layout: "print"
   end
 
+  def download_source_document
+  unless @log_report.source_document.attached?
+    redirect_to @log_report, alert: "No source document found."
+    return
+  end
+
+  redirect_to rails_blob_path(@log_report.source_document, disposition: "attachment")
+end
   private
 
   def set_log_report

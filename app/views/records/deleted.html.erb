@@ -1,0 +1,67 @@
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Deleted Records</h1>
+    <p class="text-gray-600">
+      Records moved out of the active archive. Super Admin can restore them.
+    </p>
+  </div>
+
+  <%= link_to "Back to Records Archive",
+      records_path,
+      class: "border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50" %>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100 text-gray-700">
+      <tr>
+        <th class="text-left p-3">Title</th>
+        <th class="text-left p-3">Category</th>
+        <th class="text-left p-3">Filed Date</th>
+        <th class="text-left p-3">Deleted At</th>
+        <th class="text-left p-3">Deleted By</th>
+        <th class="text-left p-3">Location</th>
+        <th class="text-left p-3">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @records.each do |record| %>
+        <tr class="border-t">
+          <td class="p-3 font-medium"><%= record.title %></td>
+          <td class="p-3"><%= record.category %></td>
+          <td class="p-3"><%= record.filed_date %></td>
+          <td class="p-3"><%= record.deleted_at&.strftime("%d %b %Y, %I:%M %p") || "—" %></td>
+          <td class="p-3"><%= record.deleted_by&.display_name || "—" %></td>
+          <td class="p-3"><%= record.physical_location %></td>
+
+          <td class="p-3">
+            <div class="flex flex-wrap gap-3">
+              <%= link_to "View",
+                  record_path(record),
+                  class: "text-green-700 font-medium" %>
+
+              <%= button_to "Restore",
+                  restore_record_path(record),
+                  method: :patch,
+                  form: { data: { turbo_confirm: "Restore this record?" } },
+                  class: "text-blue-700 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if @records.empty? %>
+        <tr>
+          <td colspan="7" class="p-6 text-center text-gray-500">
+            No deleted records found.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <%= paginate @records if respond_to?(:paginate) %>
+</div>

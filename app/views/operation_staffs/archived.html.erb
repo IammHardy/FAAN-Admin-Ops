@@ -1,0 +1,67 @@
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">Archived Staff Folders</h1>
+    <p class="text-slate-500 mt-1">
+      Staff folders that are on leave, transferred, retired, completed service, or archived.
+    </p>
+  </div>
+
+  <%= link_to "Back to Active Staff",
+      operation_staffs_path,
+      class: "border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50" %>
+</div>
+
+<div class="bg-white shadow overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-100">
+      <tr>
+        <th class="text-left p-3">Staff</th>
+        <th class="text-left p-3">Designation</th>
+        <th class="text-left p-3">Unit</th>
+        <th class="text-left p-3">Status</th>
+        <th class="text-left p-3">Archived At</th>
+        <th class="text-left p-3">Archived By</th>
+        <th class="text-left p-3">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @operation_staffs.each do |staff| %>
+        <tr class="border-t">
+          <td class="p-3 font-medium"><%= staff.full_name %></td>
+          <td class="p-3"><%= staff.designation.presence || "—" %></td>
+          <td class="p-3"><%= staff.unit.presence || "—" %></td>
+          <td class="p-3"><%= staff.folder_status.to_s.humanize %></td>
+          <td class="p-3"><%= staff.archived_at&.strftime("%d %b %Y, %I:%M %p") || "—" %></td>
+          <td class="p-3"><%= staff.archived_by&.display_name || "—" %></td>
+
+          <td class="p-3">
+            <div class="flex flex-wrap gap-3">
+              <%= link_to "Open Folder",
+                  operation_staff_path(staff),
+                  class: "text-green-700 font-semibold" %>
+
+              <%= button_to "Restore",
+                  restore_operation_staff_path(staff),
+                  method: :patch,
+                  form: { data: { turbo_confirm: "Restore this staff folder?" } },
+                  class: "text-blue-700 font-semibold bg-transparent border-0 p-0 cursor-pointer" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if @operation_staffs.empty? %>
+        <tr>
+          <td colspan="7" class="p-6 text-center text-slate-500">
+            No archived staff folders found.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <%= paginate @operation_staffs if respond_to?(:paginate) %>
+</div>

@@ -1,0 +1,52 @@
+<% content_for :page_title, "Global Search" %>
+<% content_for :page_subtitle, "Search records, dispatches, reports, staff folders, minutes and incidents." %>
+
+<div class="bg-white border border-slate-200 p-5 mb-6">
+  <%= form_with url: global_search_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-6 gap-3" do %>
+    <%= text_field_tag :query, @query, placeholder: "Search keyword, staff name, ref no...", class: "rounded-lg border-slate-300" %>
+
+    <%= select_tag :module_filter,
+        options_for_select(GlobalSearchController::MODULES.map { |key, label| [label, key] }, @module_filter),
+        class: "rounded-lg border-slate-300" %>
+
+    <%= select_tag :unit,
+        options_from_collection_for_select(@units, :name, :name, @unit),
+        include_blank: "All Units",
+        class: "rounded-lg border-slate-300" %>
+
+    <%= date_field_tag :date_from, @date_from, class: "rounded-lg border-slate-300" %>
+    <%= date_field_tag :date_to, @date_to, class: "rounded-lg border-slate-300" %>
+
+    <%= submit_tag "Search", class: "bg-green-700 text-white px-4 py-2 rounded-lg" %>
+  <% end %>
+</div>
+
+<div class="space-y-6">
+  <% if @module_filter == "all" || @module_filter == "records" %>
+    <%= render "section", title: "Records", items: @records, path_method: :record_path %>
+  <% end %>
+
+  <% if @module_filter == "all" || @module_filter == "dispatches" %>
+    <%= render "section", title: "Dispatches", items: @dispatches, path_method: :dispatch_path %>
+  <% end %>
+
+  <% if @module_filter == "all" || @module_filter == "log_reports" %>
+    <%= render "section", title: "Daily Log Reports", items: @log_reports, path_method: :log_report_path %>
+  <% end %>
+
+  <% if @module_filter == "all" || @module_filter == "monthly_reports" %>
+    <%= render "section", title: "Monthly Reports", items: @monthly_reports, path_method: :reports_monthly_report_path %>
+  <% end %>
+
+  <% if @module_filter == "all" || @module_filter == "staff_folders" %>
+    <%= render "section", title: "Staff Folders", items: @staff_folders, path_method: :operation_staff_path %>
+  <% end %>
+
+  <% if @module_filter == "all" || @module_filter == "minutes" %>
+    <%= render "section", title: "Minutes", items: @minutes, path_method: :minute_path %>
+  <% end %>
+
+  <% if @module_filter == "all" || @module_filter == "incidents" %>
+    <%= render "section", title: "Incidents", items: @incidents, path_method: :incident_path %>
+  <% end %>
+</div>

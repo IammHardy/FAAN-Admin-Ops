@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_03_083930) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_06_111830) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -283,6 +283,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_03_083930) do
     t.string "duty_area"
     t.boolean "can_be_on_duty", default: false, null: false
     t.boolean "always_present", default: false, null: false
+    t.string "folder_status", default: "active", null: false
+    t.datetime "archived_at"
+    t.text "archive_reason"
+    t.bigint "archived_by_id"
+    t.index ["archived_at"], name: "index_operation_staffs_on_archived_at"
+    t.index ["archived_by_id"], name: "index_operation_staffs_on_archived_by_id"
+    t.index ["folder_status"], name: "index_operation_staffs_on_folder_status"
   end
 
   create_table "records", force: :cascade do |t|
@@ -301,6 +308,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_03_083930) do
     t.bigint "staff_id"
     t.bigint "operation_staff_id"
     t.bigint "duty_session_id"
+    t.datetime "deleted_at"
+    t.text "restore_note"
+    t.bigint "deleted_by_id"
+    t.index ["deleted_at"], name: "index_records_on_deleted_at"
+    t.index ["deleted_by_id"], name: "index_records_on_deleted_by_id"
     t.index ["duty_session_id"], name: "index_records_on_duty_session_id"
     t.index ["filed_by_id"], name: "index_records_on_filed_by_id"
     t.index ["operation_staff_id"], name: "index_records_on_operation_staff_id"
@@ -379,8 +391,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_03_083930) do
   add_foreign_key "monthly_reports", "users", column: "reviewed_by_id"
   add_foreign_key "monthly_reports", "users", column: "uploaded_by_id"
   add_foreign_key "notifications", "users"
+  add_foreign_key "operation_staffs", "users", column: "archived_by_id"
   add_foreign_key "records", "duty_sessions"
   add_foreign_key "records", "operation_staffs"
+  add_foreign_key "records", "users", column: "deleted_by_id"
   add_foreign_key "records", "users", column: "filed_by_id"
   add_foreign_key "records", "users", column: "staff_id"
   add_foreign_key "units", "departments"

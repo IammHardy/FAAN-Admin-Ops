@@ -65,12 +65,16 @@
   <dt class="text-sm font-semibold text-gray-500">Attached Memo Copy</dt>
   <dd class="mt-1 text-sm text-gray-700">
     <% if @dispatch.memo_file.attached? %>
-      <%= link_to @dispatch.memo_file.filename.to_s,
-          rails_blob_path(@dispatch.memo_file, disposition: "attachment"),
-          class: "text-blue-600 hover:underline" %>
-    <% else %>
-      No memo copy attached.
-    <% end %>
+  <%= link_to "Download Memo File",
+      download_memo_file_dispatch_path(@dispatch),
+      class: "inline-flex items-center bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm font-medium" %>
+
+  <p class="text-xs text-gray-500 mt-2">
+    File: <%= @dispatch.memo_file.filename.to_s %>
+  </p>
+<% else %>
+  No memo copy attached.
+<% end %>
   </dd>
 </div>
 

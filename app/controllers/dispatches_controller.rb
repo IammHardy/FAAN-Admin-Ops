@@ -20,7 +20,7 @@ class DispatchesController < ApplicationController
   before_action :set_dispatch, only: [
     :show, :edit, :update, :destroy,
     :mark_dispatched, :mark_received, :mark_acknowledged,
-    :mark_filed, :print
+    :mark_filed, :print, :download_memo_file
   ]
 
   before_action :authorize_receiving_unit!, only: [
@@ -296,6 +296,15 @@ class DispatchesController < ApplicationController
       .page(params[:page])
       .per(15)
   end
+
+  def download_memo_file
+  unless @dispatch.memo_file.attached?
+    redirect_to @dispatch, alert: "No memo file found."
+    return
+  end
+
+  redirect_to rails_blob_path(@dispatch.memo_file, disposition: "attachment")
+end
 
   private
 

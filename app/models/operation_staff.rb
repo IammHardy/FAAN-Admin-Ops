@@ -3,6 +3,39 @@ class OperationStaff < ApplicationRecord
   has_many :duty_rosters, dependent: :destroy
   has_many :duty_sessions, dependent: :nullify
 
+
+  belongs_to :archived_by, class_name: "User", optional: true
+
+FOLDER_STATUSES = {
+  active: "active",
+  on_leave: "on_leave",
+  transferred: "transferred",
+  retired: "retired",
+  completed_service: "completed_service",
+  archived: "archived"
+}.freeze
+
+scope :active_folders, -> { where(folder_status: "active") }
+scope :archived_folders, -> { where.not(folder_status: "active") }
+
+def archive!(user, reason: nil, status: "archived")
+  update!(
+    folder_status: status,
+    archived_at: Time.current,
+    archived_by: user,
+    archive_reason: reason
+  )
+end
+
+def restore!
+  update!(
+    folder_status: "active",
+    archived_at: nil,
+    archived_by: nil,
+    archive_reason: nil
+  )
+end
+
   DUTY_AREAS = [
     "Admin Office",
     "Unit Office"

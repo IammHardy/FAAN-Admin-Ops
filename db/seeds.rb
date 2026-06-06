@@ -62,38 +62,43 @@ airport_admin = Unit.find_or_create_by!(department: operations, name: "Airport A
   unit.active = true
 end
 
+rgm_office = Unit.find_or_create_by!(department: operations, name: "RGM Office") do |unit|
+  unit.description = "Regional General Manager office"
+  unit.active = true
+end
+
+airfield = Unit.find_or_create_by!(department: operations, name: "Airfield") do |unit|
+  unit.description = "Airfield operations unit"
+  unit.active = true
+end
+
+apron_control = Unit.find_or_create_by!(department: operations, name: "Apron Control") do |unit|
+  unit.description = "Apron control unit"
+  unit.active = true
+end
+
 terminal_operations = Unit.find_or_create_by!(department: operations, name: "Terminal Operations") do |unit|
   unit.description = "Terminal operations unit"
   unit.active = true
 end
 
-apron_management = Unit.find_or_create_by!(department: operations, name: "Apron Management") do |unit|
-  unit.description = "Apron management unit"
+house_management = Unit.find_or_create_by!(department: operations, name: "House Management DTZ B and D / ITZ") do |unit|
+  unit.description = "House management unit for DTZ B and D / ITZ"
   unit.active = true
 end
 
-electrical_unit = Unit.find_or_create_by!(department: engineering, name: "Electrical Unit") do |unit|
-  unit.description = "Electrical maintenance unit"
+announcement = Unit.find_or_create_by!(department: operations, name: "Announcement DTZ / ITZ") do |unit|
+  unit.description = "Announcement unit for DTZ / ITZ"
   unit.active = true
 end
 
-mechanical_unit = Unit.find_or_create_by!(department: engineering, name: "Mechanical Unit") do |unit|
-  unit.description = "Mechanical maintenance unit"
+information = Unit.find_or_create_by!(department: operations, name: "Information DTZ / ITZ") do |unit|
+  unit.description = "Information unit for DTZ / ITZ"
   unit.active = true
 end
 
-aviation_security = Unit.find_or_create_by!(department: security, name: "Aviation Security") do |unit|
-  unit.description = "Security operations unit"
-  unit.active = true
-end
-
-rescue_unit = Unit.find_or_create_by!(department: fire_service, name: "Rescue Unit") do |unit|
-  unit.description = "Emergency rescue unit"
-  unit.active = true
-end
-
-concessions_unit = Unit.find_or_create_by!(department: commercial, name: "Concessions Unit") do |unit|
-  unit.description = "Commercial concessions unit"
+statistics = Unit.find_or_create_by!(department: operations, name: "Statistics") do |unit|
+  unit.description = "Statistics unit"
   unit.active = true
 end
 
@@ -163,8 +168,8 @@ unit_officer.assign_attributes(
   password_confirmation: "password123",
   role: :unit_officer,
   phone_number: "08010000004",
-  department: engineering,
-  unit: electrical_unit,
+  department: operations,
+unit: terminal_operations,
   requires_duty_session: true,
   active: true
 )
@@ -220,6 +225,44 @@ end
 
 puts "Admin staff created."
 
+
+rgm_staff = [
+  ["RGM Secretary Female", "Secretary", "Permanent Staff"],
+  ["RGM Secretary Male", "Secretary", "Permanent Staff"]
+]
+
+rgm_staff.each do |full_name, designation, status|
+  staff = OperationStaff.find_or_initialize_by(full_name: full_name)
+
+  staff.assign_attributes(
+    designation: designation,
+    unit: "RGM Office",
+    employment_status: status,
+    physical_folder_location: "RGM Office Staff Folder",
+    always_present: false,
+    can_be_on_duty: false,
+    duty_area: nil
+  )
+
+  staff.save!
+end
+
+puts "RGM staff created."
+
+rgm_user = User.find_or_initialize_by(email: "rgmoffice@faan.local")
+rgm_user.assign_attributes(
+  full_name: "RGM Office",
+  password: "password123",
+  password_confirmation: "password123",
+  role: :unit_officer,
+  phone_number: "08010000006",
+  department: operations,
+  unit: rgm_office,
+  requires_duty_session: true,
+  active: true
+)
+rgm_user.save!
+
 # Sample Dispatches
 dispatch_1 = Dispatch.find_or_initialize_by(reference_number: "DPT-#{Date.current.year}-0001")
 dispatch_1.assign_attributes(
@@ -227,7 +270,7 @@ dispatch_1.assign_attributes(
   memo_date: Date.current,
   sender_department: operations,
   sender_unit: airport_admin,
-  receiving_department: engineering,
+  receiving_department: operations,
   created_by: admin_officer,
   delivery_note: "Kindly receive and review.",
   remarks: "Urgent memo for action.",
@@ -235,7 +278,7 @@ dispatch_1.assign_attributes(
 )
 dispatch_1.save!
 
-dispatch_1.dispatch_recipients.find_or_create_by!(receiving_unit: electrical_unit) do |recipient|
+dispatch_1.dispatch_recipients.find_or_create_by!(receiving_unit: terminal_operations) do |recipient|
   recipient.status = :dispatched
 end
 
@@ -245,7 +288,7 @@ dispatch_2.assign_attributes(
   memo_date: Date.current - 1.day,
   sender_department: operations,
   sender_unit: terminal_operations,
-  receiving_department: security,
+  receiving_department: operations,
   created_by: admin_officer,
   dispatched_by: dispatch_officer,
   dispatched_at: Time.current - 12.hours,
@@ -255,7 +298,7 @@ dispatch_2.assign_attributes(
 )
 dispatch_2.save!
 
-dispatch_2.dispatch_recipients.find_or_create_by!(receiving_unit: aviation_security) do |recipient|
+dispatch_2.dispatch_recipients.find_or_create_by!(receiving_unit: rgm_office) do |recipient|
   recipient.status = :dispatched
 end
 
@@ -265,7 +308,7 @@ dispatch_3.assign_attributes(
   memo_date: Date.current - 2.days,
   sender_department: operations,
   sender_unit: airport_admin,
-  receiving_department: engineering,
+  receiving_department: operations,
   created_by: admin_officer,
   dispatched_by: dispatch_officer,
   dispatched_at: Time.current - 2.days,
@@ -275,10 +318,10 @@ dispatch_3.assign_attributes(
 )
 dispatch_3.save!
 
-dispatch_3.dispatch_recipients.find_or_create_by!(receiving_unit: mechanical_unit) do |recipient|
+dispatch_3.dispatch_recipients.find_or_create_by!(receiving_unit: apron_control) do |recipient|
   recipient.status = :received
-  recipient.receiver_name = "Engr. Musa" if recipient.respond_to?(:receiver_name=)
-  recipient.receiver_designation = "Maintenance Supervisor" if recipient.respond_to?(:receiver_designation=)
+ recipient.receiver_name = "Mr. Ibrahim" if recipient.respond_to?(:receiver_name=)
+  recipient.receiver_designation = "Apron Control Officer" if recipient.respond_to?(:receiver_designation=)
   recipient.received_by = unit_officer if recipient.respond_to?(:received_by=)
   recipient.received_at = Time.current - 1.day if recipient.respond_to?(:received_at=)
 end

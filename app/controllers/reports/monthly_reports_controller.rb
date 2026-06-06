@@ -5,7 +5,7 @@ module Reports
                   only: [:new, :create, :edit, :update, :destroy, :submit]
 
     before_action :set_monthly_report,
-                  only: [:show, :edit, :update, :destroy, :submit, :review, :archive]
+                  only: [:show, :edit, :update, :destroy, :submit, :review, :archive, :download_report_file]
 
     def index
       @monthly_reports =
@@ -143,6 +143,15 @@ module Reports
       end
     end
 
+    def download_report_file
+  unless @monthly_report.report_file.attached?
+    redirect_to reports_monthly_report_path(@monthly_report),
+                alert: "No report file found."
+    return
+  end
+
+  redirect_to rails_blob_path(@monthly_report.report_file, disposition: "attachment")
+end
     private
 
     def set_monthly_report

@@ -33,7 +33,7 @@
         <th class="text-left p-3">Filed By</th>
         <th class="text-left p-3">Location</th>
         <th class="text-left p-3">Scan</th>
-        <th class="text-left p-3"></th>
+        <th class="text-left p-3">Actions</th>
       </tr>
     </thead>
 
@@ -45,11 +45,38 @@
           <td class="p-3"><%= record.filed_date %></td>
           <td class="p-3"><%= record.filed_by&.email %></td>
           <td class="p-3"><%= record.physical_location %></td>
+          <td class="p-3"><%= record.attachment.attached? ? "Yes" : "No" %></td>
+
           <td class="p-3">
-            <%= record.attachment.attached? ? "Yes" : "No" %>
+            <div class="flex flex-wrap gap-3 items-center">
+              <%= link_to "View",
+                  record_path(record),
+                  class: "text-green-700 font-medium" %>
+
+              <%= link_to "Edit",
+                  edit_record_path(record),
+                  class: "text-blue-700 font-medium" %>
+
+              <% if record.attachment.attached? %>
+                <%= link_to "Download",
+                    download_attachment_record_path(record),
+                    class: "text-slate-700 font-medium" %>
+              <% end %>
+
+              <%= button_to "Delete",
+                  record_path(record),
+                  method: :delete,
+                  form: { data: { turbo_confirm: "Move this record to deleted records?" } },
+                  class: "text-red-600 font-medium bg-transparent border-0 p-0 cursor-pointer" %>
+            </div>
           </td>
-          <td class="p-3">
-            <%= link_to "View", record_path(record), class: "text-green-700 font-medium" %>
+        </tr>
+      <% end %>
+
+      <% if @records.empty? %>
+        <tr>
+          <td colspan="7" class="p-6 text-center text-gray-500">
+            No records found.
           </td>
         </tr>
       <% end %>
