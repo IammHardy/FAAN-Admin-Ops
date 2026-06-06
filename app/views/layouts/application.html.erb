@@ -93,85 +93,138 @@
             </button>
           </div>
 <nav class="flex-1 px-4 py-3 space-y-1 text-sm overflow-y-auto">
-  <%= link_to "Dashboard", dashboard_path, class: nav_link_class(dashboard_path) %>
+
+  <%= link_to dashboard_path,
+      class: nav_link_class(dashboard_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("layout-dashboard") %>
+      Dashboard
+    </div>
+  <% end %>
 
   <% if current_user.super_admin? %>
-    <div class="border-t border-slate-200 my-2"></div>
+    <div class="border-t border-slate-200 my-3"></div>
 
-    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+    <p class="px-4 text-[11px] uppercase tracking-wide text-slate-400">
       System Administration
     </p>
 
-    <%= link_to "Departments", departments_path, class: nav_link_class(departments_path) %>
-    <%= link_to "Units", units_path, class: nav_link_class(units_path) %>
-    <%= link_to "Users", users_path, class: nav_link_class(users_path) %>
-    <%= link_to "Duty Roster", duty_rosters_path, class: nav_link_class(duty_rosters_path) %>
-    <%= link_to "Audit Logs", audit_logs_path, class: nav_link_class(audit_logs_path) %>
+    <%= link_to departments_path, class: nav_link_class(departments_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("building-2") %>
+        Departments
+      </div>
+    <% end %>
+
+    <%= link_to units_path, class: nav_link_class(units_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("blocks") %>
+        Units
+      </div>
+    <% end %>
+
+    <%= link_to users_path, class: nav_link_class(users_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("users") %>
+        Users
+      </div>
+    <% end %>
+
+    <%= link_to duty_rosters_path, class: nav_link_class(duty_rosters_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("calendar-days") %>
+        Duty Roster
+      </div>
+    <% end %>
+
+    <%= link_to audit_logs_path, class: nav_link_class(audit_logs_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("shield-check") %>
+        Audit Logs
+      </div>
+    <% end %>
   <% end %>
 
-  <% if current_user.unit_officer? %>
-    <div class="border-t border-slate-200 my-2"></div>
+  <div class="border-t border-slate-200 my-3"></div>
 
-    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
-      Unit Office
-    </p>
+  <p class="px-4 text-[11px] uppercase tracking-wide text-slate-400">
+    Records & Dispatch
+  </p>
 
-    <%= link_to "Incoming Memos", incoming_dispatches_path, class: nav_link_class(incoming_dispatches_path) %>
+  <%= link_to dispatches_path, class: nav_link_class(dispatches_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("send") %>
+      Dispatch Register
+    </div>
   <% end %>
 
-  <% if current_user.super_admin? || current_user.admin_officer? || current_user.unit_officer? || current_user.reviewer? %>
-    <%= link_to "Daily Logs", log_reports_path, class: nav_link_class(log_reports_path) %>
+  <%= link_to operation_staffs_path, class: nav_link_class(operation_staffs_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("folder-kanban") %>
+      Operations Staff
+    </div>
   <% end %>
 
-  <% if current_user.dispatch_officer? || current_user.admin_officer? || current_user.super_admin? %>
-    <div class="border-t border-slate-200 my-2"></div>
-
-    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
-      Dispatch
-    </p>
-
-    <%= link_to "Dispatch Register", dispatches_path, class: nav_link_class(dispatches_path) %>
-    <%= link_to "New Dispatch", new_dispatch_path, class: nav_link_class(new_dispatch_path) %>
-    <%= link_to "Pending Acknowledgements", pending_acknowledgement_dispatches_path, class: nav_link_class(pending_acknowledgement_dispatches_path) %>
-    <%= link_to "Ready to File", ready_to_file_dispatches_path, class: nav_link_class(ready_to_file_dispatches_path) %>
-    <%= link_to "Filed Dispatches", filed_dispatches_path, class: nav_link_class(filed_dispatches_path) %>
-
-    <div class="border-t border-slate-200 my-2"></div>
-
-    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
+  <%= link_to records_path, class: nav_link_class(records_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("archive") %>
       Records Archive
-    </p>
-
-    <%= link_to "Operations Staff", operation_staffs_path, class: nav_link_class(operation_staffs_path) %>
-    <%= link_to "Records Archive", records_path, class: nav_link_class(records_path) %>
-    <%= link_to "Add Record", new_record_path, class: nav_link_class(new_record_path) %>
-    <%= link_to "Daily Filing Log", daily_filing_log_path, class: nav_link_class(daily_filing_log_path) %>
+    </div>
   <% end %>
 
-  <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
-    <div class="border-t border-slate-200 my-2"></div>
+  <%= link_to daily_filing_log_path, class: nav_link_class(daily_filing_log_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("file-stack") %>
+      Daily Filing Log
+    </div>
+  <% end %>
 
-    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
-      Reviews & Reports
-    </p>
+  <%= link_to log_reports_path, class: nav_link_class(log_reports_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("clipboard-list") %>
+      Daily Logs
+    </div>
+  <% end %>
 
-    <%= link_to "Incidents", incidents_path, class: nav_link_class(incidents_path) %>
-    <%= link_to "Reports", reports_dispatches_path, class: nav_link_class(reports_dispatches_path) %>
+  <%= link_to incidents_path, class: nav_link_class(incidents_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("triangle-alert") %>
+      Incidents
+    </div>
+  <% end %>
+
+  <%= link_to reports_monthly_reports_path,
+      class: nav_link_class(reports_monthly_reports_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("file-bar-chart") %>
+      Monthly Reports
+    </div>
   <% end %>
 
   <% if current_user.super_admin? || current_user.admin_officer? %>
-    <%= link_to "Minutes Extraction", minutes_path, class: nav_link_class(minutes_path) %>
+    <%= link_to minutes_path, class: nav_link_class(minutes_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("mic") %>
+        Minutes Extraction
+      </div>
+    <% end %>
   <% end %>
 
-  <%= link_to "Monthly Reports",
-      reports_monthly_reports_path,
-      class: nav_link_class(reports_monthly_reports_path) %>
+  <%= link_to global_search_path,
+      class: nav_link_class(global_search_path) do %>
+    <div class="flex items-center gap-3">
+      <%= nav_icon("search") %>
+      Global Search
+    </div>
+  <% end %>
 
   <% unread_count = current_user.notifications.unread.count %>
 
   <%= link_to notifications_path,
-      class: "relative flex items-center px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-800" do %>
-    🔔 Notifications
+      class: "relative flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-800 rounded-lg" do %>
+
+    <%= nav_icon("bell") %>
+    Notifications
 
     <% if unread_count.positive? %>
       <span class="absolute top-2 right-3 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
@@ -179,19 +232,27 @@
       </span>
     <% end %>
   <% end %>
-  <% if current_user.super_admin? || current_user.admin_officer? || current_user.reviewer? %>
-    <div class="border-t border-slate-200 my-2"></div>
-
-    <p class="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-slate-400">
-      Global Search
-      <%= link_to "Global Search", global_search_path, class: nav_link_class(global_search_path) %>
-    </p>
-    <% end %>
 
   <% if current_user.super_admin? %>
-  <%= link_to "Archived Staff", archived_operation_staffs_path, class: nav_link_class(archived_operation_staffs_path) %>
-  <%= link_to "Deleted Records", deleted_records_path, class: nav_link_class(deleted_records_path) %>
-<% end %>
+    <div class="border-t border-slate-200 my-3"></div>
+
+    <%= link_to archived_operation_staffs_path,
+        class: nav_link_class(archived_operation_staffs_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("folder-x") %>
+        Archived Staff
+      </div>
+    <% end %>
+
+    <%= link_to deleted_records_path,
+        class: nav_link_class(deleted_records_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("trash-2") %>
+        Deleted Records
+      </div>
+    <% end %>
+  <% end %>
+
 </nav>
 
           <div class="px-4 py-3 border-t border-slate-200">
