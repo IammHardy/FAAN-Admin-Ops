@@ -1,6 +1,18 @@
 <div class="bg-white border border-gray-200">
+
   <% if @dispatches.any? %>
     <div class="overflow-x-auto w-full">
+    <div class="flex items-center justify-between mb-4">
+  <div></div>
+
+  <% if can_manage_dispatches? %>
+    <%= link_to new_dispatch_path,
+        class: "#{btn_primary} inline-flex items-center gap-2" do %>
+      <%= lucide_icon "plus", class: "w-4 h-4" %>
+      Create Dispatch
+    <% end %>
+  <% end %>
+</div>
       <table class="min-w-[1000px] w-full text-sm whitespace-nowrap">
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>

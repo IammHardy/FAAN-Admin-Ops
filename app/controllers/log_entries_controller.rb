@@ -11,6 +11,7 @@ before_action :require_reviewer_or_admin!, only: [:create_incident]
     @log_entry = @log_report.log_entries.new
   end
 
+  
   def create
   @log_entry = @log_report.log_entries.new(log_entry_params)
 

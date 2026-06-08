@@ -151,7 +151,10 @@ module Reports
     return
   end
 
-  redirect_to rails_blob_path(@monthly_report.report_file, disposition: "attachment")
+  redirect_to rails_storage_proxy_path(
+  @monthly_report.report_file,
+  disposition: "attachment"
+)
 end
     private
 

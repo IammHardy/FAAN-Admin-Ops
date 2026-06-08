@@ -157,6 +157,12 @@
       Dispatch Register
     </div>
   <% end %>
+<%= link_to new_dispatch_path, class: nav_link_class(new_dispatch_path) do %>
+  <div class="flex items-center gap-3">
+  <%= nav_icon("plus-circle") %>
+  Create Dispatch
+  </div>
+<% end %>
 
   <%= link_to operation_staffs_path, class: nav_link_class(operation_staffs_path) do %>
     <div class="flex items-center gap-3">

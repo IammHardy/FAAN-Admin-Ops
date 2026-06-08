@@ -166,10 +166,17 @@
     <% end %>
   <% end %>
 
-  <%= link_to new_log_report_log_entry_path(@log_report),
-      class: "#{btn_secondary} w-full inline-flex items-center justify-center gap-2" do %>
-    <%= lucide_icon "plus", class: "w-4 h-4" %>
-    Add Log Entry
-  <% end %>
+  <% if can_manage_logs? && @log_report.draft? %>
+  <div class="bg-white border border-gray-200 p-6 mt-6">
+    <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
+      <%= lucide_icon "plus", class: "w-5 h-5 text-green-700" %>
+      Quick Add Log Entry
+    </h3>
+
+    <%= render "quick_log_entry_form",
+        log_report: @log_report,
+        log_entry: LogEntry.new %>
+  </div>
+<% end %>
 </div>
 </div>

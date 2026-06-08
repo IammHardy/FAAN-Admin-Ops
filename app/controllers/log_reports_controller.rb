@@ -41,7 +41,6 @@ def create
     unit_id: current_user.unit_id,
     shift: log_report_params[:shift]
   )
-  @log_report.duty_session = current_duty_session
 
   if existing_log.present?
     redirect_to existing_log, warning: "Log report already exists. Continue editing instead."
@@ -50,6 +49,7 @@ def create
 
   @log_report = LogReport.new(log_report_params)
   @log_report.entered_by = current_user
+  @log_report.duty_session = current_duty_session
 
   if current_user.unit_officer?
     @log_report.department = current_user.department
