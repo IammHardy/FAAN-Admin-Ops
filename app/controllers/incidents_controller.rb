@@ -23,24 +23,35 @@ class IncidentsController < ApplicationController
     @incident.log_entry_id = params[:log_entry_id]
   end
 
+
   def create
-    @incident = Incident.new(incident_params)
-    @incident.created_by = current_user
+  if incident_params[:log_entry_id].present? &&
+     Incident.exists?(log_entry_id: incident_params[:log_entry_id])
 
-    if @incident.save
-      AuditLogger.call(
-        user: current_user,
-        action: "create",
-        auditable: @incident,
-        description: "Created incident #{@incident.incident_number}"
-      )
+    existing_incident = Incident.find_by(log_entry_id: incident_params[:log_entry_id])
 
-      redirect_to @incident, success: "Incident created successfully."
-    else
-      flash.now[:error] = "Unable to create incident."
-      render :new, status: :unprocessable_entity
-    end
+    redirect_to existing_incident,
+                alert: "An incident already exists for this log entry."
+    return
   end
+
+  @incident = Incident.new(incident_params)
+  @incident.created_by = current_user
+
+  if @incident.save
+    AuditLogger.call(
+      user: current_user,
+      action: "create",
+      auditable: @incident,
+      description: "Created incident #{@incident.incident_number}"
+    )
+
+    redirect_to @incident, success: "Incident created successfully."
+  else
+    flash.now[:error] = "Unable to create incident."
+    render :new, status: :unprocessable_entity
+  end
+end
 
   def edit
   end
@@ -99,7 +110,7 @@ class IncidentsController < ApplicationController
       escalated_to: params[:escalated_to],
       remark: params[:reviewer_remark]
     )
-
+    NotificationService.incident_escalated(@incident)
     AuditLogger.call(
       user: current_user,
       action: "escalate",

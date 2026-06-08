@@ -23,8 +23,8 @@
   </p>
 
   <%= form_with url: generate_admin_week_duty_rosters_path, method: :post, local: true, class: "flex flex-col md:flex-row gap-3" do %>
-    <%= date_field_tag :week_start,
-    Date.current.next_week(:monday),
+   <%= date_field_tag :week_start,
+    Date.current.beginning_of_week(:monday),
     class: "rounded-lg border-slate-300" %>
 
     <%= submit_tag "Generate Weekly Roster",

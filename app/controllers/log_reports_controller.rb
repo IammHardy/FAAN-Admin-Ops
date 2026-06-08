@@ -107,6 +107,7 @@ end
 
   def submit
     @log_report.submit!(current_user)
+    NotificationService.daily_log_submitted(@log_report)
 
     AuditLogger.call(
       user: current_user,

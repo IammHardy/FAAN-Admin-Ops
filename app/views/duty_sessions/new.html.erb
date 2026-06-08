@@ -19,10 +19,15 @@
             </p>
           </div>
 
-          <%= button_to "Start Duty",
-              duty_sessions_path(duty_roster_id: roster.id),
-              method: :post,
-              class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
+         <%= button_to "Start Duty",
+    duty_sessions_path(duty_roster_id: roster.id),
+    method: :post,
+    form: {
+      data: {
+        turbo_confirm: "Start duty as #{roster.operation_staff.full_name}?"
+      }
+    },
+    class: "bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800" %>
         </div>
       <% end %>
     </div>

@@ -80,6 +80,7 @@ module Reports
 
     def submit
       @monthly_report.update!(status: :submitted)
+      NotificationService.monthly_report_submitted(@monthly_report)
 
       AuditLogger.call(
         user: current_user,
