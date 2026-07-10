@@ -92,6 +92,24 @@ end
     super_admin? || admin_officer? || reviewer?
   end
 
+  # Name of the administrative unit whose on-duty officers may use the document
+  # archive. Kept here as a single source of truth (matches the seeded unit).
+  ADMIN_UNIT_NAME = "Airport Admin".freeze
+
+  def in_admin_unit?
+    unit&.name == ADMIN_UNIT_NAME
+  end
+
+  # Who may view/download the shared document archive (Records). Super admins and
+  # admin officers always may; other officers only when they belong to the Admin
+  # unit and are currently on duty. Reviewers are explicitly excluded.
+  def can_access_records?
+    return true if super_admin? || admin_officer?
+    return false if reviewer?
+
+    in_admin_unit? && active_duty_session.present?
+  end
+
   def send_devise_notification(notification, *args)
     if notification == :reset_password_instructions
       BrevoEmailService.send_reset_password_email(self, args.first)

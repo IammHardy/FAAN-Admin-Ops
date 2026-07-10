@@ -60,10 +60,14 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
- config.action_mailer.default_url_options = {
-  host: "web-production-9272f.up.railway.app",
-  protocol: "https"
-}
+  # Configurable via APP_HOST so moving to a custom domain does not break reset
+  # links; falls back to the current Railway URL.
+  app_host = ENV.fetch("APP_HOST", "web-production-9272f.up.railway.app")
+
+  config.action_mailer.default_url_options = {
+    host: app_host,
+    protocol: "https"
+  }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -93,6 +97,7 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
   config.hosts << /.*\.up\.railway\.app/
+  config.hosts << ENV["APP_HOST"] if ENV["APP_HOST"].present?
 
 config.action_mailer.delivery_method = :smtp
 config.action_mailer.perform_deliveries = true
@@ -101,7 +106,7 @@ config.action_mailer.raise_delivery_errors = true
 config.action_mailer.smtp_settings = {
   address: ENV["SMTP_ADDRESS"],
   port: ENV.fetch("SMTP_PORT", 587).to_i,
-  domain: "web-production-9272f.up.railway.app",
+  domain: ENV.fetch("SMTP_DOMAIN", app_host),
   user_name: ENV["SMTP_USERNAME"],
   password: ENV["SMTP_PASSWORD"],
   authentication: "plain",

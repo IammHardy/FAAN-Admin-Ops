@@ -2,7 +2,7 @@ class BrevoEmailService
   def self.send_reset_password_email(user, token)
     reset_url = Rails.application.routes.url_helpers.edit_user_password_url(
       reset_password_token: token,
-      host: "web-production-9272f.up.railway.app",
+      host: ENV.fetch("APP_HOST", "web-production-9272f.up.railway.app"),
       protocol: "https"
     )
 

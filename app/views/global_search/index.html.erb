@@ -6,7 +6,7 @@
     <%= text_field_tag :query, @query, placeholder: "Search keyword, staff name, ref no...", class: "rounded-lg border-slate-300" %>
 
     <%= select_tag :module_filter,
-        options_for_select(GlobalSearchController::MODULES.map { |key, label| [label, key] }, @module_filter),
+        options_for_select(available_modules.map { |key, label| [label, key] }, @module_filter),
         class: "rounded-lg border-slate-300" %>
 
     <%= select_tag :unit,

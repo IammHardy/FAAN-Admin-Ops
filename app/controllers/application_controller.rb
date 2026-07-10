@@ -63,6 +63,12 @@ class ApplicationController < ActionController::Base
     redirect_to dashboard_path, error: "You are not authorized to access this record."
   end
 
+  def require_records_access!
+    return if current_user&.can_access_records?
+
+    redirect_to dashboard_path, error: "You are not authorized to access the document archive."
+  end
+
   def require_reviewer_or_admin!
     return if current_user&.super_admin? || current_user&.admin_officer? || current_user&.reviewer?
 

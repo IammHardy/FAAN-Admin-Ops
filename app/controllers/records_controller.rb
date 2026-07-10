@@ -1,5 +1,6 @@
 class RecordsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_records_access!
   before_action :require_super_admin!, only: [:deleted, :restore]
   before_action :require_active_duty_session!, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_record, only: [:show, :edit, :update, :destroy, :download_attachment, :restore]

@@ -1,7 +1,17 @@
 
 puts "Seeding FAAN Admin Operations System..."
 
-if Rails.env.development? || Rails.env.test?
+demo_environment = Rails.env.development? || Rails.env.test?
+
+# Password used for seeded accounts. It is read from SEED_PASSWORD so that no
+# real credential ever lives in source control. In development/test we fall back
+# to a well-known value for convenience; outside those environments a password
+# MUST be provided or user accounts are skipped (so a fresh production deploy can
+# never create a login with a publicly known password).
+seed_password = ENV["SEED_PASSWORD"].presence
+seed_password ||= "password123" if demo_environment
+
+if demo_environment
   puts "Clearing existing development/test seed data..."
 
   MinuteAudioPart.destroy_all
@@ -104,93 +114,36 @@ end
 
 puts "Units created."
 
-# Users
-super_admin = User.find_or_initialize_by(email: "admin@faan.local")
-super_admin.assign_attributes(
-  full_name: "System Administrator",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :super_admin,
-  phone_number: "08010000001",
-  department: operations,
-  unit: airport_admin,
-  requires_duty_session: false,
-  active: true
-)
-super_admin.save!
+# Primary administrator account (created in every environment).
+# The password is only set when the account is first created, so re-running the
+# seeds on a later deploy never overwrites a password the admin has since changed.
+admin_email = ENV["SEED_ADMIN_EMAIL"].presence || "yusufabdulhadi567@gmail.com"
+real_admin = User.find_or_initialize_by(email: admin_email)
 
-real_admin = User.find_or_initialize_by(email: "yusufabdulhadi567@gmail.com")
-real_admin.assign_attributes(
-  full_name: "Yusuf Abdulhadi Adavize",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :super_admin,
-  phone_number: "08000000000",
-  department: operations,
-  unit: airport_admin,
-  requires_duty_session: false,
-  active: true
-)
-real_admin.save!
+if real_admin.new_record? && seed_password.blank?
+  puts "WARNING: SEED_PASSWORD is not set; skipping creation of the admin account."
+  puts "         Set SEED_PASSWORD and re-run `rails db:seed` to create #{admin_email}."
+else
+  real_admin.assign_attributes(
+    full_name: "Yusuf Abdulhadi Adavize",
+    role: :super_admin,
+    phone_number: "08000000000",
+    department: operations,
+    unit: airport_admin,
+    requires_duty_session: false,
+    active: true
+  )
 
-admin_officer = User.find_or_initialize_by(email: "adminofficer@faan.local")
-admin_officer.assign_attributes(
-  full_name: "Admin Officer",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :admin_officer,
-  phone_number: "08010000002",
-  department: operations,
-  unit: airport_admin,
-  requires_duty_session: true,
-  active: true
-)
-admin_officer.save!
+  if real_admin.new_record?
+    real_admin.password = seed_password
+    real_admin.password_confirmation = seed_password
+  end
 
-dispatch_officer = User.find_or_initialize_by(email: "dispatch@faan.local")
-dispatch_officer.assign_attributes(
-  full_name: "Dispatch Officer",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :dispatch_officer,
-  phone_number: "08010000003",
-  department: operations,
-  unit: airport_admin,
-  requires_duty_session: true,
-  active: true
-)
-dispatch_officer.save!
+  real_admin.save!
+  puts "Admin account ensured (#{admin_email})."
+end
 
-unit_officer = User.find_or_initialize_by(email: "unitofficer@faan.local")
-unit_officer.assign_attributes(
-  full_name: "Unit Officer",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :unit_officer,
-  phone_number: "08010000004",
-  department: operations,
-unit: terminal_operations,
-  requires_duty_session: true,
-  active: true
-)
-unit_officer.save!
-
-reviewer = User.find_or_initialize_by(email: "reviewer@faan.local")
-reviewer.assign_attributes(
-  full_name: "HOD Reviewer",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :reviewer,
-  phone_number: "08010000005",
-  department: operations,
-  unit: terminal_operations,
-  requires_duty_session: false,
-  active: true
-)
-reviewer.save!
-
-puts "Users created."
-
+# Real operational staff reference data (safe to seed in all environments).
 admin_staff = [
   ["Mr Nuhu P. Nanloh", "HOD Operations", "Permanent Staff", true, false],
   ["Mr Anietie John Udoh", "HOU Operations", "Permanent Staff", true, false],
@@ -225,7 +178,6 @@ end
 
 puts "Admin staff created."
 
-
 rgm_staff = [
   ["RGM Secretary Female", "Secretary", "Permanent Staff"],
   ["RGM Secretary Male", "Secretary", "Permanent Staff"]
@@ -249,19 +201,79 @@ end
 
 puts "RGM staff created."
 
-rgm_user = User.find_or_initialize_by(email: "rgmoffice@faan.local")
-rgm_user.assign_attributes(
+# ---------------------------------------------------------------------------
+# Demo accounts and sample data.
+# These use placeholder ".local" logins and a shared demo password, so they are
+# ONLY created in development/test. They must never exist on a public deploy.
+# ---------------------------------------------------------------------------
+unless demo_environment
+  puts "Skipping demo accounts and sample data outside development/test."
+  puts "Seed complete."
+  return
+end
+
+build_user = lambda do |email, attrs|
+  user = User.find_or_initialize_by(email: email)
+  user.assign_attributes(attrs.merge(password: seed_password, password_confirmation: seed_password))
+  user.save!
+  user
+end
+
+super_admin = build_user.call("admin@faan.local",
+  full_name: "System Administrator",
+  role: :super_admin,
+  phone_number: "08010000001",
+  department: operations,
+  unit: airport_admin,
+  requires_duty_session: false,
+  active: true)
+
+admin_officer = build_user.call("adminofficer@faan.local",
+  full_name: "Admin Officer",
+  role: :admin_officer,
+  phone_number: "08010000002",
+  department: operations,
+  unit: airport_admin,
+  requires_duty_session: true,
+  active: true)
+
+dispatch_officer = build_user.call("dispatch@faan.local",
+  full_name: "Dispatch Officer",
+  role: :dispatch_officer,
+  phone_number: "08010000003",
+  department: operations,
+  unit: airport_admin,
+  requires_duty_session: true,
+  active: true)
+
+unit_officer = build_user.call("unitofficer@faan.local",
+  full_name: "Unit Officer",
+  role: :unit_officer,
+  phone_number: "08010000004",
+  department: operations,
+  unit: terminal_operations,
+  requires_duty_session: true,
+  active: true)
+
+reviewer = build_user.call("reviewer@faan.local",
+  full_name: "HOD Reviewer",
+  role: :reviewer,
+  phone_number: "08010000005",
+  department: operations,
+  unit: terminal_operations,
+  requires_duty_session: false,
+  active: true)
+
+rgm_user = build_user.call("rgmoffice@faan.local",
   full_name: "RGM Office",
-  password: "password123",
-  password_confirmation: "password123",
   role: :unit_officer,
   phone_number: "08010000006",
   department: operations,
   unit: rgm_office,
   requires_duty_session: true,
-  active: true
-)
-rgm_user.save!
+  active: true)
+
+puts "Demo users created."
 
 # Sample Dispatches
 dispatch_1 = Dispatch.find_or_initialize_by(reference_number: "DPT-#{Date.current.year}-0001")
@@ -320,7 +332,7 @@ dispatch_3.save!
 
 dispatch_3.dispatch_recipients.find_or_create_by!(receiving_unit: apron_control) do |recipient|
   recipient.status = :received
- recipient.receiver_name = "Mr. Ibrahim" if recipient.respond_to?(:receiver_name=)
+  recipient.receiver_name = "Mr. Ibrahim" if recipient.respond_to?(:receiver_name=)
   recipient.receiver_designation = "Apron Control Officer" if recipient.respond_to?(:receiver_designation=)
   recipient.received_by = unit_officer if recipient.respond_to?(:received_by=)
   recipient.received_at = Time.current - 1.day if recipient.respond_to?(:received_at=)
@@ -427,10 +439,10 @@ puts "Audit logs created."
 
 puts "Seed complete."
 puts
-puts "Login accounts:"
-puts "Real Admin: yusufabdulhadi567@gmail.com / password123"
-puts "Super Admin: admin@faan.local / password123"
-puts "Admin Officer: adminofficer@faan.local / password123"
-puts "Dispatch Officer: dispatch@faan.local / password123"
-puts "Unit Officer: unitofficer@faan.local / password123"
-puts "Reviewer: reviewer@faan.local / password123"
+puts "Demo login accounts (development/test only):"
+puts "Super Admin: admin@faan.local"
+puts "Admin Officer: adminofficer@faan.local"
+puts "Dispatch Officer: dispatch@faan.local"
+puts "Unit Officer: unitofficer@faan.local"
+puts "Reviewer: reviewer@faan.local"
+puts "Password: value of SEED_PASSWORD (defaults to \"password123\" in dev/test)"

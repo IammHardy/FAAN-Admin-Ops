@@ -1,5 +1,6 @@
 class GlobalSearchController < ApplicationController
   before_action :authenticate_user!
+  helper_method :available_modules
 
   MODULES = {
     "all" => "All Modules",
@@ -40,14 +41,43 @@ class GlobalSearchController < ApplicationController
     search_incidents if search_module?("incidents")
   end
 
+  # Modules the current user is allowed to search, for building the filter menu.
+  # "all" plus every module that passes the per-module role check.
+  def available_modules
+    MODULES.select { |key, _label| key == "all" || can_search?(key) }
+  end
+
   private
 
   def no_search_params?
     @query.blank? && @date_from.blank? && @date_to.blank? && @unit.blank? && @module_filter == "all"
   end
 
+  # A module is searched only when it is in scope for the current filter AND the
+  # current user is allowed to see that module. This mirrors the role gates that
+  # each module's own controller enforces, so search can never be used to read
+  # records a user cannot open directly.
   def search_module?(module_name)
-    @module_filter == "all" || @module_filter == module_name
+    (@module_filter == "all" || @module_filter == module_name) && can_search?(module_name)
+  end
+
+  def can_search?(module_name)
+    case module_name
+    when "records"
+      current_user.can_access_records?             # RecordsController (require_records_access!)
+    when "dispatches"
+      current_user.can_manage_dispatches?          # DispatchesController#index
+    when "log_reports"
+      current_user.can_access_logs?                # LogReportsController
+    when "minutes"
+      current_user.admin_level?                    # MinutesController (require_admin_access!)
+    when "incidents"
+      current_user.can_access_incidents?           # IncidentsController (require_incident_access!)
+    else
+      # monthly_reports and staff_folders are readable by any authenticated
+      # user, matching their controllers.
+      true
+    end
   end
 
   def date_range

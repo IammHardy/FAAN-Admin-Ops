@@ -171,18 +171,20 @@
     </div>
   <% end %>
 
-  <%= link_to records_path, class: nav_link_class(records_path) do %>
-    <div class="flex items-center gap-3">
-      <%= nav_icon("archive") %>
-      Records Archive
-    </div>
-  <% end %>
+  <% if current_user.can_access_records? %>
+    <%= link_to records_path, class: nav_link_class(records_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("archive") %>
+        Records Archive
+      </div>
+    <% end %>
 
-  <%= link_to daily_filing_log_path, class: nav_link_class(daily_filing_log_path) do %>
-    <div class="flex items-center gap-3">
-      <%= nav_icon("file-stack") %>
-      Daily Filing Log
-    </div>
+    <%= link_to daily_filing_log_path, class: nav_link_class(daily_filing_log_path) do %>
+      <div class="flex items-center gap-3">
+        <%= nav_icon("file-stack") %>
+        Daily Filing Log
+      </div>
+    <% end %>
   <% end %>
 
   <%= link_to log_reports_path, class: nav_link_class(log_reports_path) do %>
@@ -358,7 +360,7 @@
       </div>
     </div>
 
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
       function setupSidebarMenu() {
         const sidebar = document.getElementById("sidebar");
         const openButton = document.getElementById("sidebar-open");
